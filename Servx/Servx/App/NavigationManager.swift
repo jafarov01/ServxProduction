@@ -14,8 +14,8 @@ enum AppView: Hashable {
     case authentication
     case home
     case register
-    case subcategories(category: ServiceCategory)
-    case services(category: ServiceCategory, subcategory: ServiceSubcategory)
+    //case subcategories(category: ServiceCategory)
+    //case services(category: ServiceCategory, subcategory: ServiceArea)
 }
 
 class NavigationManager: ObservableObject {

@@ -10,13 +10,13 @@ import SwiftUI
 struct ServicesView: View {
     @State private var filterInput: String = ""
     var category: ServiceCategory
-    var subcategory: ServiceSubcategory
+    var serviceArea: ServiceArea
     @EnvironmentObject private var navigationManager: NavigationManager
     //    @ObservedObject private var viewModel: SingleSubCategoryServicesListViewViewModel
     
-    init(category: ServiceCategory, subcategory: ServiceSubcategory) {
+    init(category: ServiceCategory, serviceArea: ServiceArea) {
         self.category = category
-        self.subcategory = subcategory
+        self.serviceArea = serviceArea
     }
     
     var body: some View {
@@ -66,16 +66,8 @@ struct ServicesView: View {
                 .padding(.top, 16)
             }
         }
-        .navigationTitle(subcategory.name)
+        .navigationTitle(serviceArea.name)
         .navigationBarBackButtonHidden(true)
     }
 }
 
-#Preview {
-    let category = ServxStaticData.serviceCategories[0]
-    let subcategory = category.subcategories[0]
-    ServicesView(
-        category: category,
-        subcategory: subcategory
-    )
-}

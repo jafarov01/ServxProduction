@@ -7,19 +7,21 @@
 
 import Foundation
 
-struct User {
-    let id: String
+struct User: Codable, Identifiable {
+    var id: String = UUID().uuidString // Local ID initially, replaced with backend ID post-sync.
     let email: String
     let password: String
     let firstName: String
     let lastName: String
     let phoneNumber: String
     let address: Address
-    let languagesSpoken : [String]
+    let languagesSpoken: [String]
+    let role: Role
+    var education: String?
+    var serviceProfiles: [ServiceProfile]?
     
-    // Service profiles for this user
-    var serviceProfiles: [ServiceProfile]
-    
-    // A user is always a seeker
-    var isSeeker: Bool { true }
+    enum Role: String, Codable {
+        case serviceSeeker = "SERVICE_SEEKER"
+        case serviceProvider = "SERVICE_PROVIDER"
+    }
 }

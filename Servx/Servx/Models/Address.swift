@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct Address {
-    let address: String
+struct Address: Codable {
+    let addressLine: String
     let city: String
     let zipCode: String
-    let country: String
+    let country: String // Use ISO 3166-1 alpha-2 codes for consistency with backend.
 }

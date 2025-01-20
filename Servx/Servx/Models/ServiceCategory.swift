@@ -7,7 +7,8 @@
 
 import Foundation
 
-struct ServiceCategory : Hashable {
+struct ServiceCategory: Codable, Identifiable {
+    let id: String // Backend ID for the category.
     let name: String
-    var subcategories: [ServiceSubcategory]
+    var serviceAreas: [ServiceArea]
 }
