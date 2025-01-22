@@ -8,7 +8,7 @@
 import Foundation
 
 struct ServiceCategory: Codable, Identifiable {
-    let id: String // Backend ID for the category.
+    let id: String
     let name: String
     var serviceAreas: [ServiceArea]
 }

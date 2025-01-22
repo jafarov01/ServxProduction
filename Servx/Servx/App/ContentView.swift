@@ -12,7 +12,7 @@ struct ContentView: View {
 
     // View Models for DI
     @StateObject private var loginViewModel = LoginViewModel(authService: AuthService())
-    @StateObject private var registerViewModel = RegisterViewModel()
+    @StateObject private var registerViewModel = RegisterViewModel(authService: AuthService(), serviceCategoryService: ServiceCategoryService())
 
     var body: some View {
         NavigationStack(path: $navigationManager.path) {

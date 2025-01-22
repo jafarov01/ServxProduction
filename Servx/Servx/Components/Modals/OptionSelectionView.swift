@@ -15,13 +15,12 @@ struct OptionSelectionView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            ServxTextView(
-                text: title,
-                color: Color("primary300"),
-                size: 16,
-                weight: .bold
-            )
+            // Title
+            Text(title)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(Color("primary300"))
 
+            // Selection Button
             Button(action: {
                 isPickerPresented = true
             }) {
@@ -41,7 +40,7 @@ struct OptionSelectionView: View {
                 )
             }
             .sheet(isPresented: $isPickerPresented) {
-                PickerView(
+                LazyPickerView(
                     title: title,
                     options: options,
                     selectedOption: $selectedOption
@@ -51,7 +50,7 @@ struct OptionSelectionView: View {
     }
 }
 
-struct PickerView: View {
+struct LazyPickerView: View {
     var title: String
     var options: [String]
     @Binding var selectedOption: String
@@ -59,16 +58,23 @@ struct PickerView: View {
 
     var body: some View {
         NavigationView {
-            List {
-                ForEach(options, id: \.self) { option in
-                    Button(action: {
-                        selectedOption = option
-                        dismiss()
-                    }) {
-                        Text(option)
-                            .foregroundColor(.primary)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(options, id: \.self) { option in
+                        Button(action: {
+                            selectedOption = option
+                            dismiss()
+                        }) {
+                            Text(option)
+                                .padding()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .background(Color.white)
+                                .cornerRadius(8)
+                                .shadow(radius: 2)
+                        }
                     }
                 }
+                .padding()
             }
             .navigationTitle("Select \(title)")
             .navigationBarTitleDisplayMode(.inline)

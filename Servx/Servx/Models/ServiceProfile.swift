@@ -8,17 +8,17 @@
 import Foundation
 
 struct ServiceProfile: Codable, Identifiable {
-    var id: String = UUID().uuidString // Local ID, replaced post-sync.
-    let serviceCategoryId: String // References the ID of a ServiceCategory.
-    let serviceAreaIds: [String] // IDs of ServiceAreas (subcategories).
+    let id: String
+    let userId: String? // Optional to align with the backend (not sent during registration)
+    let serviceCategoryId: String
+    let serviceAreaIds: [String]
     let workExperience: String
     
     func toDictionary() -> [String: Any] {
-            [
-                "id": id,
-                "serviceCategoryId": serviceCategoryId,
-                "serviceAreaIds": serviceAreaIds,
-                "workExperience": workExperience
-            ]
-        }
+        [
+            "serviceCategoryId": serviceCategoryId,
+            "serviceAreaIds": serviceAreaIds,
+            "workExperience": workExperience
+        ]
+    }
 }

@@ -13,55 +13,58 @@ struct ServiceProviderRegistrationInitialStageView: View {
     var onNext: () -> Void
 
     var body: some View {
-        
-        HStack {
-            Button(action: {
-                navigationManager.goBack()
-            }) {
-                Image(systemName: "chevron.left")
-                    .foregroundColor(.blue)
-                    .padding()
-            }
-            .padding(.leading, 10)
-            
-            Spacer()
-        }
-        .frame(height: 44)
-        
         VStack(spacing: 24) {
-            ServxInputView(
-                text: $viewModel.email,
-                placeholder: "Email",
-                frameColor: Color("primary100"),
-                backgroundColor: .white,
-                textColor: Color("primary300"),
-                keyboardType: .emailAddress
-            )
+            // Navigation Header
+            HStack {
+                Button(action: {
+                    navigationManager.goBack()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.blue)
+                        .padding()
+                }
+                Spacer()
+            }
+            .frame(height: 44)
+            .padding(.horizontal)
 
-            ServxInputView(
-                text: $viewModel.password,
-                placeholder: "Password",
-                isSecure: true,
-                frameColor: Color("primary100"),
-                backgroundColor: .white,
-                textColor: Color("primary300")
-            )
+            // Input Fields
+            VStack(spacing: 16) {
+                ServxInputView(
+                    text: $viewModel.email,
+                    placeholder: "Email",
+                    frameColor: Color("primary100"),
+                    backgroundColor: .white,
+                    textColor: Color("primary300"),
+                    keyboardType: .emailAddress
+                )
 
-//            ServxButtonView(
-//                title: "Next",
-//                width: 200,
-//                height: 50,
-//                frameColor: viewModel.isInitialStageValid ? Color("primary500") : .gray,
-//                innerColor: viewModel.isInitialStageValid ? Color("primary500") : .gray,
-//                textColor: .white,
-//                cornerRadius: 12,
-//                isDisabled: !viewModel.isInitialStageValid,
-//                action: {
-//                    if viewModel.isInitialStageValid {
-//                        onNext()
-//                    }
-//                }
-//            )
+                ServxInputView(
+                    text: $viewModel.password,
+                    placeholder: "Password",
+                    isSecure: true,
+                    frameColor: Color("primary100"),
+                    backgroundColor: .white,
+                    textColor: Color("primary300")
+                )
+            }
+
+            // Next Button
+            ServxButtonView(
+                title: "Next",
+                width: 200,
+                height: 50,
+                frameColor: viewModel.isInitialStageValid ? ServxTheme.linkTextColor : ServxTheme.buttonDisabledColor,
+                innerColor: viewModel.isInitialStageValid ? ServxTheme.linkTextColor : ServxTheme.buttonDisabledColor,
+                textColor: ServxTheme.backgroundColor,
+                isDisabled: !viewModel.isInitialStageValid,
+                action: {
+                    if viewModel.isInitialStageValid {
+                        onNext()
+                    }
+                }
+            )
+            .opacity(viewModel.isInitialStageValid ? 1 : 0.6) // Disabled state opacity
         }
         .padding(24)
         .navigationBarBackButtonHidden(true)

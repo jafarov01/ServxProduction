@@ -8,14 +8,7 @@
 import Combine
 import Foundation
 
-struct Profile: Identifiable {
-    let id = UUID()
-    var serviceCategory: String = ""
-    var serviceAreas: [String] = [""]
-    var education: String = ""
-    var workExperience: String = ""
-}
-
+@MainActor
 class RegisterViewModel: ObservableObject {
     // MARK: - Published Variables
     @Published var email: String = ""
@@ -23,50 +16,186 @@ class RegisterViewModel: ObservableObject {
     @Published var firstName: String = ""
     @Published var lastName: String = ""
     @Published var phoneNumber: String = ""
-    @Published var address: String = ""
-    @Published var country: String = ""
-    @Published var city: String = ""
+    @Published var addressLine: String = ""
+    @Published var zipCode: String = ""
+    @Published var selectedCountry: String = ""
+    @Published var selectedCity: String = ""
+    @Published var selectedLanguages: Set<String> = []
+    @Published var education: String = ""
     @Published var isRememberMe: Bool = false
+
+    // Profiles for Service Provider
+    @Published var profiles: [ServiceProviderProfileRequest] = []
+
+    // Dropdown options
+    @Published var countryOptions: [String] = ["Azerbaijan", "Estonia", "Hungary"]
+    @Published var cityDictionary: [String: [String]] = [
+        "Azerbaijan": ["Baku", "Ganja", "Sumqayit"],
+        "Estonia": ["Tallinn", "Tartu", "Narva"],
+        "Hungary": ["Budapest", "Debrecen", "Szeged"]
+    ]
+    func cityOptions(for country: String) -> [String] {
+        cityDictionary[country] ?? []
+    }
     
-    // Profiles
-    @Published var profiles: [Profile] = []
-    
-    // Dropdown options for Service Provider
-    let educationOptions = ["High School", "Bachelor's Degree", "Master's Degree", "PhD"]
-    let serviceCategoryOptions = ["Plumbing", "Electrical", "Cleaning", "Carpentry"]
-    let serviceAreaOptions = ["Toilet Issue", "Kitchen Tube", "Wiring Repair", "Appliance Setup"]
-    let workExperienceOptions = ["< 1 year", "1-3 years", "3-5 years", "> 5 years"]
+    @Published var languageOptions: [String] = ["English", "Azerbaijani", "Estonian", "Russian", "Hungarian", "German", "Turkish"]
+    @Published var educationOptions: [String] = ["High School", "Bachelor's Degree", "Master's Degree", "PhD"]
+    @Published var workExperienceOptions: [String] = ["< 1 year", "1-3 years", "3-5 years", "> 5 years"]
+    @Published var serviceCategoryOptions: [ServiceCategory] = []
+    @Published var serviceAreaOptions: [ServiceArea] = []
 
     // Validation States
+    @Published var isInitialStageValid: Bool = false
+    @Published var isPersonalDetailsStageValid: Bool = false
     @Published var isProfessionalDetailsStageValid: Bool = false
-    
-    // Validation Logic
-    private func validateProfessionalDetails() {
-        // At least one profile must be valid
-        isProfessionalDetailsStageValid = profiles.allSatisfy { profile in
-            !profile.serviceCategory.isEmpty &&
-            !profile.serviceAreas[0].isEmpty && // Check at least one service area
-            !profile.education.isEmpty &&
-            !profile.workExperience.isEmpty
-        }
+    @Published var isLoading: Bool = false
+
+    // Dependencies
+    private let authService: AuthServiceProtocol
+    private let serviceCategoryService: ServiceCategoryServiceProtocol
+    private var cancellables = Set<AnyCancellable>()
+
+    // MARK: - Initialization
+    init(authService: AuthServiceProtocol, serviceCategoryService: ServiceCategoryServiceProtocol) {
+        self.authService = authService
+        self.serviceCategoryService = serviceCategoryService
+        setupValidation()
+        fetchServiceData()
     }
-    
-    // Add a Profile
+
+    // MARK: - Validation Logic
+    private func setupValidation() {
+        setupInitialStageValidation()
+        setupPersonalDetailsValidation()
+        setupProfessionalDetailsValidation()
+    }
+
+    private func setupInitialStageValidation() {
+        Publishers.CombineLatest(
+            $email.map { !$0.isEmpty && $0.contains("@") },
+            $password.map { $0.count >= 6 }
+        )
+        .map { $0 && $1 }
+        .receive(on: DispatchQueue.main)
+        .assign(to: &$isInitialStageValid)
+    }
+
+    private func setupPersonalDetailsValidation() {
+        Publishers.CombineLatest4(
+            $firstName.map { !$0.isEmpty },
+            $lastName.map { !$0.isEmpty },
+            $phoneNumber.map { !$0.isEmpty && $0.count >= 10 },
+            $education.map { !$0.isEmpty }
+        )
+        .map { $0 && $1 && $2 && $3 }
+        .receive(on: DispatchQueue.main)
+        .assign(to: &$isPersonalDetailsStageValid)
+    }
+
+    private func setupProfessionalDetailsValidation() {
+        $profiles
+            .map { profiles in
+                profiles.allSatisfy { profile in
+                    profile.serviceCategoryId > 0 &&
+                    !profile.serviceAreaIds.isEmpty &&
+                    !profile.workExperience.isEmpty
+                }
+            }
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$isProfessionalDetailsStageValid)
+    }
+
+    // MARK: - Profile Management
     func addProfile() {
-        let newProfile = Profile()
-        profiles.append(newProfile)
+        profiles.append(ServiceProviderProfileRequest(serviceCategoryId: 0, serviceAreaIds: [], workExperience: ""))
     }
-    
-    // Remove a Profile
+
     func removeProfile(at index: Int) {
         profiles.remove(at: index)
-        validateProfessionalDetails()
     }
-    
-    // Ensure at Least One Profile Exists
+
     func ensureAtLeastOneProfile() {
         if profiles.isEmpty {
-            profiles.append(Profile())
+            addProfile()
+        }
+    }
+
+    // MARK: - Fetch Service Data
+    func fetchServiceData() {
+        Task {
+            do {
+                serviceCategoryOptions = try await serviceCategoryService.fetchServiceCategories()
+                serviceAreaOptions = try await serviceCategoryService.fetchServiceAreas()
+            } catch {
+                print("Failed to fetch service data: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    // MARK: - Registration Actions
+    func registerServiceSeeker(completion: @escaping (Bool) -> Void) {
+        guard isInitialStageValid, isPersonalDetailsStageValid else { return }
+
+        let seekerRequest = RegisterSeekerRequest(
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            password: password,
+            phoneNumber: phoneNumber,
+            address: AddressRequest(
+                addressLine: addressLine,
+                city: selectedCity,
+                zipCode: zipCode,
+                country: selectedCountry
+            ),
+            languagesSpoken: selectedLanguages
+        )
+
+        isLoading = true
+        Task { [weak self] in
+            guard let self = self else { return }
+            do {
+                let _ = try await self.authService.registerServiceSeeker(seekerRequest: seekerRequest)
+                self.isLoading = false
+                completion(true)
+            } catch {
+                self.isLoading = false
+                completion(false)
+            }
+        }
+    }
+
+    func registerServiceProvider(completion: @escaping (Bool) -> Void) {
+        guard isInitialStageValid, isPersonalDetailsStageValid, isProfessionalDetailsStageValid else { return }
+
+        let providerRequest = RegisterProviderRequest(
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            password: password,
+            phoneNumber: phoneNumber,
+            address: AddressRequest(
+                addressLine: addressLine,
+                city: selectedCity,
+                zipCode: zipCode,
+                country: selectedCountry
+            ),
+            languagesSpoken: selectedLanguages,
+            education: education,
+            profiles: profiles
+        )
+
+        isLoading = true
+        Task { [weak self] in
+            guard let self = self else { return }
+            do {
+                let _ = try await self.authService.registerServiceProvider(providerRequest: providerRequest)
+                self.isLoading = false
+                completion(true)
+            } catch {
+                self.isLoading = false
+                completion(false)
+            }
         }
     }
 }

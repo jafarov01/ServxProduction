@@ -14,18 +14,19 @@ struct RegisterProviderRequest: Encodable {
     let email: String
     let password: String
     let phoneNumber: String
-    let role: String
+    let role: String = "SERVICE_PROVIDER" // Enforced constant
     let address: AddressRequest
-    let languagesSpoken: [String]
+    var languagesSpoken: Set<String>
     let education: String
-    let profiles: [ServiceProviderProfileRequest]
+    var profiles: [ServiceProviderProfileRequest]
 }
 
 /// A nested model for the service provider's profile.
-struct ServiceProviderProfileRequest: Encodable {
-    let serviceCategoryId: Int
-    let serviceAreaIds: [Int]
-    let workExperience: String
+struct ServiceProviderProfileRequest: Identifiable, Encodable {
+    var id = UUID()
+    var serviceCategoryId: Int
+    var serviceAreaIds: [Int]
+    var workExperience: String
 }
 
 /// Reuse the same `AddressRequest` structure as in `RegisterSeekerRequest`.

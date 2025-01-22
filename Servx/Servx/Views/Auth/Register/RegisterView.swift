@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct RegisterView: View {
-    @State var isCustomerOnly: Bool = true
+    @State private var isServiceSeeker: Bool = true
     @StateObject private var viewModel: RegisterViewModel
     @EnvironmentObject private var navigationManager: NavigationManager
 
@@ -16,69 +16,72 @@ struct RegisterView: View {
     }
 
     var body: some View {
-        
-        HStack {
-            Button(action: {
-                navigationManager.goBack()
-            }) {
-                Image(systemName: "chevron.left")
-                    .foregroundColor(.blue)
-                    .padding()
+        VStack(spacing: 16) {
+            // Navigation Header
+            HStack {
+                Button(action: {
+                    navigationManager.goBack()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.blue)
+                        .padding()
+                }
+                Spacer()
             }
-            .padding(.leading, 10)
-            
-            Spacer()
-        }
-        .frame(height: 44)
-        
-        ScrollView {
-            VStack(spacing: 10) {
-                // Title
-                ServxTextView(
-                    text: "Create Profile",
-                    color: Color("primary500"),
-                    size: 32,
-                    weight: .bold,
-                    alignment: .center,
-                    paddingValues: EdgeInsets(top: 16, leading: 0, bottom: 0, trailing: 0),
-                    lineSpacing: 4
+            .frame(height: 44)
+            .padding(.horizontal)
+
+            // Title
+            ServxTextView(
+                text: "Create Profile",
+                color: Color("primary500"),
+                size: 32,
+                weight: .bold,
+                alignment: .center
+            )
+            .padding(.top, 16)
+
+            // Role Selection Buttons
+            HStack(spacing: 16) {
+                ServxButtonView(
+                    title: "Service Seeker",
+                    width: 163,
+                    height: 40,
+                    frameColor: Color("primary500"),
+                    innerColor: isServiceSeeker ? Color("primary500") : .white,
+                    textColor: isServiceSeeker ? .white : Color("greyScale500"),
+                    cornerRadius: 8,
+                    action: { isServiceSeeker = true }
                 )
 
-                // Role Selection Buttons
-                HStack(spacing: 16) {
-                    ServxButtonView(
-                        title: "Customer",
-                        width: 163,
-                        height: 40,
-                        frameColor: Color("primary500"),
-                        innerColor: isCustomerOnly ? Color("primary500") : .white,
-                        textColor: isCustomerOnly ? .white : Color("greyScale500"),
-                        cornerRadius: 8,
-                        action: { isCustomerOnly = true }
-                    )
-
-                    ServxButtonView(
-                        title: "Service Provider",
-                        width: 163,
-                        height: 40,
-                        frameColor: Color("primary500"),
-                        innerColor: !isCustomerOnly ? Color("primary500") : .white,
-                        textColor: !isCustomerOnly ? .white : Color("greyScale500"),
-                        cornerRadius: 8,
-                        action: { isCustomerOnly = false }
-                    )
-                }
-
-//                // Dynamic Input View
-//                if isCustomerOnly {
-//                    ServiceSeekerRegistrationView(viewModel: viewModel)
-//                } else {
-//                    ServiceProviderRegistrationView(viewModel: viewModel)
-//                }
-                
-                // Footer
-                ServiceAuthView(hasAccount: false)
+                ServxButtonView(
+                    title: "Service Provider",
+                    width: 163,
+                    height: 40,
+                    frameColor: Color("primary500"),
+                    innerColor: !isServiceSeeker ? Color("primary500") : .white,
+                    textColor: !isServiceSeeker ? .white : Color("greyScale500"),
+                    cornerRadius: 8,
+                    action: { isServiceSeeker = false }
+                )
             }
+
+            // Dynamic Input View
+            ScrollView {
+                VStack {
+                    if isServiceSeeker {
+                        ServiceSeekerRegistrationView(viewModel: viewModel)
+                    } else {
+                        ServiceProviderRegistrationView(viewModel: viewModel)
+                    }
+                }
+            }
+            .padding(.horizontal)
+
+            Spacer()
+
+            // Footer
+            ServiceAuthView(hasAccount: false)
         }
         .navigationBarBackButtonHidden(true)
     }

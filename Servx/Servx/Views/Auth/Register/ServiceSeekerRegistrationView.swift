@@ -12,58 +12,52 @@ struct ServiceSeekerRegistrationView: View {
     @EnvironmentObject private var navigationManager: NavigationManager
 
     var body: some View {
-        
-        HStack {
-            Button(action: {
-                navigationManager.goBack()
-            }) {
-                Image(systemName: "chevron.left")
-                    .foregroundColor(.blue)
-                    .padding()
-            }
-            .padding(.leading, 10)
-            
-            Spacer()
-        }
-        .frame(height: 44)
-        
         VStack(spacing: 24) {
-            // Input Fields
-            inputFields()
-
-            // Remember Me Toggle
-            Toggle(isOn: $viewModel.isRememberMe) {
-                ServxTextView(
-                    text: "Remember me",
-                    color: .black,
-                    size: 16,
-                    weight: .regular
-                )
+            // Navigation Header
+            HStack {
+                Button(action: {
+                    navigationManager.goBack()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(Color("primary500"))
+                        .padding()
+                }
+                Spacer()
             }
-            .toggleStyle(.switch)
-            .padding(.horizontal, 25)
+            .frame(height: 44)
+            .padding(.horizontal)
+
+            // Input Fields
+            ScrollView {
+                inputFields()
+                    .padding(.horizontal, 24)
+            }
 
             // Continue Button
-//            ServxButtonView(
-//                title: "Continue",
-//                width: 342,
-//                height: 56,
-//                frameColor: viewModel.isFormValid ? Color("primary200") : .gray,
-//                innerColor: viewModel.isFormValid ? Color("primary200") : .gray,
-//                textColor: .white,
-//                isDisabled: !viewModel.isFormValid,
-//                action: {
-//                    if viewModel.isFormValid {
-//                        viewModel.createProfile()
-//                        navigationManager.navigate(to: .home)
-//                    }
-//                }
-//            )
+            ServxButtonView(
+                title: "Continue",
+                width: 342,
+                height: 56,
+                frameColor: viewModel.isPersonalDetailsStageValid ? Color("primary500") : .gray,
+                innerColor: viewModel.isPersonalDetailsStageValid ? Color("primary500") : .gray,
+                textColor: .white,
+                isDisabled: !viewModel.isPersonalDetailsStageValid,
+                action: {
+                    if viewModel.isPersonalDetailsStageValid {
+                        viewModel.registerServiceSeeker { success in
+                            if success {
+                                navigationManager.navigate(to: .authentication)
+                            } else {
+                                // Handle error (e.g., show an alert)
+                            }
+                        }
+                    }
+                }
+            )
+            .opacity(viewModel.isPersonalDetailsStageValid ? 1 : 0.6)
+            .padding(.top, 16)
         }
-//        .onAppear(){
-//            viewModel.testValidation()
-//        }
-        .padding(24)
+        .padding(.vertical, 24)
         .navigationBarBackButtonHidden(true)
     }
 
@@ -103,28 +97,40 @@ struct ServiceSeekerRegistrationView: View {
                 keyboardType: .phonePad
             )
 
+            // Address Fields
             ServxInputView(
-                text: $viewModel.address,
-                placeholder: "Current Address",
+                text: $viewModel.addressLine,
+                placeholder: "Address Line",
                 frameColor: Color("primary100"),
                 backgroundColor: .white,
                 textColor: Color("primary300")
             )
 
-            ServxInputView(
-                text: $viewModel.country,
-                placeholder: "Country",
-                frameColor: Color("primary100"),
-                backgroundColor: .white,
-                textColor: Color("primary300")
+            OptionSelectionView(
+                title: "Country",
+                options: viewModel.countryOptions,
+                selectedOption: $viewModel.selectedCountry
+            )
+
+            OptionSelectionView(
+                title: "City",
+                options: viewModel.cityOptions(for: viewModel.selectedCountry),
+                selectedOption: $viewModel.selectedCity
             )
 
             ServxInputView(
-                text: $viewModel.city,
-                placeholder: "City",
+                text: $viewModel.zipCode,
+                placeholder: "Zip Code",
                 frameColor: Color("primary100"),
                 backgroundColor: .white,
-                textColor: Color("primary300")
+                textColor: Color("primary300"),
+                keyboardType: .numbersAndPunctuation
+            )
+
+            MultiSelectDropdownView(
+                title: "Languages Spoken",
+                options: viewModel.languageOptions,
+                selectedOptions: $viewModel.selectedLanguages
             )
         }
     }

@@ -14,9 +14,9 @@ struct RegisterSeekerRequest: Encodable {
     let email: String
     let password: String
     let phoneNumber: String
-    let role: String
+    let role: String = "SERVICE_SEEKER" // Enforced constant
     let address: AddressRequest
-    let languagesSpoken: [String]
+    var languagesSpoken: Set<String>
 }
 
 /// A nested model for the address in registration.

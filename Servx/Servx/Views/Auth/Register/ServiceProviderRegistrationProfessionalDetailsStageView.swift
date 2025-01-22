@@ -10,7 +10,7 @@ import SwiftUI
 struct ServiceProviderRegistrationProfessionalDetailsStageView: View {
     @EnvironmentObject private var navigationManager: NavigationManager
     @ObservedObject var viewModel: RegisterViewModel
-    var onComplete: () -> Void
+    var onNext: () -> Void
 
     var body: some View {
         VStack(spacing: 16) {
@@ -20,15 +20,14 @@ struct ServiceProviderRegistrationProfessionalDetailsStageView: View {
                     navigationManager.goBack()
                 }) {
                     Image(systemName: "chevron.left")
-                        .foregroundColor(.blue)
+                        .foregroundColor(Color("primary500"))
                         .padding()
                 }
-                .padding(.leading, 10)
-                
                 Spacer()
             }
             .frame(height: 44)
-            
+            .padding(.horizontal)
+
             ScrollView {
                 VStack(spacing: 24) {
                     // Profile Forms
@@ -38,22 +37,34 @@ struct ServiceProviderRegistrationProfessionalDetailsStageView: View {
                                 .font(.headline)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.bottom, 8)
-                            
-                            OptionSelectionView(
-                                title: "Education",
-                                options: viewModel.educationOptions,
-                                selectedOption: $viewModel.profiles[index].education
-                            )
+                                .foregroundColor(Color("primary500"))
+
                             OptionSelectionView(
                                 title: "Service Category",
-                                options: viewModel.serviceCategoryOptions,
-                                selectedOption: $viewModel.profiles[index].serviceCategory
+                                options: viewModel.serviceCategoryOptions.map { $0.name },
+                                selectedOption: Binding(
+                                    get: { viewModel.profiles[index].serviceCategoryId > 0 ? "\(viewModel.profiles[index].serviceCategoryId)" : "" },
+                                    set: { newValue in
+                                        if let id = Int(newValue) {
+                                            viewModel.profiles[index].serviceCategoryId = id
+                                        }
+                                    }
+                                )
                             )
+
                             OptionSelectionView(
-                                title: "Service Area",
-                                options: viewModel.serviceAreaOptions,
-                                selectedOption: $viewModel.profiles[index].serviceAreas[0] // Example for first area
+                                title: "Service Area(s)",
+                                options: viewModel.serviceAreaOptions.map { $0.name },
+                                selectedOption: Binding(
+                                    get: { viewModel.profiles[index].serviceAreaIds.first.map { "\($0)" } ?? "" },
+                                    set: { newValue in
+                                        if let id = Int(newValue) {
+                                            viewModel.profiles[index].serviceAreaIds = [id]
+                                        }
+                                    }
+                                )
                             )
+
                             OptionSelectionView(
                                 title: "Work Experience",
                                 options: viewModel.workExperienceOptions,
@@ -63,7 +74,7 @@ struct ServiceProviderRegistrationProfessionalDetailsStageView: View {
                         .padding()
                         .background(Color("primary100"))
                         .cornerRadius(12)
-                        
+
                         // Remove Button for Additional Profiles
                         if index > 0 {
                             Button(action: {
@@ -76,7 +87,7 @@ struct ServiceProviderRegistrationProfessionalDetailsStageView: View {
                             }
                         }
                     }
-                    
+
                     // Add Profile Button
                     ServxButtonView(
                         title: "Add Profile",
@@ -90,10 +101,10 @@ struct ServiceProviderRegistrationProfessionalDetailsStageView: View {
                             viewModel.addProfile()
                         }
                     )
-                    
-                    // Complete Registration Button
+
+                    // Next Button
                     ServxButtonView(
-                        title: "Complete",
+                        title: "Next",
                         width: 200,
                         height: 50,
                         frameColor: viewModel.isProfessionalDetailsStageValid ? Color("primary500") : .gray,
@@ -103,7 +114,7 @@ struct ServiceProviderRegistrationProfessionalDetailsStageView: View {
                         isDisabled: !viewModel.isProfessionalDetailsStageValid,
                         action: {
                             if viewModel.isProfessionalDetailsStageValid {
-                                onComplete()
+                                onNext()
                             }
                         }
                     )
@@ -113,6 +124,7 @@ struct ServiceProviderRegistrationProfessionalDetailsStageView: View {
         }
         .onAppear {
             viewModel.ensureAtLeastOneProfile()
+            viewModel.fetchServiceData()
         }
         .navigationBarBackButtonHidden(true)
     }

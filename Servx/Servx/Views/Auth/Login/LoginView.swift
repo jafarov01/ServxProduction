@@ -87,8 +87,8 @@ struct LoginView: View {
                         title: "Sign in",
                         width: 342,
                         height: 56,
-                        frameColor: viewModel.isFormValid ? ServxTheme.linkTextColor : ServxTheme.greyScale400Color,
-                        innerColor: viewModel.isFormValid ? ServxTheme.linkTextColor : ServxTheme.greyScale400Color,
+                        frameColor: viewModel.isFormValid ? ServxTheme.primaryColor : ServxTheme.buttonDisabledColor,
+                        innerColor: viewModel.isFormValid ? ServxTheme.primaryColor : ServxTheme.buttonDisabledColor,
                         textColor: ServxTheme.backgroundColor,
                         isDisabled: !viewModel.isFormValid,
                         action: {
@@ -109,7 +109,7 @@ struct LoginView: View {
                     height: 40,
                     frameColor: .clear,
                     innerColor: .clear,
-                    textColor: ServxTheme.linkTextColor,
+                    textColor: ServxTheme.primaryColor,
                     font: .subheadline,
                     action: {
                         navigationManager.navigate(to: .forgotPassword)
