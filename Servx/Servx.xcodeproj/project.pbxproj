@@ -10,10 +10,6 @@
 		55385E9B2D40857100CA96D6 /* MultiSelectDropdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55385E9A2D40856A00CA96D6 /* MultiSelectDropdownView.swift */; };
 		5574B7472D3DC7E700DF60ED /* ServiceCategoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7462D3DC7E700DF60ED /* ServiceCategoryService.swift */; };
 		5574B7492D3DC80000DF60ED /* ServiceCategoryServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7482D3DC80000DF60ED /* ServiceCategoryServiceProtocol.swift */; };
-		5574B74D2D3DC82E00DF60ED /* ServiceCategoriesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B74C2D3DC82E00DF60ED /* ServiceCategoriesResponse.swift */; };
-		5574B74F2D3DC83B00DF60ED /* ServiceAreasResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B74E2D3DC83B00DF60ED /* ServiceAreasResponse.swift */; };
-		5574B7512D3DC87D00DF60ED /* FetchAreasRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7502D3DC87D00DF60ED /* FetchAreasRequest.swift */; };
-		5574B7532D3DC89500DF60ED /* FetchCategoriesRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7522D3DC89500DF60ED /* FetchCategoriesRequest.swift */; };
 		5574B7572D3DC8B800DF60ED /* LoginRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7562D3DC8B800DF60ED /* LoginRequest.swift */; };
 		5574B7592D3DC8C600DF60ED /* RegisterSeekerRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7582D3DC8C600DF60ED /* RegisterSeekerRequest.swift */; };
 		5574B75B2D3DC8D300DF60ED /* RegisterProviderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B75A2D3DC8D300DF60ED /* RegisterProviderRequest.swift */; };
@@ -25,8 +21,6 @@
 		5574B7672D3DC92100DF60ED /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7662D3DC91C00DF60ED /* Endpoint.swift */; };
 		5574B7692D3DC92800DF60ED /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7682D3DC92400DF60ED /* HTTPMethod.swift */; };
 		5574B76B2D3DC93900DF60ED /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B76A2D3DC93600DF60ED /* NetworkError.swift */; };
-		5574B7792D3DDF7F00DF60ED /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7782D3DDF7C00DF60ED /* TestView.swift */; };
-		5574B77B2D3DDF9300DF60ED /* TestViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B77A2D3DDF8F00DF60ED /* TestViewModel.swift */; };
 		55FBA2882D35EAE100F86201 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55FBA2672D35EAE100F86201 /* Preview Assets.xcassets */; };
 		55FBA2892D35EAE100F86201 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55FBA2862D35EAE100F86201 /* Assets.xcassets */; };
 		55FBA28A2D35EAE100F86201 /* ServiceArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA25A2D35EAE100F86201 /* ServiceArea.swift */; };
@@ -89,10 +83,6 @@
 		55385E9A2D40856A00CA96D6 /* MultiSelectDropdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectDropdownView.swift; sourceTree = "<group>"; };
 		5574B7462D3DC7E700DF60ED /* ServiceCategoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceCategoryService.swift; sourceTree = "<group>"; };
 		5574B7482D3DC80000DF60ED /* ServiceCategoryServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceCategoryServiceProtocol.swift; sourceTree = "<group>"; };
-		5574B74C2D3DC82E00DF60ED /* ServiceCategoriesResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceCategoriesResponse.swift; sourceTree = "<group>"; };
-		5574B74E2D3DC83B00DF60ED /* ServiceAreasResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceAreasResponse.swift; sourceTree = "<group>"; };
-		5574B7502D3DC87D00DF60ED /* FetchAreasRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchAreasRequest.swift; sourceTree = "<group>"; };
-		5574B7522D3DC89500DF60ED /* FetchCategoriesRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchCategoriesRequest.swift; sourceTree = "<group>"; };
 		5574B7562D3DC8B800DF60ED /* LoginRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginRequest.swift; sourceTree = "<group>"; };
 		5574B7582D3DC8C600DF60ED /* RegisterSeekerRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterSeekerRequest.swift; sourceTree = "<group>"; };
 		5574B75A2D3DC8D300DF60ED /* RegisterProviderRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterProviderRequest.swift; sourceTree = "<group>"; };
@@ -104,8 +94,6 @@
 		5574B7662D3DC91C00DF60ED /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		5574B7682D3DC92400DF60ED /* HTTPMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPMethod.swift; sourceTree = "<group>"; };
 		5574B76A2D3DC93600DF60ED /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
-		5574B7782D3DDF7C00DF60ED /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
-		5574B77A2D3DDF8F00DF60ED /* TestViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewModel.swift; sourceTree = "<group>"; };
 		55FBA2152D35E8C900F86201 /* Servx.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Servx.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		55FBA2252D35E8CB00F86201 /* ServxTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ServxTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		55FBA22F2D35E8CB00F86201 /* ServxUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ServxUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -218,30 +206,10 @@
 		5574B7452D3DC7A800DF60ED /* ServiceCategories */ = {
 			isa = PBXGroup;
 			children = (
-				5574B74B2D3DC81800DF60ED /* RequestModels */,
-				5574B74A2D3DC80700DF60ED /* ResponseModels */,
 				5574B7462D3DC7E700DF60ED /* ServiceCategoryService.swift */,
 				5574B7482D3DC80000DF60ED /* ServiceCategoryServiceProtocol.swift */,
 			);
 			path = ServiceCategories;
-			sourceTree = "<group>";
-		};
-		5574B74A2D3DC80700DF60ED /* ResponseModels */ = {
-			isa = PBXGroup;
-			children = (
-				5574B74C2D3DC82E00DF60ED /* ServiceCategoriesResponse.swift */,
-				5574B74E2D3DC83B00DF60ED /* ServiceAreasResponse.swift */,
-			);
-			path = ResponseModels;
-			sourceTree = "<group>";
-		};
-		5574B74B2D3DC81800DF60ED /* RequestModels */ = {
-			isa = PBXGroup;
-			children = (
-				5574B7502D3DC87D00DF60ED /* FetchAreasRequest.swift */,
-				5574B7522D3DC89500DF60ED /* FetchCategoriesRequest.swift */,
-			);
-			path = RequestModels;
 			sourceTree = "<group>";
 		};
 		5574B7542D3DC89F00DF60ED /* ResponseModels */ = {
@@ -359,8 +327,6 @@
 		5574B7772D3DDF6E00DF60ED /* Testing */ = {
 			isa = PBXGroup;
 			children = (
-				5574B77A2D3DDF8F00DF60ED /* TestViewModel.swift */,
-				5574B7782D3DDF7C00DF60ED /* TestView.swift */,
 			);
 			path = Testing;
 			sourceTree = "<group>";
@@ -666,15 +632,11 @@
 				5574B7492D3DC80000DF60ED /* ServiceCategoryServiceProtocol.swift in Sources */,
 				55FBA28F2D35EAE100F86201 /* RegisterView.swift in Sources */,
 				55FBA2902D35EAE100F86201 /* ServxTheme.swift in Sources */,
-				5574B74D2D3DC82E00DF60ED /* ServiceCategoriesResponse.swift in Sources */,
 				55FBA2912D35EAE100F86201 /* OTPInputView.swift in Sources */,
-				5574B7532D3DC89500DF60ED /* FetchCategoriesRequest.swift in Sources */,
 				5574B7612D3DC8FB00DF60ED /* AuthService.swift in Sources */,
 				5574B7672D3DC92100DF60ED /* Endpoint.swift in Sources */,
 				5574B75D2D3DC8EA00DF60ED /* AuthResponse.swift in Sources */,
 				55FBA2962D35EAE100F86201 /* NavigationManager.swift in Sources */,
-				5574B7792D3DDF7F00DF60ED /* TestView.swift in Sources */,
-				5574B7512D3DC87D00DF60ED /* FetchAreasRequest.swift in Sources */,
 				55FBA2972D35EAE100F86201 /* ServiceProviderRegistrationProfessionalDetailsStageView.swift in Sources */,
 				55FBA2982D35EAE100F86201 /* SendOTPView.swift in Sources */,
 				55FBA2992D35EAE100F86201 /* RegisterViewModel.swift in Sources */,
@@ -694,11 +656,9 @@
 				55FBA2A72D35EAE100F86201 /* HomeViewModel.swift in Sources */,
 				55FBA2A82D35EAE100F86201 /* User.swift in Sources */,
 				55FBA2A92D35EAE100F86201 /* ServxApp.swift in Sources */,
-				5574B74F2D3DC83B00DF60ED /* ServiceAreasResponse.swift in Sources */,
 				55FBA2AA2D35EAE100F86201 /* ServicesView.swift in Sources */,
 				5574B75F2D3DC8F200DF60ED /* RegisterResponse.swift in Sources */,
 				55FBA2AB2D35EAE100F86201 /* Address.swift in Sources */,
-				5574B77B2D3DDF9300DF60ED /* TestViewModel.swift in Sources */,
 				55FBA2AC2D35EAE100F86201 /* ServiceSeekerRegistrationView.swift in Sources */,
 				5574B7652D3DC91500DF60ED /* APIClient.swift in Sources */,
 				55385E9B2D40857100CA96D6 /* MultiSelectDropdownView.swift in Sources */,

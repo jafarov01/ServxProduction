@@ -14,19 +14,6 @@ struct ServiceProviderRegistrationInitialStageView: View {
 
     var body: some View {
         VStack(spacing: 24) {
-            // Navigation Header
-            HStack {
-                Button(action: {
-                    navigationManager.goBack()
-                }) {
-                    Image(systemName: "chevron.left")
-                        .foregroundColor(.blue)
-                        .padding()
-                }
-                Spacer()
-            }
-            .frame(height: 44)
-            .padding(.horizontal)
 
             // Input Fields
             VStack(spacing: 16) {

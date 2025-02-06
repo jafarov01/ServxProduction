@@ -7,7 +7,6 @@
 
 import Foundation
 
-/// Implementation of the `ServiceCategoryServiceProtocol` for fetching service categories and service areas.
 final class ServiceCategoryService: ServiceCategoryServiceProtocol {
     private let apiClient: APIClientProtocol
 
@@ -19,18 +18,15 @@ final class ServiceCategoryService: ServiceCategoryServiceProtocol {
     /// Fetches the list of service categories.
     /// - Returns: An array of `ServiceCategory`.
     func fetchServiceCategories() async throws -> [ServiceCategory] {
-        // Make the API call using APIClient
-        let categoriesResponse: ServiceCategoriesResponse = try await apiClient.request(Endpoint.serviceCategories)
-        // Return the categories directly
-        return categoriesResponse.categories
+        let categoriesResponse: [ServiceCategory] = try await apiClient.request(Endpoint.serviceCategories)
+        return categoriesResponse
     }
 
-    /// Fetches the list of service areas..
+    /// Fetches the list of service areas for a specific category.
+    /// - Parameter categoryId: The ID of the selected service category.
     /// - Returns: An array of `ServiceArea`.
-    func fetchServiceAreas() async throws -> [ServiceArea] {
-        // Make the API call using APIClient
-        let areasResponse: ServiceAreasResponse = try await apiClient.request(Endpoint.serviceAreas)
-        // Return the subcategories directly
-        return areasResponse.areas
+    func fetchServiceAreas(forCategoryId categoryId: Int) async throws -> [ServiceArea] {
+        let areasResponse: [ServiceArea] = try await apiClient.request(Endpoint.serviceAreas(categoryId: categoryId))
+        return areasResponse
     }
 }

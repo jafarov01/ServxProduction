@@ -14,20 +14,6 @@ struct ServiceProviderRegistrationProfessionalDetailsStageView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            // Navigation Back Button
-            HStack {
-                Button(action: {
-                    navigationManager.goBack()
-                }) {
-                    Image(systemName: "chevron.left")
-                        .foregroundColor(Color("primary500"))
-                        .padding()
-                }
-                Spacer()
-            }
-            .frame(height: 44)
-            .padding(.horizontal)
-
             ScrollView {
                 VStack(spacing: 24) {
                     // Profile Forms
@@ -47,6 +33,7 @@ struct ServiceProviderRegistrationProfessionalDetailsStageView: View {
                                     set: { newValue in
                                         if let id = Int(newValue) {
                                             viewModel.profiles[index].serviceCategoryId = id
+                                            viewModel.updateSelectedCategory(id: id) // fetch areas after category change
                                         }
                                     }
                                 )
@@ -75,7 +62,7 @@ struct ServiceProviderRegistrationProfessionalDetailsStageView: View {
                         .background(Color("primary100"))
                         .cornerRadius(12)
 
-                        // Remove Button for Additional Profiles
+                        // remove button for additional profiles
                         if index > 0 {
                             Button(action: {
                                 viewModel.removeProfile(at: index)

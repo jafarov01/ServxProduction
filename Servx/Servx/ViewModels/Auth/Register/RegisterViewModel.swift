@@ -43,6 +43,7 @@ class RegisterViewModel: ObservableObject {
     @Published var workExperienceOptions: [String] = ["< 1 year", "1-3 years", "3-5 years", "> 5 years"]
     @Published var serviceCategoryOptions: [ServiceCategory] = []
     @Published var serviceAreaOptions: [ServiceArea] = []
+    @Published var selectedCategoryId: Int? = nil
 
     // Validation States
     @Published var isInitialStageValid: Bool = false
@@ -60,7 +61,6 @@ class RegisterViewModel: ObservableObject {
         self.authService = authService
         self.serviceCategoryService = serviceCategoryService
         setupValidation()
-        fetchServiceData()
     }
 
     // MARK: - Validation Logic
@@ -120,16 +120,63 @@ class RegisterViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Fetch Service Data
     func fetchServiceData() {
         Task {
             do {
+                // Log before fetching service categories
+                print("Starting to fetch service categories...")
+
+                // Attempt to fetch service categories
                 serviceCategoryOptions = try await serviceCategoryService.fetchServiceCategories()
-                serviceAreaOptions = try await serviceCategoryService.fetchServiceAreas()
+                
+                // Log after categories are fetched
+                print("Service Categories fetched: \(serviceCategoryOptions.count)") // Debugging output
+                if serviceCategoryOptions.isEmpty {
+                    print("Warning: No service categories found.")
+                }
+
+            } catch let error as NetworkError {
+                print("Network error fetching service categories: \(error.localizedDescription)")
             } catch {
                 print("Failed to fetch service data: \(error.localizedDescription)")
             }
         }
+    }
+
+    func fetchServiceAreas() {
+        // Ensure service areas are fetched only when category is selected
+        guard let selectedCategoryId = selectedCategoryId else {
+            print("No category selected, skipping service area fetch.")
+            return
+        }
+        
+        // Log when starting to fetch service areas
+        print("Starting to fetch service areas for category \(selectedCategoryId)...")
+        
+        Task {
+            do {
+                // Fetch service areas based on the selected category
+                serviceAreaOptions = try await serviceCategoryService.fetchServiceAreas(forCategoryId: selectedCategoryId)
+                
+                // Log how many areas were fetched
+                print("Service Areas fetched for category \(selectedCategoryId): \(serviceAreaOptions.count)") // Debugging output
+                
+                if serviceAreaOptions.isEmpty {
+                    print("Warning: No service areas found for category \(selectedCategoryId).")
+                }
+                
+            } catch let error as NetworkError {
+                print("Network error fetching service areas for category \(selectedCategoryId): \(error.localizedDescription)")
+            } catch {
+                print("Failed to fetch service areas for category \(selectedCategoryId): \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    // MARK: - Update selected category
+    func updateSelectedCategory(id: Int) {
+        selectedCategoryId = id
+        fetchServiceAreas()
     }
 
     // MARK: - Registration Actions

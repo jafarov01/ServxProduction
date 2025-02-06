@@ -20,20 +20,6 @@ struct ServiceProviderRegistrationView: View {
     
     var body: some View {
         VStack {
-            // Navigation Header
-            HStack {
-                Button(action: {
-                    navigationManager.goBack()
-                }) {
-                    Image(systemName: "chevron.left")
-                        .foregroundColor(.blue)
-                        .padding()
-                }
-                Spacer()
-            }
-            .frame(height: 44)
-            .padding(.horizontal)
-            
             // Dynamic Content Based on Stage
             VStack {
                 switch currentStage {

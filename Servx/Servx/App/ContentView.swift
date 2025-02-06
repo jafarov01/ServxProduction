@@ -32,10 +32,6 @@ struct ContentView: View {
                         Text("LOGGED IN");
                     case .register:
                         RegisterView(viewModel: registerViewModel)
-                    //case .subcategories(let category):
-                        //SubcategoriesView(category: category)
-                    //case .services(let category, let serviceArea):
-                        //ServicesView(category: category, serviceArea: serviceArea)
                     case .forgotPassword:
                         ForgotPasswordView()
                     }

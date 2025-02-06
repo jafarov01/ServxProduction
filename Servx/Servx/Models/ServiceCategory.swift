@@ -8,7 +8,6 @@
 import Foundation
 
 struct ServiceCategory: Codable, Identifiable {
-    let id: String
+    let id: Int64
     let name: String
-    var serviceAreas: [ServiceArea]
 }

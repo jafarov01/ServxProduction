@@ -13,7 +13,7 @@ enum Endpoint {
     case registerSeeker(body: RegisterSeekerRequest)
     case registerProvider(body: RegisterProviderRequest)
     case serviceCategories
-    case serviceAreas
+    case serviceAreas(categoryId: Int)
 
     var url: String {
         let baseURL = "http://localhost:8080/api/"
@@ -26,8 +26,8 @@ enum Endpoint {
             return "\(baseURL)auth/register/provider"
         case .serviceCategories:
             return "\(baseURL)services/categories"
-        case .serviceAreas:
-            return "\(baseURL)services/areas"
+        case .serviceAreas(let categoryId): // Handle categoryId for serviceAreas endpoint
+            return "\(baseURL)services/areas/\(categoryId)"
         }
     }
 
