@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ServiceCategory: Codable, Identifiable {
+struct ServiceCategory: Codable, Identifiable, SelectableOption {
     let id: Int64
     let name: String
 }

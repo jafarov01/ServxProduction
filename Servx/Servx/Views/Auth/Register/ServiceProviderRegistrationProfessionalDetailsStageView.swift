@@ -16,65 +16,9 @@ struct ServiceProviderRegistrationProfessionalDetailsStageView: View {
         VStack(spacing: 16) {
             ScrollView {
                 VStack(spacing: 24) {
-                    // Profile Forms
                     ForEach(viewModel.profiles.indices, id: \.self) { index in
-                        VStack(spacing: 16) {
-                            Text("Profile \(index + 1)")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.bottom, 8)
-                                .foregroundColor(Color("primary500"))
-
-                            OptionSelectionView(
-                                title: "Service Category",
-                                options: viewModel.serviceCategoryOptions.map { $0.name },
-                                selectedOption: Binding(
-                                    get: { viewModel.profiles[index].serviceCategoryId > 0 ? "\(viewModel.profiles[index].serviceCategoryId)" : "" },
-                                    set: { newValue in
-                                        if let id = Int(newValue) {
-                                            viewModel.profiles[index].serviceCategoryId = id
-                                            viewModel.updateSelectedCategory(id: id) // fetch areas after category change
-                                        }
-                                    }
-                                )
-                            )
-
-                            OptionSelectionView(
-                                title: "Service Area(s)",
-                                options: viewModel.serviceAreaOptions.map { $0.name },
-                                selectedOption: Binding(
-                                    get: { viewModel.profiles[index].serviceAreaIds.first.map { "\($0)" } ?? "" },
-                                    set: { newValue in
-                                        if let id = Int(newValue) {
-                                            viewModel.profiles[index].serviceAreaIds = [id]
-                                        }
-                                    }
-                                )
-                            )
-
-                            OptionSelectionView(
-                                title: "Work Experience",
-                                options: viewModel.workExperienceOptions,
-                                selectedOption: $viewModel.profiles[index].workExperience
-                            )
-                        }
-                        .padding()
-                        .background(Color("primary100"))
-                        .cornerRadius(12)
-
-                        // remove button for additional profiles
-                        if index > 0 {
-                            Button(action: {
-                                viewModel.removeProfile(at: index)
-                            }) {
-                                Text("Remove Profile")
-                                    .font(.subheadline)
-                                    .foregroundColor(.red)
-                                    .padding(.top, 8)
-                            }
-                        }
+                        profileForm(for: index)
                     }
-
                     // Add Profile Button
                     ServxButtonView(
                         title: "Add Profile",
@@ -114,5 +58,62 @@ struct ServiceProviderRegistrationProfessionalDetailsStageView: View {
             viewModel.fetchServiceData()
         }
         .navigationBarBackButtonHidden(true)
+    }
+
+    // MARK: - Helper Functions
+    @ViewBuilder
+    private func profileForm(for index: Int) -> some View {
+        VStack(spacing: 16) {
+            Text("Profile \(index + 1)")
+                .font(.headline)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.bottom, 8)
+                .foregroundColor(Color("primary500"))
+
+            // Service Category Selection
+            ObjectOptionSelectionView(
+                title: "Service Category",
+                options: viewModel.serviceCategoryOptions,
+                selectedOptionId: serviceCategoryBinding(for: index)
+            )
+
+            // Service Area(s) Selection
+            ObjectOptionSelectionView(
+                title: "Service Area(s)",
+                options: viewModel.serviceAreaOptions,
+                selectedOptionId: serviceAreaBinding(for: index)
+            )
+
+            // Work Experience Selection (unchanged)
+            OptionSelectionView(
+                title: "Work Experience",
+                options: viewModel.workExperienceOptions,
+                selectedOption: $viewModel.profiles[index].workExperience
+            )
+        }
+        .padding()
+        .background(Color("primary100"))
+        .cornerRadius(12)
+    }
+
+    private func serviceCategoryBinding(for index: Int) -> Binding<Int64?> {
+        Binding(
+            get: { viewModel.profiles[index].serviceCategoryId },
+            set: { newValue in
+                viewModel.profiles[index].serviceCategoryId = newValue ?? 0
+                viewModel.updateSelectedCategory(id: Int(newValue ?? 0))
+            }
+        )
+    }
+
+    private func serviceAreaBinding(for index: Int) -> Binding<Int64?> {
+        Binding(
+            get: { viewModel.profiles[index].serviceAreaIds.first },
+            set: { newValue in
+                if let newValue = newValue {
+                    viewModel.profiles[index].serviceAreaIds = [newValue]
+                }
+            }
+        )
     }
 }

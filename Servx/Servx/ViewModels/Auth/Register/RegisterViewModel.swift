@@ -119,7 +119,8 @@ class RegisterViewModel: ObservableObject {
             addProfile()
         }
     }
-
+    
+    // MARK: - Fetching Service Categories and Areas
     func fetchServiceData() {
         Task {
             do {

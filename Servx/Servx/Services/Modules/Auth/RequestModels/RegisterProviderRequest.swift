@@ -22,10 +22,9 @@ struct RegisterProviderRequest: Encodable {
 }
 
 /// A nested model for the service provider's profile.
-struct ServiceProviderProfileRequest: Identifiable, Encodable {
-    var id = UUID()
-    var serviceCategoryId: Int
-    var serviceAreaIds: [Int]
+struct ServiceProviderProfileRequest: Encodable {
+    var serviceCategoryId: Int64
+    var serviceAreaIds: [Int64]
     var workExperience: String
 }
 

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		55385E9B2D40857100CA96D6 /* MultiSelectDropdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55385E9A2D40856A00CA96D6 /* MultiSelectDropdownView.swift */; };
+		556C875E2D56A110005C824E /* ObjectOptionSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556C875D2D56A109005C824E /* ObjectOptionSelectionView.swift */; };
 		5574B7472D3DC7E700DF60ED /* ServiceCategoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7462D3DC7E700DF60ED /* ServiceCategoryService.swift */; };
 		5574B7492D3DC80000DF60ED /* ServiceCategoryServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7482D3DC80000DF60ED /* ServiceCategoryServiceProtocol.swift */; };
 		5574B7572D3DC8B800DF60ED /* LoginRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7562D3DC8B800DF60ED /* LoginRequest.swift */; };
@@ -81,6 +82,7 @@
 
 /* Begin PBXFileReference section */
 		55385E9A2D40856A00CA96D6 /* MultiSelectDropdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectDropdownView.swift; sourceTree = "<group>"; };
+		556C875D2D56A109005C824E /* ObjectOptionSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectOptionSelectionView.swift; sourceTree = "<group>"; };
 		5574B7462D3DC7E700DF60ED /* ServiceCategoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceCategoryService.swift; sourceTree = "<group>"; };
 		5574B7482D3DC80000DF60ED /* ServiceCategoryServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceCategoryServiceProtocol.swift; sourceTree = "<group>"; };
 		5574B7562D3DC8B800DF60ED /* LoginRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginRequest.swift; sourceTree = "<group>"; };
@@ -260,6 +262,7 @@
 		5574B76F2D3DC97200DF60ED /* Modals */ = {
 			isa = PBXGroup;
 			children = (
+				556C875D2D56A109005C824E /* ObjectOptionSelectionView.swift */,
 				55385E9A2D40856A00CA96D6 /* MultiSelectDropdownView.swift */,
 				55FBA2492D35EAE100F86201 /* OptionSelectionView.swift */,
 			);
@@ -665,6 +668,7 @@
 				55FBA2AE2D35EAE100F86201 /* LoginViewModel.swift in Sources */,
 				55FBA2AF2D35EAE100F86201 /* OnboardingView.swift in Sources */,
 				5574B75B2D3DC8D300DF60ED /* RegisterProviderRequest.swift in Sources */,
+				556C875E2D56A110005C824E /* ObjectOptionSelectionView.swift in Sources */,
 				5574B7692D3DC92800DF60ED /* HTTPMethod.swift in Sources */,
 				55FBA2B12D35EAE100F86201 /* ServiceProviderPersonalDetailsStageView.swift in Sources */,
 				55FBA2B22D35EAE100F86201 /* ServxButtonView.swift in Sources */,
