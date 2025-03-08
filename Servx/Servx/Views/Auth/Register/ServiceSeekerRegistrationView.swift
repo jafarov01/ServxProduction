@@ -113,7 +113,7 @@ struct ServiceSeekerRegistrationView: View {
                 keyboardType: .numbersAndPunctuation
             )
 
-            MultiSelectDropdownView(
+            MultiSelectStringDropdownView(
                 title: "Languages Spoken",
                 options: viewModel.languageOptions,
                 selectedOptions: $viewModel.selectedLanguages

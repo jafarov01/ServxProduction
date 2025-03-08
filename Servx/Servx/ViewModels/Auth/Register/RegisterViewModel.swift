@@ -34,6 +34,11 @@ class RegisterViewModel: ObservableObject {
         "Estonia": ["Tallinn", "Tartu", "Narva"],
         "Hungary": ["Budapest", "Debrecen", "Szeged"]
     ]
+    private let countryCodeMap: [String: String] = [
+        "Azerbaijan": "AZE",
+        "Estonia": "EST",
+        "Hungary": "HUN"
+    ]
     func cityOptions(for country: String) -> [String] {
         cityDictionary[country] ?? []
     }
@@ -183,6 +188,7 @@ class RegisterViewModel: ObservableObject {
     // MARK: - Registration Actions
     func registerServiceSeeker(completion: @escaping (Bool) -> Void) {
         guard isInitialStageValid, isPersonalDetailsStageValid else { return }
+        
 
         let seekerRequest = RegisterSeekerRequest(
             firstName: firstName,
@@ -216,6 +222,8 @@ class RegisterViewModel: ObservableObject {
     func registerServiceProvider(completion: @escaping (Bool) -> Void) {
         guard isInitialStageValid, isPersonalDetailsStageValid, isProfessionalDetailsStageValid else { return }
 
+        let countryCode = countryCodeMap[selectedCountry] ?? ""
+        
         let providerRequest = RegisterProviderRequest(
             firstName: firstName,
             lastName: lastName,
@@ -226,7 +234,7 @@ class RegisterViewModel: ObservableObject {
                 addressLine: addressLine,
                 city: selectedCity,
                 zipCode: zipCode,
-                country: selectedCountry
+                country: countryCode // Send code instead of name
             ),
             languagesSpoken: selectedLanguages,
             education: education,

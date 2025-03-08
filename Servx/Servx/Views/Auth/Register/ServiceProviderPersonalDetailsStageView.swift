@@ -71,7 +71,7 @@ struct ServiceProviderPersonalDetailsStageView: View {
                     )
 
                     // Languages Spoken Field
-                    MultiSelectDropdownView(
+                    MultiSelectStringDropdownView(
                         title: "Languages Spoken",
                         options: viewModel.languageOptions,
                         selectedOptions: $viewModel.selectedLanguages

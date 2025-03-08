@@ -16,7 +16,7 @@ protocol SelectableOption: Identifiable, Hashable {
 struct ObjectOptionSelectionView<T: SelectableOption>: View {
     var title: String
     var options: [T]
-    @Binding var selectedOptionId: Int64?  // Binding to the selected option's id
+    @Binding var selectedOptionId: Int64?
     @State private var isPickerPresented: Bool = false
 
     var body: some View {

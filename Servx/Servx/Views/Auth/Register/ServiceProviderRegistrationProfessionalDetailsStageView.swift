@@ -78,11 +78,11 @@ struct ServiceProviderRegistrationProfessionalDetailsStageView: View {
             )
 
             // Service Area(s) Selection
-            ObjectOptionSelectionView(
-                title: "Service Area(s)",
-                options: viewModel.serviceAreaOptions,
-                selectedOptionId: serviceAreaBinding(for: index)
-            )
+            MultiSelectDropdownView<ServiceArea>(
+                            title: "Service Area(s)",
+                            options: viewModel.serviceAreaOptions,
+                            selectedOptionIds: serviceAreasBinding(for: index)
+                        )
 
             // Work Experience Selection (unchanged)
             OptionSelectionView(
@@ -106,13 +106,11 @@ struct ServiceProviderRegistrationProfessionalDetailsStageView: View {
         )
     }
 
-    private func serviceAreaBinding(for index: Int) -> Binding<Int64?> {
+    private func serviceAreasBinding(for index: Int) -> Binding<Set<Int64>> {
         Binding(
-            get: { viewModel.profiles[index].serviceAreaIds.first },
+            get: { Set(viewModel.profiles[index].serviceAreaIds) },
             set: { newValue in
-                if let newValue = newValue {
-                    viewModel.profiles[index].serviceAreaIds = [newValue]
-                }
+                viewModel.profiles[index].serviceAreaIds = Array(newValue)
             }
         )
     }
