@@ -19,11 +19,5 @@ protocol AuthServiceProtocol {
     /// - Parameters:
     ///   - seekerRequest: The registration details for a service seeker.
     /// - Returns: A response model containing user details.
-    func registerServiceSeeker(seekerRequest: RegisterSeekerRequest) async throws -> RegisterResponse
-
-    /// Register method for service providers.
-    /// - Parameters:
-    ///   - providerRequest: The registration details for a service provider.
-    /// - Returns: A response model containing user details.
-    func registerServiceProvider(providerRequest: RegisterProviderRequest) async throws -> RegisterResponse
+    func register(request: RegisterRequest) async throws -> RegisterResponse
 }

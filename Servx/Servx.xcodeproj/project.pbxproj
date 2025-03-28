@@ -8,13 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		5510A4C32D7CED9E00C7971E /* MultiSelectStringDropdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5510A4C22D7CED9C00C7971E /* MultiSelectStringDropdownView.swift */; };
+		5510A4DF2D82567C00C7971E /* BackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5510A4DE2D82567A00C7971E /* BackButton.swift */; };
 		55385E9B2D40857100CA96D6 /* MultiSelectDropdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55385E9A2D40856A00CA96D6 /* MultiSelectDropdownView.swift */; };
 		556C875E2D56A110005C824E /* ObjectOptionSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556C875D2D56A109005C824E /* ObjectOptionSelectionView.swift */; };
 		5574B7472D3DC7E700DF60ED /* ServiceCategoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7462D3DC7E700DF60ED /* ServiceCategoryService.swift */; };
 		5574B7492D3DC80000DF60ED /* ServiceCategoryServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7482D3DC80000DF60ED /* ServiceCategoryServiceProtocol.swift */; };
 		5574B7572D3DC8B800DF60ED /* LoginRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7562D3DC8B800DF60ED /* LoginRequest.swift */; };
-		5574B7592D3DC8C600DF60ED /* RegisterSeekerRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7582D3DC8C600DF60ED /* RegisterSeekerRequest.swift */; };
-		5574B75B2D3DC8D300DF60ED /* RegisterProviderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B75A2D3DC8D300DF60ED /* RegisterProviderRequest.swift */; };
+		5574B7592D3DC8C600DF60ED /* RegisterRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7582D3DC8C600DF60ED /* RegisterRequest.swift */; };
 		5574B75D2D3DC8EA00DF60ED /* AuthResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B75C2D3DC8EA00DF60ED /* AuthResponse.swift */; };
 		5574B75F2D3DC8F200DF60ED /* RegisterResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B75E2D3DC8F200DF60ED /* RegisterResponse.swift */; };
 		5574B7612D3DC8FB00DF60ED /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7602D3DC8FB00DF60ED /* AuthService.swift */; };
@@ -32,7 +32,6 @@
 		55FBA2902D35EAE100F86201 /* ServxTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2512D35EAE100F86201 /* ServxTheme.swift */; };
 		55FBA2912D35EAE100F86201 /* OTPInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2822D35EAE100F86201 /* OTPInputView.swift */; };
 		55FBA2962D35EAE100F86201 /* NavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2432D35EAE100F86201 /* NavigationManager.swift */; };
-		55FBA2972D35EAE100F86201 /* ServiceProviderRegistrationProfessionalDetailsStageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA27D2D35EAE100F86201 /* ServiceProviderRegistrationProfessionalDetailsStageView.swift */; };
 		55FBA2982D35EAE100F86201 /* SendOTPView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2832D35EAE100F86201 /* SendOTPView.swift */; };
 		55FBA2992D35EAE100F86201 /* RegisterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA26D2D35EAE100F86201 /* RegisterViewModel.swift */; };
 		55FBA29A2D35EAE100F86201 /* UserDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2462D35EAE100F86201 /* UserDefaultsManager.swift */; };
@@ -40,7 +39,6 @@
 		55FBA29E2D35EAE100F86201 /* ServiceButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA24B2D35EAE100F86201 /* ServiceButtonView.swift */; };
 		55FBA29F2D35EAE100F86201 /* ServiceCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2562D35EAE100F86201 /* ServiceCategory.swift */; };
 		55FBA2A02D35EAE100F86201 /* TimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2452D35EAE100F86201 /* TimerManager.swift */; };
-		55FBA2A12D35EAE100F86201 /* ServiceProviderRegistrationInitialStageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA27C2D35EAE100F86201 /* ServiceProviderRegistrationInitialStageView.swift */; };
 		55FBA2A42D35EAE100F86201 /* ServxTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA24E2D35EAE100F86201 /* ServxTextView.swift */; };
 		55FBA2A52D35EAE100F86201 /* CategoryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2482D35EAE100F86201 /* CategoryButton.swift */; };
 		55FBA2A62D35EAE100F86201 /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2752D35EAE100F86201 /* ForgotPasswordView.swift */; };
@@ -49,17 +47,14 @@
 		55FBA2A92D35EAE100F86201 /* ServxApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2442D35EAE100F86201 /* ServxApp.swift */; };
 		55FBA2AA2D35EAE100F86201 /* ServicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2722D35EAE100F86201 /* ServicesView.swift */; };
 		55FBA2AB2D35EAE100F86201 /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2532D35EAE100F86201 /* Address.swift */; };
-		55FBA2AC2D35EAE100F86201 /* ServiceSeekerRegistrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2802D35EAE100F86201 /* ServiceSeekerRegistrationView.swift */; };
 		55FBA2AE2D35EAE100F86201 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA26A2D35EAE100F86201 /* LoginViewModel.swift */; };
 		55FBA2AF2D35EAE100F86201 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2782D35EAE100F86201 /* OnboardingView.swift */; };
-		55FBA2B12D35EAE100F86201 /* ServiceProviderPersonalDetailsStageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA27E2D35EAE100F86201 /* ServiceProviderPersonalDetailsStageView.swift */; };
 		55FBA2B22D35EAE100F86201 /* ServxButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA24C2D35EAE100F86201 /* ServxButtonView.swift */; };
 		55FBA2B32D35EAE100F86201 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2422D35EAE100F86201 /* ContentView.swift */; };
 		55FBA2B42D35EAE100F86201 /* ServiceAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA24A2D35EAE100F86201 /* ServiceAuthView.swift */; };
 		55FBA2B62D35EAE100F86201 /* ForgotPasswordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2692D35EAE100F86201 /* ForgotPasswordViewModel.swift */; };
 		55FBA2B82D35EAE100F86201 /* ServiceProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2572D35EAE100F86201 /* ServiceProfile.swift */; };
 		55FBA2B92D35EAE100F86201 /* OptionSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2492D35EAE100F86201 /* OptionSelectionView.swift */; };
-		55FBA2BA2D35EAE100F86201 /* ServiceProviderRegistrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA27F2D35EAE100F86201 /* ServiceProviderRegistrationView.swift */; };
 		55FBA2BB2D35EAE100F86201 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2762D35EAE100F86201 /* LoginView.swift */; };
 		55FBA2BC2D35EAE100F86201 /* ServxInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA24D2D35EAE100F86201 /* ServxInputView.swift */; };
 /* End PBXBuildFile section */
@@ -83,13 +78,13 @@
 
 /* Begin PBXFileReference section */
 		5510A4C22D7CED9C00C7971E /* MultiSelectStringDropdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectStringDropdownView.swift; sourceTree = "<group>"; };
+		5510A4DE2D82567A00C7971E /* BackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackButton.swift; sourceTree = "<group>"; };
 		55385E9A2D40856A00CA96D6 /* MultiSelectDropdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectDropdownView.swift; sourceTree = "<group>"; };
 		556C875D2D56A109005C824E /* ObjectOptionSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectOptionSelectionView.swift; sourceTree = "<group>"; };
 		5574B7462D3DC7E700DF60ED /* ServiceCategoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceCategoryService.swift; sourceTree = "<group>"; };
 		5574B7482D3DC80000DF60ED /* ServiceCategoryServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceCategoryServiceProtocol.swift; sourceTree = "<group>"; };
 		5574B7562D3DC8B800DF60ED /* LoginRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginRequest.swift; sourceTree = "<group>"; };
-		5574B7582D3DC8C600DF60ED /* RegisterSeekerRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterSeekerRequest.swift; sourceTree = "<group>"; };
-		5574B75A2D3DC8D300DF60ED /* RegisterProviderRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterProviderRequest.swift; sourceTree = "<group>"; };
+		5574B7582D3DC8C600DF60ED /* RegisterRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterRequest.swift; sourceTree = "<group>"; };
 		5574B75C2D3DC8EA00DF60ED /* AuthResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthResponse.swift; sourceTree = "<group>"; };
 		5574B75E2D3DC8F200DF60ED /* RegisterResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterResponse.swift; sourceTree = "<group>"; };
 		5574B7602D3DC8FB00DF60ED /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
@@ -132,11 +127,6 @@
 		55FBA2782D35EAE100F86201 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		55FBA2792D35EAE100F86201 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		55FBA27B2D35EAE100F86201 /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
-		55FBA27C2D35EAE100F86201 /* ServiceProviderRegistrationInitialStageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProviderRegistrationInitialStageView.swift; sourceTree = "<group>"; };
-		55FBA27D2D35EAE100F86201 /* ServiceProviderRegistrationProfessionalDetailsStageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProviderRegistrationProfessionalDetailsStageView.swift; sourceTree = "<group>"; };
-		55FBA27E2D35EAE100F86201 /* ServiceProviderPersonalDetailsStageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProviderPersonalDetailsStageView.swift; sourceTree = "<group>"; };
-		55FBA27F2D35EAE100F86201 /* ServiceProviderRegistrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProviderRegistrationView.swift; sourceTree = "<group>"; };
-		55FBA2802D35EAE100F86201 /* ServiceSeekerRegistrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceSeekerRegistrationView.swift; sourceTree = "<group>"; };
 		55FBA2822D35EAE100F86201 /* OTPInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPInputView.swift; sourceTree = "<group>"; };
 		55FBA2832D35EAE100F86201 /* SendOTPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendOTPView.swift; sourceTree = "<group>"; };
 		55FBA2862D35EAE100F86201 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -229,8 +219,7 @@
 			isa = PBXGroup;
 			children = (
 				5574B7562D3DC8B800DF60ED /* LoginRequest.swift */,
-				5574B7582D3DC8C600DF60ED /* RegisterSeekerRequest.swift */,
-				5574B75A2D3DC8D300DF60ED /* RegisterProviderRequest.swift */,
+				5574B7582D3DC8C600DF60ED /* RegisterRequest.swift */,
 			);
 			path = RequestModels;
 			sourceTree = "<group>";
@@ -289,6 +278,7 @@
 		5574B7722D3DC9AE00DF60ED /* Others */ = {
 			isa = PBXGroup;
 			children = (
+				5510A4DE2D82567A00C7971E /* BackButton.swift */,
 				55FBA2822D35EAE100F86201 /* OTPInputView.swift */,
 				55FBA2832D35EAE100F86201 /* SendOTPView.swift */,
 				55FBA24A2D35EAE100F86201 /* ServiceAuthView.swift */,
@@ -459,11 +449,6 @@
 			isa = PBXGroup;
 			children = (
 				55FBA27B2D35EAE100F86201 /* RegisterView.swift */,
-				55FBA27C2D35EAE100F86201 /* ServiceProviderRegistrationInitialStageView.swift */,
-				55FBA27D2D35EAE100F86201 /* ServiceProviderRegistrationProfessionalDetailsStageView.swift */,
-				55FBA27E2D35EAE100F86201 /* ServiceProviderPersonalDetailsStageView.swift */,
-				55FBA27F2D35EAE100F86201 /* ServiceProviderRegistrationView.swift */,
-				55FBA2802D35EAE100F86201 /* ServiceSeekerRegistrationView.swift */,
 			);
 			path = Register;
 			sourceTree = "<group>";
@@ -640,10 +625,10 @@
 				55FBA2902D35EAE100F86201 /* ServxTheme.swift in Sources */,
 				55FBA2912D35EAE100F86201 /* OTPInputView.swift in Sources */,
 				5574B7612D3DC8FB00DF60ED /* AuthService.swift in Sources */,
+				5510A4DF2D82567C00C7971E /* BackButton.swift in Sources */,
 				5574B7672D3DC92100DF60ED /* Endpoint.swift in Sources */,
 				5574B75D2D3DC8EA00DF60ED /* AuthResponse.swift in Sources */,
 				55FBA2962D35EAE100F86201 /* NavigationManager.swift in Sources */,
-				55FBA2972D35EAE100F86201 /* ServiceProviderRegistrationProfessionalDetailsStageView.swift in Sources */,
 				55FBA2982D35EAE100F86201 /* SendOTPView.swift in Sources */,
 				55FBA2992D35EAE100F86201 /* RegisterViewModel.swift in Sources */,
 				55FBA29A2D35EAE100F86201 /* UserDefaultsManager.swift in Sources */,
@@ -655,9 +640,8 @@
 				5574B7472D3DC7E700DF60ED /* ServiceCategoryService.swift in Sources */,
 				55FBA2A02D35EAE100F86201 /* TimerManager.swift in Sources */,
 				5574B76B2D3DC93900DF60ED /* NetworkError.swift in Sources */,
-				55FBA2A12D35EAE100F86201 /* ServiceProviderRegistrationInitialStageView.swift in Sources */,
 				55FBA2A42D35EAE100F86201 /* ServxTextView.swift in Sources */,
-				5574B7592D3DC8C600DF60ED /* RegisterSeekerRequest.swift in Sources */,
+				5574B7592D3DC8C600DF60ED /* RegisterRequest.swift in Sources */,
 				55FBA2A52D35EAE100F86201 /* CategoryButton.swift in Sources */,
 				55FBA2A62D35EAE100F86201 /* ForgotPasswordView.swift in Sources */,
 				55FBA2A72D35EAE100F86201 /* HomeViewModel.swift in Sources */,
@@ -666,22 +650,18 @@
 				55FBA2AA2D35EAE100F86201 /* ServicesView.swift in Sources */,
 				5574B75F2D3DC8F200DF60ED /* RegisterResponse.swift in Sources */,
 				55FBA2AB2D35EAE100F86201 /* Address.swift in Sources */,
-				55FBA2AC2D35EAE100F86201 /* ServiceSeekerRegistrationView.swift in Sources */,
 				5574B7652D3DC91500DF60ED /* APIClient.swift in Sources */,
 				55385E9B2D40857100CA96D6 /* MultiSelectDropdownView.swift in Sources */,
 				55FBA2AE2D35EAE100F86201 /* LoginViewModel.swift in Sources */,
 				55FBA2AF2D35EAE100F86201 /* OnboardingView.swift in Sources */,
-				5574B75B2D3DC8D300DF60ED /* RegisterProviderRequest.swift in Sources */,
 				556C875E2D56A110005C824E /* ObjectOptionSelectionView.swift in Sources */,
 				5574B7692D3DC92800DF60ED /* HTTPMethod.swift in Sources */,
-				55FBA2B12D35EAE100F86201 /* ServiceProviderPersonalDetailsStageView.swift in Sources */,
 				55FBA2B22D35EAE100F86201 /* ServxButtonView.swift in Sources */,
 				55FBA2B32D35EAE100F86201 /* ContentView.swift in Sources */,
 				55FBA2B42D35EAE100F86201 /* ServiceAuthView.swift in Sources */,
 				55FBA2B62D35EAE100F86201 /* ForgotPasswordViewModel.swift in Sources */,
 				55FBA2B82D35EAE100F86201 /* ServiceProfile.swift in Sources */,
 				55FBA2B92D35EAE100F86201 /* OptionSelectionView.swift in Sources */,
-				55FBA2BA2D35EAE100F86201 /* ServiceProviderRegistrationView.swift in Sources */,
 				55FBA2BB2D35EAE100F86201 /* LoginView.swift in Sources */,
 				55FBA2BC2D35EAE100F86201 /* ServxInputView.swift in Sources */,
 				5574B7572D3DC8B800DF60ED /* LoginRequest.swift in Sources */,

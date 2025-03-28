@@ -20,12 +20,10 @@ class RegisterViewModel: ObservableObject {
     @Published var zipCode: String = ""
     @Published var selectedCountry: String = ""
     @Published var selectedCity: String = ""
-    @Published var selectedLanguages: Set<String> = []
+    @Published var selectedLanguages: [String] = [] // Changed to Array (was Set)
     @Published var education: String = ""
     @Published var isRememberMe: Bool = false
-
-    // Profiles for Service Provider
-    @Published var profiles: [ServiceProviderProfileRequest] = []
+    var isLoading = false
 
     // Dropdown options
     @Published var countryOptions: [String] = ["Azerbaijan", "Estonia", "Hungary"]
@@ -44,214 +42,97 @@ class RegisterViewModel: ObservableObject {
     }
     
     @Published var languageOptions: [String] = ["English", "Azerbaijani", "Estonian", "Russian", "Hungarian", "German", "Turkish"]
-    @Published var educationOptions: [String] = ["High School", "Bachelor's Degree", "Master's Degree", "PhD"]
-    @Published var workExperienceOptions: [String] = ["< 1 year", "1-3 years", "3-5 years", "> 5 years"]
-    @Published var serviceCategoryOptions: [ServiceCategory] = []
-    @Published var serviceAreaOptions: [ServiceArea] = []
-    @Published var selectedCategoryId: Int? = nil
-
-    // Validation States
-    @Published var isInitialStageValid: Bool = false
-    @Published var isPersonalDetailsStageValid: Bool = false
-    @Published var isProfessionalDetailsStageValid: Bool = false
-    @Published var isLoading: Bool = false
+    private let languageCodeMap: [String: String] = [
+        "English": "en",
+        "Azerbaijani": "az",
+        "Estonian": "et",
+        "Russian": "ru",
+        "Hungarian": "hu",
+        "German": "de",
+        "Turkish": "tr"
+    ]
 
     // Dependencies
     private let authService: AuthServiceProtocol
-    private let serviceCategoryService: ServiceCategoryServiceProtocol
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Initialization
-    init(authService: AuthServiceProtocol, serviceCategoryService: ServiceCategoryServiceProtocol) {
+    init(authService: AuthServiceProtocol) {
         self.authService = authService
-        self.serviceCategoryService = serviceCategoryService
-        setupValidation()
-    }
-
-    // MARK: - Validation Logic
-    private func setupValidation() {
-        setupInitialStageValidation()
-        setupPersonalDetailsValidation()
-        setupProfessionalDetailsValidation()
-    }
-
-    private func setupInitialStageValidation() {
-        Publishers.CombineLatest(
-            $email.map { !$0.isEmpty && $0.contains("@") },
-            $password.map { $0.count >= 6 }
-        )
-        .map { $0 && $1 }
-        .receive(on: DispatchQueue.main)
-        .assign(to: &$isInitialStageValid)
-    }
-
-    private func setupPersonalDetailsValidation() {
-        Publishers.CombineLatest4(
-            $firstName.map { !$0.isEmpty },
-            $lastName.map { !$0.isEmpty },
-            $phoneNumber.map { !$0.isEmpty && $0.count >= 10 },
-            $education.map { !$0.isEmpty }
-        )
-        .map { $0 && $1 && $2 && $3 }
-        .receive(on: DispatchQueue.main)
-        .assign(to: &$isPersonalDetailsStageValid)
-    }
-
-    private func setupProfessionalDetailsValidation() {
-        $profiles
-            .map { profiles in
-                profiles.allSatisfy { profile in
-                    profile.serviceCategoryId > 0 &&
-                    !profile.serviceAreaIds.isEmpty &&
-                    !profile.workExperience.isEmpty
-                }
-            }
-            .receive(on: DispatchQueue.main)
-            .assign(to: &$isProfessionalDetailsStageValid)
-    }
-
-    // MARK: - Profile Management
-    func addProfile() {
-        profiles.append(ServiceProviderProfileRequest(serviceCategoryId: 0, serviceAreaIds: [], workExperience: ""))
-    }
-
-    func removeProfile(at index: Int) {
-        profiles.remove(at: index)
-    }
-
-    func ensureAtLeastOneProfile() {
-        if profiles.isEmpty {
-            addProfile()
-        }
-    }
-    
-    // MARK: - Fetching Service Categories and Areas
-    func fetchServiceData() {
-        Task {
-            do {
-                // Log before fetching service categories
-                print("Starting to fetch service categories...")
-
-                // Attempt to fetch service categories
-                serviceCategoryOptions = try await serviceCategoryService.fetchServiceCategories()
-                
-                // Log after categories are fetched
-                print("Service Categories fetched: \(serviceCategoryOptions.count)") // Debugging output
-                if serviceCategoryOptions.isEmpty {
-                    print("Warning: No service categories found.")
-                }
-
-            } catch let error as NetworkError {
-                print("Network error fetching service categories: \(error.localizedDescription)")
-            } catch {
-                print("Failed to fetch service data: \(error.localizedDescription)")
-            }
-        }
-    }
-
-    func fetchServiceAreas() {
-        // Ensure service areas are fetched only when category is selected
-        guard let selectedCategoryId = selectedCategoryId else {
-            print("No category selected, skipping service area fetch.")
-            return
-        }
-        
-        // Log when starting to fetch service areas
-        print("Starting to fetch service areas for category \(selectedCategoryId)...")
-        
-        Task {
-            do {
-                // Fetch service areas based on the selected category
-                serviceAreaOptions = try await serviceCategoryService.fetchServiceAreas(forCategoryId: selectedCategoryId)
-                
-                // Log how many areas were fetched
-                print("Service Areas fetched for category \(selectedCategoryId): \(serviceAreaOptions.count)") // Debugging output
-                
-                if serviceAreaOptions.isEmpty {
-                    print("Warning: No service areas found for category \(selectedCategoryId).")
-                }
-                
-            } catch let error as NetworkError {
-                print("Network error fetching service areas for category \(selectedCategoryId): \(error.localizedDescription)")
-            } catch {
-                print("Failed to fetch service areas for category \(selectedCategoryId): \(error.localizedDescription)")
-            }
-        }
-    }
-    
-    // MARK: - Update selected category
-    func updateSelectedCategory(id: Int) {
-        selectedCategoryId = id
-        fetchServiceAreas()
     }
 
     // MARK: - Registration Actions
-    func registerServiceSeeker(completion: @escaping (Bool) -> Void) {
-        guard isInitialStageValid, isPersonalDetailsStageValid else { return }
+    func register(completion: @escaping (Bool) -> Void) {
+        // Convert selected country name to code
+        guard let countryCode = countryCodeMap[selectedCountry] else {
+            print("Invalid country selection")
+            completion(false)
+            return
+        }
         
-
-        let seekerRequest = RegisterSeekerRequest(
+        // Convert selected language names to codes
+        let languageCodes = selectedLanguages.compactMap { languageCodeMap[$0] }
+        
+        let request = RegisterRequest(
             firstName: firstName,
             lastName: lastName,
             email: email,
             password: password,
             phoneNumber: phoneNumber,
+            role: "SERVICE_SEEKER",
             address: AddressRequest(
-                addressLine: addressLine,
                 city: selectedCity,
+                country: countryCode,
                 zipCode: zipCode,
-                country: selectedCountry
+                addressLine: addressLine
             ),
-            languagesSpoken: selectedLanguages
+            languagesSpoken: languageCodes // Send codes instead of full names
         )
 
+        // Debug print the request
+        print("Sending country code:", countryCode)
+        print("Sending language codes:", languageCodes)
+        
         isLoading = true
         Task { [weak self] in
             guard let self = self else { return }
             do {
-                let _ = try await self.authService.registerServiceSeeker(seekerRequest: seekerRequest)
+                let _ = try await self.authService.register(request: request)
                 self.isLoading = false
                 completion(true)
             } catch {
+                print("Registration error: \(error)")
                 self.isLoading = false
                 completion(false)
             }
         }
     }
+}
 
-    func registerServiceProvider(completion: @escaping (Bool) -> Void) {
-        guard isInitialStageValid, isPersonalDetailsStageValid, isProfessionalDetailsStageValid else { return }
-
-        let countryCode = countryCodeMap[selectedCountry] ?? ""
-        
-        let providerRequest = RegisterProviderRequest(
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            password: password,
-            phoneNumber: phoneNumber,
-            address: AddressRequest(
-                addressLine: addressLine,
-                city: selectedCity,
-                zipCode: zipCode,
-                country: countryCode // Send code instead of name
-            ),
-            languagesSpoken: selectedLanguages,
-            education: education,
-            profiles: profiles
-        )
-
-        isLoading = true
-        Task { [weak self] in
-            guard let self = self else { return }
-            do {
-                let _ = try await self.authService.registerServiceProvider(providerRequest: providerRequest)
-                self.isLoading = false
-                completion(true)
-            } catch {
-                self.isLoading = false
-                completion(false)
-            }
-        }
+// MARK: - Validation Logic
+extension RegisterViewModel {
+    var isValid: Bool {
+        !firstName.isEmpty &&
+        !lastName.isEmpty &&
+        isValidEmail(email) &&
+        isValidPhoneNumber(phoneNumber) &&
+        !addressLine.isEmpty &&
+        !zipCode.isEmpty &&
+        !selectedCountry.isEmpty &&
+        !selectedCity.isEmpty &&
+        !selectedLanguages.isEmpty // Now checks array count
+    }
+    
+    private func isValidEmail(_ email: String) -> Bool {
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+        return emailPred.evaluate(with: email)
+    }
+    
+    private func isValidPhoneNumber(_ phone: String) -> Bool {
+        // Match Spring Boot's @Pattern(regexp = "^\\+[0-9]{10,15}$")
+        let phoneRegEx = "^\\+[0-9]{10,15}$"
+        let phonePred = NSPredicate(format:"SELF MATCHES %@", phoneRegEx)
+        return phonePred.evaluate(with: phone)
     }
 }

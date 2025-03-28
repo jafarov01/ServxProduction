@@ -7,22 +7,20 @@
 
 import Foundation
 
-/// A model for the registration payload of a Service Seeker.
-struct RegisterSeekerRequest: Encodable {
+struct RegisterRequest: Encodable {
     let firstName: String
     let lastName: String
     let email: String
     let password: String
     let phoneNumber: String
-    let role: String = "SERVICE_SEEKER" // Enforced constant
+    let role: String // Remove default; send explicitly from frontend
     let address: AddressRequest
-    var languagesSpoken: Set<String>
+    let languagesSpoken: [String] // Change from Set to Array
 }
 
-/// A nested model for the address in registration.
 struct AddressRequest: Encodable {
-    let addressLine: String
     let city: String
-    let zipCode: String
     let country: String
+    let zipCode: String
+    let addressLine: String
 }

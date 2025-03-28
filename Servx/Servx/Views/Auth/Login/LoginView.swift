@@ -17,20 +17,6 @@ struct LoginView: View {
 
     var body: some View {
         VStack(spacing: 32) {
-            // Navigation Header
-            HStack {
-                Button(action: {
-                    navigationManager.goBack()
-                }) {
-                    Image(systemName: "chevron.left")
-                        .foregroundColor(.blue)
-                        .padding()
-                }
-                .padding(.leading, 10)
-
-                Spacer()
-            }
-            .frame(height: 44)
 
             // Title
             ServxTextView(
