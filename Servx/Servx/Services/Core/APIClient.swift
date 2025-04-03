@@ -7,93 +7,87 @@
 
 import Foundation
 
-// Define a protocol for dependency injection and testability
 protocol APIClientProtocol {
     func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T
 }
 
 final class APIClient: APIClientProtocol {
     private let session: URLSession
-
+    
     init(session: URLSession = .shared) {
         self.session = session
     }
-
-    // Generic request method to handle all API calls
+    
     func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T {
-        // Log the endpoint URL and method
         guard let url = URL(string: endpoint.url) else {
             print("Error: Invalid URL: \(endpoint.url)")
             throw NetworkError.invalidURL
         }
+        
         print("Requesting URL: \(url) with method: \(endpoint.method.rawValue)")
         
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = endpoint.method.rawValue
-
-        // Set headers
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        if let token = UserDefaultsManager.authToken {
+        
+
+        if endpoint.requiresAuth {
+            let token = try await getAuthToken()
             urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
-
-        // Add body for POST/PUT requests
+        
         if let body = endpoint.body {
             urlRequest.httpBody = try JSONEncoder().encode(body)
         }
-
+        
         do {
-            // Log the start of the request
             let (data, response) = try await session.data(for: urlRequest)
-
-            // Check for HTTP response errors
+            
             guard let httpResponse = response as? HTTPURLResponse else {
-                print("Error: Invalid response received.")
                 throw NetworkError.unknown
             }
             
-            // Log HTTP status code and content type
-            print("HTTP Status Code: \(httpResponse.statusCode)")
-            if let contentType = httpResponse.allHeaderFields["Content-Type"] as? String {
-                print("Response Content-Type: \(contentType)")
-            }
-
-            // Handle HTTP status codes
+            print("HTTP Status: \(httpResponse.statusCode)")
+            
             switch httpResponse.statusCode {
             case 200...299:
-                // Successfully received a valid response, decode the data
                 do {
-                    let decodedData = try JSONDecoder().decode(T.self, from: data)
-                    return decodedData
-                } catch let decodingError {
-                    print("Decoding error: \(decodingError.localizedDescription)")
-                    throw NetworkError.requestFailed
+                    let decodedResponse = try JSONDecoder().decode(T.self, from: data)
+                    return decodedResponse
+                } catch {
+                    print("Decoding failed: \(error.localizedDescription)")
+                    throw NetworkError.decodingError
                 }
             case 401:
-                print("Unauthorized access (401).")
+                print("401 Unauthorized - Invalid or expired token.")
                 throw NetworkError.unauthorized
             case 403:
-                print("Forbidden access (403).")
+                print("403 Forbidden - User does not have permission.")
                 throw NetworkError.forbidden
             case 404:
-                print("Not found (404).")
+                print("404 Not Found - Resource does not exist.")
                 throw NetworkError.notFound
             case 500...599:
-                print("Server error: \(httpResponse.statusCode).")
+                print("Server error: \(httpResponse.statusCode)")
                 throw NetworkError.serverError(statusCode: httpResponse.statusCode)
             default:
-                print("Unexpected HTTP status code: \(httpResponse.statusCode).")
                 throw NetworkError.unknown
             }
-
-        } catch let error as NetworkError {
-            // Catch specific network errors and log them
-            print("NetworkError: \(error.localizedDescription)")
-            throw error
         } catch {
-            // Catch generic errors and log them
-            print("Request failed with error: \(error.localizedDescription)")
-            throw NetworkError.requestFailed
+            print("Network error: \(error.localizedDescription)")
+            throw NetworkError.unknown
+        }
+    }
+    
+    private func getAuthToken() async throws -> String {
+        do {
+            guard let token = try KeychainManager.getToken(service: "auth") else {
+                throw NetworkError.unauthorized
+            }
+            return token
+        } catch {
+            print("Keychain access error: \(error.localizedDescription)")
+            throw NetworkError.unauthorized
         }
     }
 }

@@ -7,12 +7,12 @@
 import SwiftUI
 
 struct LoginView: View {
-    @StateObject private var viewModel: LoginViewModel
+    @ObservedObject private var viewModel: LoginViewModel
     @EnvironmentObject private var navigationManager: NavigationManager
 
     // Dependency Injection for ViewModel
-    init(viewModel: @autoclosure @escaping () -> LoginViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel())
+    init(viewModel: LoginViewModel) {
+        _viewModel = ObservedObject(wrappedValue: viewModel)
     }
 
     var body: some View {

@@ -89,8 +89,3 @@ struct ServiceAuthView: View {
         .padding(.horizontal, 24)
     }
 }
-
-#Preview {
-    ServiceAuthView(hasAccount: true)
-        .environmentObject(NavigationManager())
-}

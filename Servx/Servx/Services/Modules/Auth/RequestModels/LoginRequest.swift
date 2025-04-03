@@ -8,7 +8,7 @@
 import Foundation
 
 /// A model for the login request payload.
-struct LoginRequest: Encodable {
+struct LoginRequest: APIRequest {
     let email: String
     let password: String
 }

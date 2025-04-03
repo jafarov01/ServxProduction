@@ -16,6 +16,7 @@ struct User: Codable, Identifiable {
     let address: Address
     let languagesSpoken: [String]
     let role: Role
+    let profilePhotoUrl: String?
     
     enum Role: String, Codable {
         case serviceSeeker = "SERVICE_SEEKER"

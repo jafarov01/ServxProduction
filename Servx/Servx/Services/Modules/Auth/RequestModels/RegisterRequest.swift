@@ -7,18 +7,18 @@
 
 import Foundation
 
-struct RegisterRequest: Encodable {
+struct RegisterRequest: APIRequest {
     let firstName: String
     let lastName: String
     let email: String
     let password: String
     let phoneNumber: String
-    let role: String // Remove default; send explicitly from frontend
+    let role: String
     let address: AddressRequest
-    let languagesSpoken: [String] // Change from Set to Array
+    let languagesSpoken: [String]
 }
 
-struct AddressRequest: Encodable {
+struct AddressRequest: APIRequest {
     let city: String
     let country: String
     let zipCode: String

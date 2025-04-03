@@ -7,11 +7,11 @@
 import SwiftUI
 
 struct RegisterView: View {
-    @StateObject private var viewModel: RegisterViewModel
+    @ObservedObject private var viewModel: RegisterViewModel
     @EnvironmentObject private var navigationManager: NavigationManager
     
-    init(viewModel: @autoclosure @escaping () -> RegisterViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel())
+    init(viewModel: RegisterViewModel) {
+        _viewModel = ObservedObject(wrappedValue: viewModel)
     }
     
     var body: some View {

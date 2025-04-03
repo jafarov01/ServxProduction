@@ -20,7 +20,7 @@ class RegisterViewModel: ObservableObject {
     @Published var zipCode: String = ""
     @Published var selectedCountry: String = ""
     @Published var selectedCity: String = ""
-    @Published var selectedLanguages: [String] = [] // Changed to Array (was Set)
+    @Published var selectedLanguages: [String] = []
     @Published var education: String = ""
     @Published var isRememberMe: Bool = false
     var isLoading = false
@@ -86,7 +86,7 @@ class RegisterViewModel: ObservableObject {
                 zipCode: zipCode,
                 addressLine: addressLine
             ),
-            languagesSpoken: languageCodes // Send codes instead of full names
+            languagesSpoken: languageCodes
         )
 
         // Debug print the request

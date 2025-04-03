@@ -18,40 +18,34 @@ enum NetworkError: Error, LocalizedError {
     case notFound
     case timeout
     case unknown
-
-    // User-friendly error descriptions
+    case tokenRefreshFailed
+    
     var errorDescription: String? {
         switch self {
-        case .invalidURL:
-            return "The URL provided is invalid."
-        case .requestFailed:
-            return "The request could not be completed. Please try again."
-        case .serverError(let statusCode):
-            return "The server encountered an error. Status code: \(statusCode)."
-        case .decodingError:
-            return "Failed to decode the response from the server."
-        case .noData:
-            return "No data was received from the server."
-        case .unauthorized:
-            return "Unauthorized access. Please check your credentials."
-        case .forbidden:
-            return "Access to the resource is forbidden."
-        case .notFound:
-            return "The requested resource could not be found."
-        case .timeout:
-            return "The request timed out. Please check your connection and try again."
-        case .unknown:
-            return "An unknown error occurred. Please try again later."
+        case .invalidURL: return "Invalid URL"
+        case .requestFailed: return "Request failed"
+        case .serverError(let code): return "Server error (\(code))"
+        case .decodingError: return "Failed to decode response"
+        case .noData: return "No data received"
+        case .unauthorized: return "Session expired"
+        case .forbidden: return "Access forbidden"
+        case .notFound: return "Resource not found"
+        case .timeout: return "Request timed out"
+        case .tokenRefreshFailed: return "Failed to refresh session"
+        case .unknown: return "Unknown error occurred"
         }
     }
-
-    // Status code mapping (if needed for conditional checks in APIClient)
-    var statusCode: Int? {
+    
+    var recoverySuggestion: String? {
         switch self {
-        case .serverError(let statusCode):
-            return statusCode
+        case .unauthorized, .tokenRefreshFailed:
+            return "Please login again"
+        case .forbidden:
+            return "Check your permissions"
+        case .timeout:
+            return "Check your network connection"
         default:
-            return nil
+            return "Please try again later"
         }
     }
 }

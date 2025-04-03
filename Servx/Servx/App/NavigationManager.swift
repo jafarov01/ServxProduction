@@ -5,7 +5,6 @@
 //  Created by Makhlug Jafarov on 18/07/2024.
 //
 
-import Foundation
 import SwiftUI
 
 enum AppView: Hashable {
@@ -14,38 +13,44 @@ enum AppView: Hashable {
     case authentication
     case home
     case register
+    case subcategories(category: ServiceCategory)
+    case services(subcategory: Subcategory)
 }
 
 class NavigationManager: ObservableObject {
     @Published var path = NavigationPath()
-    
+    @Published var isSplashVisible = true
+
+    private let userSessionManager: UserSessionManager
+
+    init(userSessionManager: UserSessionManager) {
+        self.userSessionManager = userSessionManager
+    }
+
     func setupInitialNavigation() {
-        reset()
-        if UserDefaultsManager.isFirstLaunch {
-            path.append(AppView.onboarding)
-        } else if UserDefaultsManager.isAuthenticated {
-            path.append(AppView.home)
-        } else {
-            path.append(AppView.authentication)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            if self.userSessionManager.isAuthenticated {
+                // If the user is authenticated, navigate to home
+                self.path.append(AppView.home)
+            } else {
+                // If not authenticated, navigate to authentication
+                self.path.append(AppView.authentication)
+            }
+            self.isSplashVisible = false
         }
     }
-    
+
     func navigate(to view: AppView) {
-        print("Navigating to: \(view)")
-        self.path.append(view)
+        path.append(view)
     }
 
     func goBack() {
-        print("current path BEFORE: \(path.count)")
         if !path.isEmpty {
-            print("going back if not empty")
             path.removeLast()
         }
-        print("current path AFTER: \(path.count)")
     }
 
     func reset() {
-        print("resetting nav path")
-        path = NavigationPath()
+        path.removeLast(path.count)
     }
 }

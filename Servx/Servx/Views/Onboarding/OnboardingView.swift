@@ -13,23 +13,7 @@ struct OnboardingView: View {
     @State private var currentPage = 0
 
     var body: some View {
-        
-        HStack {
-            Button(action: {
-                navigationManager.goBack()
-            }) {
-                Image(systemName: "chevron.left")
-                    .foregroundColor(.blue)
-                    .padding()
-            }
-            .padding(.leading, 10)
-            
-            Spacer()
-        }
-        .frame(height: 44)
-        
         VStack {
-            // Tab View for Onboarding Pages
             TabView(selection: $currentPage) {
                 OnboardingPageView(
                     imageName: "onboardingOne",
@@ -109,7 +93,7 @@ struct OnboardingPageView: View {
             // Description Text
             ServxTextView(
                 text: description,
-                color: Color("grey500"),
+                color: Color("greyScale500"),
                 size: 20,
                 weight: .bold,
                 alignment: .center,

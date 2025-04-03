@@ -16,6 +16,7 @@ struct RegisterResponse: Decodable {
     let languagesSpoken: [String]
     let address: AddressResponse
     let role: String
+    let profilePhotoUrl: String
 
     /// Nested structure for address in the response.
     struct AddressResponse: Decodable {
