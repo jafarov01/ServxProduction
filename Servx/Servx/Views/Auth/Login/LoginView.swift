@@ -81,7 +81,7 @@ struct LoginView: View {
                             viewModel.handleRememberMe()
                             viewModel.login { success in
                                 if success {
-                                    navigationManager.navigate(to: .home)
+                                    navigationManager.isAuthenticated = true
                                 }
                             }
                         }
@@ -98,7 +98,7 @@ struct LoginView: View {
                     textColor: ServxTheme.primaryColor,
                     font: .subheadline,
                     action: {
-                        navigationManager.navigate(to: .forgotPassword)
+                        navigationManager.navigateTo(.forgotPassword)
                     }
                 )
             }

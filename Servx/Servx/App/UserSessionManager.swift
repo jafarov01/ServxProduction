@@ -5,57 +5,91 @@
 //  Created by Makhlug Jafarov on 2025. 04. 04..
 //
 
-import SwiftUI
+import Foundation
+import Combine
 
 @MainActor
 final class UserSessionManager: ObservableObject {
     @Published var isAuthenticated: Bool = false
-    @Published var hasFetchedUserData = false // Flag to ensure user data is fetched only once per session
+    @Published var hasFetchedUserData = false
     private let userDetailsService: UserDetailsServiceProtocol
+    private var cancellables = Set<AnyCancellable>()
 
     init(userDetailsService: UserDetailsServiceProtocol) {
         self.userDetailsService = userDetailsService
-        self.checkAuthenticationStatus()
+        setupAuthObservers()
+        checkAuthenticationStatus()
     }
 
-    // Check if user is authenticated by looking for token in Keychain
+    private func setupAuthObservers() {
+        $isAuthenticated
+            .removeDuplicates()
+            .sink { [weak self] authenticated in
+                guard let self else { return }
+                if !authenticated {
+                    self.cleanupSession()
+                }
+            }
+            .store(in: &cancellables)
+    }
+
     private func checkAuthenticationStatus() {
         Task {
-            if let token = try? KeychainManager.getToken(service: "auth") {
-                // If token exists, authenticate the user and fetch user details
-                await self.authenticateUserAndFetchDetails(token: token)
-            } else {
-                self.isAuthenticated = false
+            do {
+                if let token = try KeychainManager.getToken(service: "auth") {
+                    await handleValidToken(token)
+                } else {
+                    handleMissingToken()
+                }
+            } catch {
+                await handleAuthError(error)
             }
         }
     }
 
-    // Authenticate user and fetch user data if token is valid
-    private func authenticateUserAndFetchDetails(token: String) async {
-        // Authenticate the user based on the token
-        if !self.isAuthenticated {
-            // Make the API call to fetch user details
+    private func handleValidToken(_ token: String) async {
+        if !isAuthenticated {
             do {
                 let userDetails = try await userDetailsService.getUserDetails()
-                // Populate AuthenticatedUser singleton with fetched data
                 AuthenticatedUser.shared.authenticateUser(from: userDetails)
-                self.isAuthenticated = true
-                self.hasFetchedUserData = true
+                await MainActor.run {
+                    isAuthenticated = true
+                    hasFetchedUserData = true
+                }
             } catch {
-                // Handle error and update UI state
-                self.isAuthenticated = false
-                print("Failed to load user details: \(error.localizedDescription)")
+                await handleAuthError(error)
             }
         } else {
-            // If the user is already authenticated, mark the data as fetched
-            self.hasFetchedUserData = true
+            await MainActor.run {
+                hasFetchedUserData = true
+            }
         }
     }
 
-    // Optional: Logout functionality
-    func logout() {
+    private func handleMissingToken() {
+        isAuthenticated = false
+        hasFetchedUserData = false
+    }
+
+    private func handleAuthError(_ error: Error) async {
+        await MainActor.run {
+            isAuthenticated = false
+            hasFetchedUserData = false
+        }
+        print("Auth error: \(error.localizedDescription)")
+    }
+
+    private func cleanupSession() {
         AuthenticatedUser.shared.logout()
-        self.isAuthenticated = false
-        self.hasFetchedUserData = false
+        hasFetchedUserData = false
+    }
+
+    func logout() {
+        do {
+            try KeychainManager.deleteToken(service: "auth")
+            isAuthenticated = false
+        } catch {
+            print("Logout error: \(error.localizedDescription)")
+        }
     }
 }

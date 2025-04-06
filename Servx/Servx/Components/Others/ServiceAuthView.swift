@@ -61,7 +61,7 @@ struct ServiceAuthView: View {
                         innerColor: .clear,
                         textColor: Color("secondary500"),
                         action: {
-                            navigationManager.navigate(to: .register)
+                            navigationManager.navigateTo(.register)
                         }
                     )
                 } else {

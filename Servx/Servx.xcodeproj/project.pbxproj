@@ -43,6 +43,10 @@
 		5574B7672D3DC92100DF60ED /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7662D3DC91C00DF60ED /* Endpoint.swift */; };
 		5574B7692D3DC92800DF60ED /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7682D3DC92400DF60ED /* HTTPMethod.swift */; };
 		5574B76B2D3DC93900DF60ED /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B76A2D3DC93600DF60ED /* NetworkError.swift */; };
+		559D3CDF2DA18AC700E3862F /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559D3CDE2DA18AC700E3862F /* AppState.swift */; };
+		559D3CE12DA18B4100E3862F /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559D3CE02DA18B4100E3862F /* MainTabView.swift */; };
+		559D3CE32DA18B4C00E3862F /* UnauthenticatedFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559D3CE22DA18B4C00E3862F /* UnauthenticatedFlowView.swift */; };
+		559D3CE52DA18B7D00E3862F /* MainBottomNavBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559D3CE42DA18B7D00E3862F /* MainBottomNavBar.swift */; };
 		55FBA2882D35EAE100F86201 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55FBA2672D35EAE100F86201 /* Preview Assets.xcassets */; };
 		55FBA2892D35EAE100F86201 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55FBA2862D35EAE100F86201 /* Assets.xcassets */; };
 		55FBA28A2D35EAE100F86201 /* Subcategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA25A2D35EAE100F86201 /* Subcategory.swift */; };
@@ -130,6 +134,10 @@
 		5574B7662D3DC91C00DF60ED /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		5574B7682D3DC92400DF60ED /* HTTPMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPMethod.swift; sourceTree = "<group>"; };
 		5574B76A2D3DC93600DF60ED /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
+		559D3CDE2DA18AC700E3862F /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		559D3CE02DA18B4100E3862F /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		559D3CE22DA18B4C00E3862F /* UnauthenticatedFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnauthenticatedFlowView.swift; sourceTree = "<group>"; };
+		559D3CE42DA18B7D00E3862F /* MainBottomNavBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBottomNavBar.swift; sourceTree = "<group>"; };
 		55FBA2152D35E8C900F86201 /* Servx.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Servx.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		55FBA2252D35E8CB00F86201 /* ServxTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ServxTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		55FBA22F2D35E8CB00F86201 /* ServxUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ServxUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -436,6 +444,10 @@
 		55FBA2472D35EAE100F86201 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				559D3CE42DA18B7D00E3862F /* MainBottomNavBar.swift */,
+				559D3CE22DA18B4C00E3862F /* UnauthenticatedFlowView.swift */,
+				559D3CE02DA18B4100E3862F /* MainTabView.swift */,
+				559D3CDE2DA18AC700E3862F /* AppState.swift */,
 				5548714A2D9F4EFC00AB1811 /* UserSessionManager.swift */,
 				552F25B22D98992F00BF1234 /* AuthenticatedUser.swift */,
 				554C737C2D9CBE9700145987 /* KeychainManager.swift */,
@@ -745,6 +757,7 @@
 				5574B76B2D3DC93900DF60ED /* NetworkError.swift in Sources */,
 				55FBA2A42D35EAE100F86201 /* ServxTextView.swift in Sources */,
 				5574B7592D3DC8C600DF60ED /* RegisterRequest.swift in Sources */,
+				559D3CE32DA18B4C00E3862F /* UnauthenticatedFlowView.swift in Sources */,
 				552F25B32D98993200BF1234 /* AuthenticatedUser.swift in Sources */,
 				552F25AA2D9888D900BF1234 /* ServicesViewModel.swift in Sources */,
 				55FBA2A62D35EAE100F86201 /* ForgotPasswordView.swift in Sources */,
@@ -756,6 +769,7 @@
 				55FBA2A82D35EAE100F86201 /* User.swift in Sources */,
 				554C73782D9B524600145987 /* UserDetailsServiceProtocol.swift in Sources */,
 				55FBA2A92D35EAE100F86201 /* ServxApp.swift in Sources */,
+				559D3CE12DA18B4100E3862F /* MainTabView.swift in Sources */,
 				5574B75F2D3DC8F200DF60ED /* RegisterResponse.swift in Sources */,
 				552F25A42D98886600BF1234 /* ServiceDetailedCard.swift in Sources */,
 				552F25A82D9888C400BF1234 /* SubcategoriesViewModel.swift in Sources */,
@@ -777,10 +791,12 @@
 				55FBA2B62D35EAE100F86201 /* ForgotPasswordViewModel.swift in Sources */,
 				55FBA2B82D35EAE100F86201 /* ServiceProfile.swift in Sources */,
 				55FBA2B92D35EAE100F86201 /* OptionSelectionView.swift in Sources */,
+				559D3CDF2DA18AC700E3862F /* AppState.swift in Sources */,
 				5548714B2D9F4EFC00AB1811 /* UserSessionManager.swift in Sources */,
 				55FBA2BB2D35EAE100F86201 /* LoginView.swift in Sources */,
 				55FBA2BC2D35EAE100F86201 /* ServxInputView.swift in Sources */,
 				5574B7572D3DC8B800DF60ED /* LoginRequest.swift in Sources */,
+				559D3CE52DA18B7D00E3862F /* MainBottomNavBar.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

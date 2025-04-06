@@ -56,7 +56,7 @@ struct OnboardingView: View {
                     if currentPage < 3 {
                         currentPage += 1
                     } else {
-                        navigationManager.navigate(to: .authentication)
+                        navigationManager.navigateTo(.authentication)
                     }
                 }
             )
@@ -101,11 +101,5 @@ struct OnboardingPageView: View {
             )
         }
         .tag(tag)
-    }
-}
-
-struct OnboardingView_Previews: PreviewProvider {
-    static var previews: some View {
-        OnboardingView()
     }
 }

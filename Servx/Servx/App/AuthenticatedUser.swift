@@ -31,6 +31,9 @@ final class AuthenticatedUser {
     }
     
     func authenticateUser(from response: UserDetailsResponse) {
+        print("===== authenticateUser called =====")
+        print("Received user details response: \(response)")
+        
         self.id = response.id
         self.email = response.email
         self.role = response.role
@@ -43,10 +46,16 @@ final class AuthenticatedUser {
         self.isOnboardingRequired = false
 
         self.address = mapToAddress(response.address)
+        
+        print("User authenticated successfully. User details set:")
+        print("ID: \(self.id ?? -1), Email: \(self.email ?? "N/A"), Full Name: \(self.fullName)")
     }
     
     // Method to map UserDetailsResponse.Address to Address entity
     private func mapToAddress(_ userDetailsAddress: UserDetailsResponse.Address) -> Address {
+        print("===== mapToAddress called =====")
+        print("Mapping address: \(userDetailsAddress)")
+        
         return Address(
             addressLine: userDetailsAddress.addressLine,
             city: userDetailsAddress.city,
@@ -56,6 +65,8 @@ final class AuthenticatedUser {
     }
 
     func logout() {
+        print("===== logout called =====")
+        
         self.id = nil
         self.email = nil
         self.role = nil
@@ -66,9 +77,15 @@ final class AuthenticatedUser {
         self.address = nil
         self.languagesSpoken = nil
         self.isAuthenticated = false
+        self.isOnboardingRequired = true
+
+        print("User logged out. All user data reset.")
     }
 
     func completeOnboarding() {
+        print("===== completeOnboarding called =====")
+        
         self.isOnboardingRequired = false
+        print("Onboarding completed. isOnboardingRequired set to \(self.isOnboardingRequired)")
     }
 }

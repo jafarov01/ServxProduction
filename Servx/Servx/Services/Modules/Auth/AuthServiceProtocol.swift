@@ -20,4 +20,6 @@ protocol AuthServiceProtocol {
     ///   - seekerRequest: The registration details for a service seeker.
     /// - Returns: A response model containing user details.
     func register(request: RegisterRequest) async throws -> RegisterResponse
+    
+    func logout()
 }

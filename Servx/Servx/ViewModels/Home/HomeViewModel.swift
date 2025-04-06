@@ -15,33 +15,42 @@ class HomeViewModel: ObservableObject {
     @Published var categories: [ServiceCategory] = []
     @Published var recommendedServices: [ServiceProfile] = []
     @Published var isLoading = false
-    
+
     private let service: ServicesServiceProtocol
-    
+
     init(service: ServicesServiceProtocol = ServicesService()) {
-        
-        print("AuthenticatedUser set check", AuthenticatedUser.shared.isAuthenticated, " ", AuthenticatedUser.shared.id as Any, " ", AuthenticatedUser.shared.id as Any, " ", AuthenticatedUser.shared.email as Any)
         self.service = service
+        print("HomeViewModel initialized - checking if data is loaded.")
+        // Only load data if categories are not already loaded
+        if categories.isEmpty {
+            Task {
+                await loadData()
+            }
+        }
     }
-    
-    // Data loading function
+
     func loadData() async {
         isLoading = true
         defer { isLoading = false }
-        
-        do {
-            // Fetch categories and recommended services concurrently
-            async let categoriesTask = service.fetchCategories()
-            async let recommendedServicesTask = service.fetchRecommendedServices()
-            
-            // Await results for categories and services
-            let (fetchedCategories, fetchedServices) = await (try categoriesTask, try recommendedServicesTask)
-            
-            // Assign fetched data to published properties
-            categories = fetchedCategories
-            recommendedServices = fetchedServices
-        } catch {
-            print("Error loading data: \(error.localizedDescription)")
+
+        // Only fetch if categories are not already loaded
+        if categories.isEmpty {
+            do {
+                // Fetch categories and recommended services concurrently
+                async let categoriesTask = service.fetchCategories()
+                async let recommendedServicesTask = service.fetchRecommendedServices()
+
+                // Await results for categories and services
+                let (fetchedCategories, fetchedServices) = await (try categoriesTask, try recommendedServicesTask)
+
+                categories = fetchedCategories
+                recommendedServices = fetchedServices
+
+                print("Data loaded successfully. Categories count: \(categories.count), Services count: \(recommendedServices.count)")
+
+            } catch {
+                print("Error loading data: \(error.localizedDescription)")
+            }
         }
     }
 }

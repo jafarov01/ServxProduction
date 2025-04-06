@@ -168,7 +168,7 @@ struct RegisterView: View {
         
         viewModel.register { success in
             if success {
-                navigationManager.navigate(to: .authentication)
+                navigationManager.navigateTo(.authentication)
             } else {
                 // Handle registration error
             }

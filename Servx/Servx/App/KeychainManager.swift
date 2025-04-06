@@ -19,6 +19,9 @@ struct KeychainManager: KeychainManagerProtocol {
     private static let accessible = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
     
     static func save(token: String, service: String) throws {
+        print("===== KeychainManager.save called =====")
+        print("Saving token for service: \(service)")
+
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrService: service,
@@ -27,15 +30,22 @@ struct KeychainManager: KeychainManagerProtocol {
         ]
         
         // Delete existing item before adding new
+        print("Attempting to delete existing token for service: \(service)")
         try deleteToken(service: service)
-        
+
         let status = SecItemAdd(query as CFDictionary, nil)
-        guard status == errSecSuccess else {
+        if status == errSecSuccess {
+            print("Token successfully saved for service: \(service)")
+        } else {
+            print("Failed to save token for service: \(service), OSStatus: \(status)")
             throw KeychainError.saveFailed(status: status)
         }
     }
     
     static func getToken(service: String) throws -> String? {
+        print("===== KeychainManager.getToken called =====")
+        print("Fetching token for service: \(service)")
+        
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrService: service,
@@ -48,26 +58,36 @@ struct KeychainManager: KeychainManagerProtocol {
         
         switch status {
         case errSecSuccess:
+            print("Token found for service: \(service)")
             guard let data = result as? Data,
                   let token = String(data: data, encoding: .utf8) else {
+                print("Failed to decode token for service: \(service)")
                 throw KeychainError.invalidDataFormat
             }
             return token
         case errSecItemNotFound:
+            print("No token found for service: \(service)")
             return nil
         default:
+            print("Failed to load token for service: \(service), OSStatus: \(status)")
             throw KeychainError.loadFailed(status: status)
         }
     }
     
     static func deleteToken(service: String) throws {
+        print("===== KeychainManager.deleteToken called =====")
+        print("Deleting token for service: \(service)")
+        
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrService: service
         ]
         
         let status = SecItemDelete(query as CFDictionary)
-        guard status == errSecSuccess || status == errSecItemNotFound else {
+        if status == errSecSuccess || status == errSecItemNotFound {
+            print("Token successfully deleted for service: \(service)")
+        } else {
+            print("Failed to delete token for service: \(service), OSStatus: \(status)")
             throw KeychainError.deleteFailed(status: status)
         }
     }

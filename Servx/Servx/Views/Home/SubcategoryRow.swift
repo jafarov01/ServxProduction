@@ -19,7 +19,7 @@ struct SubcategoryRow: View {
                 
                 Spacer()
                 
-                Image(systemName: "chevron.right")
+                Image(systemName: "arrow.right.circle.fill")
                     .foregroundColor(Color("greyScale400"))
             }
             .padding(16)

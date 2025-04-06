@@ -14,7 +14,6 @@ struct HomeView: View {
     @ObservedObject private var viewModel: HomeViewModel
     @EnvironmentObject private var navigationManager: NavigationManager
 
-    // Dependency Injection for ViewModel
     init(viewModel: HomeViewModel) {
         _viewModel = ObservedObject(wrappedValue: viewModel)
     }
@@ -32,7 +31,6 @@ struct HomeView: View {
                     VStack(spacing: 20) {
                         HeaderView()
 
-                        // Search input with top padding
                         ServxInputView(
                             text: $searchInput,
                             placeholder: "Search for services",
@@ -55,26 +53,77 @@ struct HomeView: View {
             }
         }
         .onAppear {
-            Task {
-                await viewModel.loadData()
+            // Data should already be loaded in the viewModel
+            if viewModel.categories.isEmpty {
+                Task {
+                    await viewModel.loadData()
+                }
             }
         }
         .navigationBarBackButtonHidden()
     }
-    
-    private func HorizontalScrollView() -> some View {
-        ScrollView(.horizontal, showsIndicators: false) {
+}
+
+struct CategoriesSection: View {
+    @ObservedObject var viewModel: HomeViewModel
+    @EnvironmentObject var navigationManager: NavigationManager
+
+    let itemsPerRow = 4
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
             HStack {
-                ForEach(0..<10) { index in
-                    RoundedRectangle(cornerRadius: 24)
-                        .fill(Color("primary300"))
-                        .frame(width: 280, height: 134)
-                        .padding(10)
-                        .overlay(
-                            Text("This is the \(index)th page here")
-                                .foregroundColor(.white)
+                ServxTextView(
+                    text: "Category",
+                    color: Color("greyScale900"),
+                    size: 18,
+                    weight: .bold,
+                    alignment: .leading
+                )
+
+                Spacer()
+
+                ServxTextView(
+                    text: "View all",
+                    color: Color("primary500"),
+                    size: 14,
+                    weight: .regular,
+                    alignment: .leading
+                )
+            }
+            .padding(.horizontal, 20)
+
+            LazyVGrid(
+                columns: Array(repeating: GridItem(), count: itemsPerRow),
+                spacing: 10
+            ) {
+                ForEach(viewModel.categories) { category in
+                    Button(action: {
+                        print(
+                            "Navigating to subcategories for category: \(category.name)"
                         )
+                        navigationManager.navigateTo(category)
+                    }) {
+                        CategoryCard(category: category)
+                    }
                 }
+            }
+        }
+    }
+}
+
+private func HorizontalScrollView() -> some View {
+    ScrollView(.horizontal, showsIndicators: false) {
+        HStack {
+            ForEach(0..<10) { index in
+                RoundedRectangle(cornerRadius: 24)
+                    .fill(Color("primary300"))
+                    .frame(width: 280, height: 134)
+                    .padding(10)
+                    .overlay(
+                        Text("This is the \(index)th page here")
+                            .foregroundColor(.white)
+                    )
             }
         }
     }
@@ -95,7 +144,7 @@ struct HeaderView: View {
                     weight: .regular,
                     alignment: .leading
                 )
-                
+
                 // User's full name
                 ServxTextView(
                     text: AuthenticatedUser.shared.fullName,
@@ -121,48 +170,6 @@ struct HeaderView: View {
                 .frame(width: 28, height: 28)
         }
         .padding(.horizontal, 20)
-    }
-}
-
-struct CategoriesSection: View {
-    @ObservedObject var viewModel: HomeViewModel
-    @EnvironmentObject var navigationManager: NavigationManager
-
-    let itemsPerRow = 4
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                ServxTextView(
-                    text: "Category",
-                    color: Color("greyScale900"),
-                    size: 18,
-                    weight: .bold,
-                    alignment: .leading
-                )
-                
-                Spacer()
-                
-                ServxTextView(
-                    text: "View all",
-                    color: Color("primary500"),
-                    size: 14,
-                    weight: .regular,
-                    alignment: .leading
-                )
-            }
-            .padding(.horizontal, 20)
-
-            LazyVGrid(columns: Array(repeating: GridItem(), count: itemsPerRow), spacing: 10) {
-                ForEach(viewModel.categories) { category in
-                    Button(action: {
-                        navigationManager.navigate(to: .subcategories(category: category))
-                    }) {
-                        CategoryCard(category: category)
-                    }
-                }
-            }
-        }
     }
 }
 

@@ -23,9 +23,9 @@ struct ServicesListView: View {
                 ServxInputView(
                     text: $viewModel.searchQuery,
                     placeholder: "What's the problem?",
-                    frameColor: Color("greyscale400Color"),
-                    backgroundColor: Color("greyscale100Color"),
-                    textColor: Color("greyscale900Color")
+                    frameColor: Color("greyScale400"),
+                    backgroundColor: Color("greyScale100"),
+                    textColor: Color("greyScale900")
                 )
                 .padding(.horizontal, 20)
                 

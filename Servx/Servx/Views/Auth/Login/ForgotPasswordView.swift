@@ -93,13 +93,10 @@ struct ForgotPasswordView: View {
                 isDisabled: !viewModel.isFormValid,
                 action: {
                     viewModel.forgotPassword()
-                    navigationManager.navigate(to: .authentication)
+                    navigationManager.navigateTo(.authentication)
                 }
             )
         })
         .navigationBarBackButtonHidden(true)
     }
-}
-#Preview {
-    ForgotPasswordView()
 }

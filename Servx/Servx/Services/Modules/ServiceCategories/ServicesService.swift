@@ -9,19 +9,34 @@ import Foundation
 
 final class ServicesService: ServicesServiceProtocol {
     private let apiClient: APIClientProtocol
-
+    private var categories: [ServiceCategory]?
+    private var recommendedServices: [ServiceProfile]?
+    private var token: String?
+    
     init(apiClient: APIClientProtocol = APIClient()) {
         self.apiClient = apiClient
     }
-
+    
     func fetchCategories() async throws -> [ServiceCategory] {
+        if let cachedCategories = categories {
+            return cachedCategories
+        }
+        
         let endpoint = Endpoint.fetchCategories
-        return try await apiClient.request(endpoint)
+        let categoriesResponse: [ServiceCategory] = try await apiClient.request(endpoint)
+        self.categories = categoriesResponse
+        return categoriesResponse
     }
 
     func fetchRecommendedServices() async throws -> [ServiceProfile] {
+        if let cachedServices = recommendedServices {
+            return cachedServices
+        }
+        
         let endpoint = Endpoint.fetchRecommendedServices
-        return try await apiClient.request(endpoint)
+        let recommendedServicesResponse: [ServiceProfile] = try await apiClient.request(endpoint)
+        self.recommendedServices = recommendedServicesResponse
+        return recommendedServicesResponse
     }
 
     func fetchSubcategories(categoryId: Int64) async throws -> [Subcategory] {
@@ -29,11 +44,8 @@ final class ServicesService: ServicesServiceProtocol {
         return try await apiClient.request(endpoint)
     }
 
-    func fetchServices(categoryId: Int64, subcategoryId: Int64) async throws
-        -> [ServiceProfile]
-    {
-        let endpoint = Endpoint.fetchServices(
-            categoryId: categoryId, subcategoryId: subcategoryId)
+    func fetchServices(categoryId: Int64, subcategoryId: Int64) async throws -> [ServiceProfile] {
+        let endpoint = Endpoint.fetchServices(categoryId: categoryId, subcategoryId: subcategoryId)
         return try await apiClient.request(endpoint)
     }
 
