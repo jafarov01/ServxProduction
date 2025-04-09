@@ -9,37 +9,71 @@
 import SwiftUI
 
 struct ProfileView: View {
+    @StateObject private var viewModel: ProfileViewModel
     @EnvironmentObject private var navManager: NavigationManager
-    @EnvironmentObject private var userSession: UserSessionManager
-    private let authService: AuthServiceProtocol = AuthService()
+    
+    init(viewModel: ProfileViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
 
     var body: some View {
-        VStack {
-            Text("Profile View")
-                .font(.largeTitle)
-
-            Button("Sign Out") {
-                performLogout()
+        ScrollView {
+            VStack(spacing: 20) {
+                // Profile Header
+                VStack {
+                    ProfilePhotoView(imageUrl: URL(string: viewModel.user?.profilePhotoUrl ?? ""))
+                        .frame(width: 140, height: 140)
+                        .onTapGesture {
+                            navManager.navigateTo(.edit)
+                        }
+                    
+                    Text("\(viewModel.user?.firstName ?? "") \(viewModel.user?.lastName ?? "")")
+                        .font(.title)
+                        .padding(.top, 8)
+                }
+                .padding(.top, 20)
+                
+                // Options List
+                VStack(spacing: 0) {
+                    Divider()
+                    
+                    optionRow(title: "Profile")
+                    Divider()
+                    optionRow(title: "Settings") { navManager.navigateTo(.settings) }
+                    Divider()
+                    optionRow(title: "Support") { navManager.navigateTo(.support) }
+                    Divider()
+                    optionRow(title: "Log out", color: .red) { print("Logout tapped") }
+                    Divider()
+                }
+                .background(Color(.systemBackground))
+                .cornerRadius(10)
+                .padding(.horizontal)
             }
-            .padding()
-            .background(Color.red)
-            .foregroundColor(.white)
-            .cornerRadius(8)
+        }
+        .navigationTitle("Profile")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Edit") {
+                    navManager.navigateTo(.edit)
+                }
+            }
+        }
+        .onAppear {
+            viewModel.loadUserProfile()
         }
     }
     
-    private func performLogout() {
-        // Clear local user data
-        AuthenticatedUser.shared.logout()
-        
-        // Clear network-related data
-        authService.logout()
-        
-        // Reset all navigation state by creating new empty paths
-        navManager.mainPath = NavigationPath()
-        navManager.authPath = NavigationPath()
-        
-        // Update authentication state
-        userSession.logout()
+    // Reusable option row component
+    private func optionRow(title: String, color: Color = .primary, action: @escaping () -> Void = {}) -> some View {
+        Button(action: action) {
+            HStack {
+                Text(title)
+                    .foregroundColor(color)
+                Spacer()
+            }
+            .padding()
+            .contentShape(Rectangle()) // Makes entire row tappable
+        }
     }
 }

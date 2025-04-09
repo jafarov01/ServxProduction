@@ -9,12 +9,12 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var userSessionManager = UserSessionManager(
-        userDetailsService: UserDetailsService()
+        userDetailsService: UserService()
     )
     
     @StateObject private var navigationManager = NavigationManager(
         userSessionManager: UserSessionManager(
-            userDetailsService: UserDetailsService()
+            userDetailsService: UserService()
         )
     )
 

@@ -16,7 +16,7 @@ struct UnauthenticatedFlowView: View {
             LoginView(
                 viewModel: LoginViewModel(
                     authService: AuthService(),
-                    userDetailsService: UserDetailsService()
+                    userService: UserService()
                 )
             )
             .navigationDestination(for: LoginRoute.self) { route in
@@ -29,7 +29,7 @@ struct UnauthenticatedFlowView: View {
                     LoginView(
                         viewModel: LoginViewModel(
                             authService: AuthService(),
-                            userDetailsService: UserDetailsService()
+                            userService: UserService()
                         )
                     )
                     

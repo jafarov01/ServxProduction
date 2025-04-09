@@ -12,10 +12,10 @@ import Combine
 final class UserSessionManager: ObservableObject {
     @Published var isAuthenticated: Bool = false
     @Published var hasFetchedUserData = false
-    private let userDetailsService: UserDetailsServiceProtocol
+    private let userDetailsService: UserServiceProtocol
     private var cancellables = Set<AnyCancellable>()
 
-    init(userDetailsService: UserDetailsServiceProtocol) {
+    init(userDetailsService: UserServiceProtocol) {
         self.userDetailsService = userDetailsService
         setupAuthObservers()
         checkAuthenticationStatus()

@@ -30,13 +30,13 @@ final class AuthenticatedUser {
         "\(firstName ?? "") \(lastName ?? "")"
     }
     
-    func authenticateUser(from response: UserDetailsResponse) {
+    func authenticateUser(from response: UserResponse) {
         print("===== authenticateUser called =====")
         print("Received user details response: \(response)")
         
         self.id = response.id
         self.email = response.email
-        self.role = response.role
+        self.role = response.role.rawValue
         self.profilePhotoUrl = response.profilePhotoUrl
         self.firstName = response.firstName
         self.lastName = response.lastName
@@ -52,7 +52,7 @@ final class AuthenticatedUser {
     }
     
     // Method to map UserDetailsResponse.Address to Address entity
-    private func mapToAddress(_ userDetailsAddress: UserDetailsResponse.Address) -> Address {
+    private func mapToAddress(_ userDetailsAddress: AddressResponse) -> Address {
         print("===== mapToAddress called =====")
         print("Mapping address: \(userDetailsAddress)")
         
@@ -64,6 +64,7 @@ final class AuthenticatedUser {
         )
     }
 
+    // Logout function - Reset all fields
     func logout() {
         print("===== logout called =====")
         
@@ -82,10 +83,55 @@ final class AuthenticatedUser {
         print("User logged out. All user data reset.")
     }
 
+    // Complete onboarding
     func completeOnboarding() {
         print("===== completeOnboarding called =====")
         
         self.isOnboardingRequired = false
         print("Onboarding completed. isOnboardingRequired set to \(self.isOnboardingRequired)")
+    }
+
+    // MARK: - Update Methods
+
+    // Update Profile Photo
+    func updateProfilePhoto(url: String?) {
+        self.profilePhotoUrl = url
+        print("Profile photo updated to: \(url ?? "nil")")
+    }
+
+    // Update first name
+    func updateFirstName(firstName: String) {
+        self.firstName = firstName
+        print("First name updated to: \(firstName)")
+    }
+
+    // Update last name
+    func updateLastName(lastName: String) {
+        self.lastName = lastName
+        print("Last name updated to: \(lastName)")
+    }
+
+    // Update email
+    func updateEmail(email: String) {
+        self.email = email
+        print("Email updated to: \(email)")
+    }
+
+    // Update phone number
+    func updatePhoneNumber(phoneNumber: String) {
+        self.phoneNumber = phoneNumber
+        print("Phone number updated to: \(phoneNumber)")
+    }
+
+    // Update address
+    func updateAddress(address: Address) {
+        self.address = address
+        print("Address updated to: \(address)")
+    }
+
+    // Update languages spoken
+    func updateLanguagesSpoken(languages: [String]) {
+        self.languagesSpoken = languages
+        print("Languages spoken updated to: \(languages)")
     }
 }

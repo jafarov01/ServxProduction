@@ -16,6 +16,8 @@ enum Endpoint {
     case fetchServices(categoryId: Int64, subcategoryId: Int64)
     case getUserDetails
     case fetchUserDetails(userId: Int64)
+    case updateProfilePhoto
+    case deleteProfilePhoto
     
     var requiresAuth: Bool {
         switch self {
@@ -29,6 +31,8 @@ enum Endpoint {
     var url: String {
         let baseURL = "http://localhost:8080/api/"
         switch self {
+        case .updateProfilePhoto: return "\(baseURL)user/me/photo"
+        case .deleteProfilePhoto: return "\(baseURL)user/me/photo"
         case .authLogin: return "\(baseURL)auth/login"
         case .register: return "\(baseURL)auth/register"
         case .getUserDetails: return "\(baseURL)user/me"
@@ -47,6 +51,10 @@ enum Endpoint {
         switch self {
         case .authLogin, .register:
             return .post
+        case .updateProfilePhoto:
+            return .get
+        case .deleteProfilePhoto:
+            return .delete
         default:
             return .get
         }

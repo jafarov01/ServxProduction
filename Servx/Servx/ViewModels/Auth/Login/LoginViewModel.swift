@@ -20,12 +20,12 @@ class LoginViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     
     private let authService: AuthServiceProtocol
-    private let userDetailsService: UserDetailsServiceProtocol
+    private let userService: UserServiceProtocol
     private var cancellables = Set<AnyCancellable>()
     
-    init(authService: AuthServiceProtocol, userDetailsService: UserDetailsServiceProtocol) {
+    init(authService: AuthServiceProtocol, userService: UserServiceProtocol) {
         self.authService = authService
-        self.userDetailsService = userDetailsService
+        self.userService = userService
         setupValidation()
     }
     
@@ -50,7 +50,7 @@ class LoginViewModel: ObservableObject {
                     _ = try await self.authService.login(email: self.email, password: self.password)
                     
                     // Fetch user details using the getUserDetails API call
-                    let userDetails = try await self.userDetailsService.getUserDetails()
+                    let userDetails = try await self.userService.getUserDetails()
 
                     // Populate AuthenticatedUser with fetched user details
                     print("AuthenticaedUser is set")

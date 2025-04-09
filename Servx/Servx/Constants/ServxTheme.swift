@@ -16,7 +16,7 @@ struct ServxTheme {
     static let linkTextColor = Color("primary400")      // Link and active button text color
     static let backgroundColor = Color.white           // Background color for components
     static let blackColor = Color.black                // Black color for general use
-    static let greyScale400Color = Color("greyscale400")
-    static let greyScale100Color = Color("greyscale100")
+    static let greyScale400Color = Color("greyScale400")
+    static let greyScale100Color = Color("greyScale100")
     
 }

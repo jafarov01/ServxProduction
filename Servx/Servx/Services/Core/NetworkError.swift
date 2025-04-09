@@ -19,6 +19,7 @@ enum NetworkError: Error, LocalizedError {
     case timeout
     case unknown
     case tokenRefreshFailed
+    case invalidResponse
     
     var errorDescription: String? {
         switch self {
@@ -33,6 +34,7 @@ enum NetworkError: Error, LocalizedError {
         case .timeout: return "Request timed out"
         case .tokenRefreshFailed: return "Failed to refresh session"
         case .unknown: return "Unknown error occurred"
+        case .invalidResponse: return "Invalid response"
         }
     }
     

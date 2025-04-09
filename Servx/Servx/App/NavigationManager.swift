@@ -17,6 +17,12 @@ enum LoginRoute: Hashable {
     case forgotPassword
 }
 
+enum ProfileRoute: Hashable {
+    case edit
+    case settings
+    case support
+}
+
 enum Tab: String, CaseIterable {
     case home
     case booking
@@ -31,6 +37,7 @@ final class NavigationManager: ObservableObject {
     // MARK: - Published Properties
     @Published var mainPath = NavigationPath()    // Main app navigation stack
     @Published var authPath = NavigationPath()   // Authentication flow stack
+    @Published var profilePath = NavigationPath() // Profile navigation stack
     @Published var selectedTab: Tab = .home
     @Published var isAuthenticated = false
     @Published var isSplashVisible = true
@@ -65,6 +72,11 @@ final class NavigationManager: ObservableObject {
         logNavigation("LoginRoute: \(route)")
     }
     
+    func navigateTo(_ route: ProfileRoute) {
+        profilePath.append(route)
+        logNavigation("ProfileRoute: \(route)")
+    }
+    
     func switchTab(to tab: Tab) {
         guard selectedTab != tab else { return }
         selectedTab = tab
@@ -84,6 +96,7 @@ final class NavigationManager: ObservableObject {
     
     func resetAllNavigation() {
         mainPath = NavigationPath()
+        profilePath = NavigationPath()
         authPath = NavigationPath()
         print("🔄 Reset all navigation stacks")
     }
@@ -107,6 +120,11 @@ final class NavigationManager: ObservableObject {
     func resetMainNavigation() {
         mainPath = NavigationPath()
         print("🔄 Reset main navigation stack")
+    }
+    
+    func resetProfileNavigation() {
+        profilePath = NavigationPath()
+        print("🔄 Reset profile navigation stack")
     }
 }
 
@@ -140,5 +158,6 @@ private extension NavigationManager {
         print("🧭 Navigation: \(message)")
         print("Main Path: \(String(describing: mainPath))")
         print("Auth Path: \(String(describing: authPath))")
+        print("Profile Path: \(String(describing: profilePath))")
     }
 }

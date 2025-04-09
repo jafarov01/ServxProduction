@@ -15,7 +15,7 @@ struct ForgotPasswordView: View {
     @StateObject var viewModel = ForgotPasswordViewModel()
     @EnvironmentObject private var navigationManager: NavigationManager
     
-    @StateObject private var loginViewModel = LoginViewModel(authService: AuthService(), userDetailsService: UserDetailsService())
+    @StateObject private var loginViewModel = LoginViewModel(authService: AuthService(), userService: UserService())
         
     var body: some View {
         
