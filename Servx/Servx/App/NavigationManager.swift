@@ -17,10 +17,14 @@ enum LoginRoute: Hashable {
     case forgotPassword
 }
 
-enum ProfileRoute: Hashable {
-    case edit
+enum MoreRoute: Hashable {
+    case profile
+    case editProfile
+    case photoEdit
     case settings
     case support
+    case becomeProvider
+    case manageServices
 }
 
 enum Tab: String, CaseIterable {
@@ -28,7 +32,7 @@ enum Tab: String, CaseIterable {
     case booking
     case calendar
     case inbox
-    case profile
+    case more
 }
 
 // MARK: - Navigation Manager
@@ -37,7 +41,7 @@ final class NavigationManager: ObservableObject {
     // MARK: - Published Properties
     @Published var mainPath = NavigationPath()    // Main app navigation stack
     @Published var authPath = NavigationPath()   // Authentication flow stack
-    @Published var profilePath = NavigationPath() // Profile navigation stack
+    @Published var morePath = NavigationPath()
     @Published var selectedTab: Tab = .home
     @Published var isAuthenticated = false
     @Published var isSplashVisible = true
@@ -72,9 +76,8 @@ final class NavigationManager: ObservableObject {
         logNavigation("LoginRoute: \(route)")
     }
     
-    func navigateTo(_ route: ProfileRoute) {
-        profilePath.append(route)
-        logNavigation("ProfileRoute: \(route)")
+    func navigateTo(_ route: MoreRoute) {
+        morePath.append(route)
     }
     
     func switchTab(to tab: Tab) {
@@ -91,12 +94,15 @@ final class NavigationManager: ObservableObject {
         } else if !authPath.isEmpty {
             authPath.removeLast()
             print("↩️ Auth navigation back")
+        } else if !morePath.isEmpty {
+            morePath.removeLast()
+            print("↩️ More navigation back")
         }
     }
     
     func resetAllNavigation() {
         mainPath = NavigationPath()
-        profilePath = NavigationPath()
+        morePath = NavigationPath()
         authPath = NavigationPath()
         print("🔄 Reset all navigation stacks")
     }
@@ -120,11 +126,6 @@ final class NavigationManager: ObservableObject {
     func resetMainNavigation() {
         mainPath = NavigationPath()
         print("🔄 Reset main navigation stack")
-    }
-    
-    func resetProfileNavigation() {
-        profilePath = NavigationPath()
-        print("🔄 Reset profile navigation stack")
     }
 }
 
@@ -158,6 +159,6 @@ private extension NavigationManager {
         print("🧭 Navigation: \(message)")
         print("Main Path: \(String(describing: mainPath))")
         print("Auth Path: \(String(describing: authPath))")
-        print("Profile Path: \(String(describing: profilePath))")
+        print("More Path: \(String(describing: morePath))")
     }
 }

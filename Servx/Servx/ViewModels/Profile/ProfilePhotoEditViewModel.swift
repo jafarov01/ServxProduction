@@ -2,48 +2,53 @@
 //  ProfilePhotoEditViewModel.swift
 //  Servx
 //
-//  Created by Makhlug Jafarov on 2025. 04. 07..
+//  Created by Makhlug Jafarov on 2025. 04. 10..
 //
 
 import SwiftUI
-import UIKit
 
+@MainActor
 class ProfilePhotoEditViewModel: ObservableObject {
     @Published var isLoading = false
-    @Published var errorMessage: String?
     private let userService: UserServiceProtocol
-
+    
     init(userService: UserServiceProtocol = UserService()) {
         self.userService = userService
     }
-
-    // Select a new photo from library or camera
-    func selectNewPhoto(_ image: UIImage) async {
+    
+    func savePhoto(_ image: UIImage) async {
         isLoading = true
-        errorMessage = nil
-        
         do {
-            let updatedPhotoURL = try await userService.updateProfilePhoto(image)
-            AuthenticatedUser.shared.updateProfilePhoto(url: updatedPhotoURL.absoluteString)
-            isLoading = false
+            let url = try await userService.updateProfilePhoto(image)
+            AuthenticatedUser.shared.updateProfilePhoto(url: url)
+            await MainActor.run {
+                // Notify parent to refresh data
+                NotificationCenter.default.post(name: .userDataUpdated, object: nil)
+            }
         } catch {
-            errorMessage = "Failed to update photo: \(error.localizedDescription)"
-            isLoading = false
+            print("Error updating photo: \(error.localizedDescription)")
+            // Show error alert
         }
+        isLoading = false
     }
 
-    // Remove profile photo
-    func removeProfilePhoto() async {
+    func removePhoto() async {
         isLoading = true
-        errorMessage = nil
-        
         do {
             try await userService.deleteProfilePhoto()
             AuthenticatedUser.shared.updateProfilePhoto(url: nil)
-            isLoading = false
+            await MainActor.run {
+                NotificationCenter.default.post(name: .userDataUpdated, object: nil)
+            }
         } catch {
-            errorMessage = "Failed to delete photo: \(error.localizedDescription)"
-            isLoading = false
+            print("Error removing photo: \(error.localizedDescription)")
+            // Show error alert
         }
+        isLoading = false
     }
+}
+
+// Add this extension
+extension Notification.Name {
+    static let userDataUpdated = Notification.Name("UserDataUpdatedNotification")
 }

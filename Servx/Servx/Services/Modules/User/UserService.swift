@@ -12,6 +12,7 @@ protocol UserServiceProtocol {
     func getUserDetails() async throws -> UserResponse
     func updateProfilePhoto(_ image: UIImage) async throws -> URL
     func deleteProfilePhoto() async throws
+    func updateUserDetails(_ request: UpdateUserRequest) async throws -> UserResponse
 }
 
 final class UserService: UserServiceProtocol {
@@ -27,25 +28,36 @@ final class UserService: UserServiceProtocol {
         return try await apiClient.request(.getUserDetails)
     }
     
+    func updateUserDetails(_ request: UpdateUserRequest) async throws -> UserResponse {
+            return try await apiClient.request(
+                .updateUserDetails(request: request)
+            )
+        }
+    
     /// Uploads a new profile photo. Returns a URL for the new profile photo.
     func updateProfilePhoto(_ image: UIImage) async throws -> URL {
-        // Convert UIImage to JPEG data.
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {
-            throw NetworkError.invalidResponse
+            throw NetworkError.invalidImageData
         }
-        
-        // APIClient.upload will create a multipart/form-data request.
+
         let response: ProfilePhotoResponse = try await apiClient.upload(
             endpoint: .updateProfilePhoto,
             fileData: imageData,
             fileName: "profile.jpg",
             mimeType: "image/jpeg"
         )
-        
-        // Convert the returned URL string to URL.
-        guard let url = URL(string: response.url) else {
-            throw NetworkError.invalidResponse
+
+        // Validate URL construction
+        guard let url = response.fullURL() else {
+            print("""
+            🚨 Invalid URL Construction:
+               - Base: http://localhost:8080
+               - Path: \(response.url)
+            """)
+            throw NetworkError.invalidURLFormat
         }
+        
+        print("✅ Valid Profile Photo URL: \(url.absoluteString)")
         return url
     }
     

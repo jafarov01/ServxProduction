@@ -20,6 +20,8 @@ enum NetworkError: Error, LocalizedError {
     case unknown
     case tokenRefreshFailed
     case invalidResponse
+    case invalidURLFormat
+    case invalidImageData
     
     var errorDescription: String? {
         switch self {
@@ -35,6 +37,8 @@ enum NetworkError: Error, LocalizedError {
         case .tokenRefreshFailed: return "Failed to refresh session"
         case .unknown: return "Unknown error occurred"
         case .invalidResponse: return "Invalid response"
+        case .invalidURLFormat: return "Invalid URL format"
+        case .invalidImageData: return "Invalid image data"
         }
     }
     

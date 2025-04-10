@@ -18,7 +18,8 @@ enum Endpoint {
     case fetchUserDetails(userId: Int64)
     case updateProfilePhoto
     case deleteProfilePhoto
-    
+    case updateUserDetails(request: UpdateUserRequest)
+
     var requiresAuth: Bool {
         switch self {
         case .authLogin, .register:
@@ -27,45 +28,52 @@ enum Endpoint {
             return true
         }
     }
-    
+
     var url: String {
         let baseURL = "http://localhost:8080/api/"
         switch self {
         case .updateProfilePhoto: return "\(baseURL)user/me/photo"
         case .deleteProfilePhoto: return "\(baseURL)user/me/photo"
         case .authLogin: return "\(baseURL)auth/login"
+        case .updateUserDetails: return "\(baseURL)user/me"
         case .register: return "\(baseURL)auth/register"
         case .getUserDetails: return "\(baseURL)user/me"
         case .fetchCategories: return "\(baseURL)categories"
-        case .fetchRecommendedServices: return "\(baseURL)service-offers/recommended"
+        case .fetchRecommendedServices:
+            return "\(baseURL)service-offers/recommended"
         case .fetchSubcategories(let categoryId):
             return "\(baseURL)categories/\(categoryId)/subcategories"
         case .fetchServices(let categoryId, let subcategoryId):
-            return "\(baseURL)categories/\(categoryId)/subcategories/\(subcategoryId)/service-offers"
+            return
+                "\(baseURL)categories/\(categoryId)/subcategories/\(subcategoryId)/service-offers"
         case .fetchUserDetails(let userId):
             return "\(baseURL)users/\(userId)"
         }
     }
-    
+
     var method: HTTPMethod {
         switch self {
         case .authLogin, .register:
             return .post
         case .updateProfilePhoto:
-            return .get
+            return .put
+        case .updateUserDetails:
+            return .put
         case .deleteProfilePhoto:
             return .delete
         default:
             return .get
         }
     }
-    
+
     var body: APIRequest? {
         switch self {
         case .authLogin(let body):
             return body as APIRequest
         case .register(let body):
             return body as APIRequest
+        case .updateUserDetails(let request):
+            return request
         default:
             return nil
         }

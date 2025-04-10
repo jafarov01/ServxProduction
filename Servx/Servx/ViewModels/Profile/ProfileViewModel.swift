@@ -9,49 +9,29 @@
 import SwiftUI
 import Combine
 
+@MainActor
 class ProfileViewModel: ObservableObject {
-    @Published var user: UserResponse?
-    @Published var isLoading = false
-    @Published var errorMessage: String?
-    
+    @Published var user: User?
+    var isLoading : Bool = false
+    var errorMessage : String = ""
     private let userService: UserServiceProtocol
-
+    
     init(userService: UserServiceProtocol = UserService()) {
         self.userService = userService
     }
-
-    // Fetch user details
-    func loadUserProfile() {
+    
+    func loadUser() async {
         isLoading = true
-        errorMessage = nil
-        Task {
-            do {
-                let fetchedUser = try await userService.getUserDetails()
-                await MainActor.run {
-                    self.user = fetchedUser
-                    self.isLoading = false
-                }
-            } catch {
-                await MainActor.run {
-                    self.errorMessage = error.localizedDescription
-                    self.isLoading = false
-                }
+        do {
+            let response = try await userService.getUserDetails()
+            let user = response.toEntity()
+            await MainActor.run {
+                self.user = user
+                AuthenticatedUser.shared.updateUser(user: user)
             }
+        } catch {
+            errorMessage = "Failed to load user: \(error.localizedDescription)"
         }
-    }
-
-    // Refresh the user data
-    func refreshUserData() {
-        Task {
-            do {
-                let refreshedUser = try await userService.getUserDetails()
-                await MainActor.run {
-                    self.user = refreshedUser
-                }
-                AuthenticatedUser.shared.authenticateUser(from: refreshedUser) // Update AuthenticatedUser
-            } catch {
-                print("Failed to refresh user data: \(error.localizedDescription)")
-            }
-        }
+        isLoading = false
     }
 }

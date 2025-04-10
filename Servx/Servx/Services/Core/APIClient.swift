@@ -66,6 +66,10 @@ final class APIClient: APIClientProtocol {
             urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
         
+        if endpoint.method != .get && endpoint.body == nil {
+            urlRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        }
+        
         if let body = endpoint.body {
             urlRequest.httpBody = try JSONEncoder().encode(body)
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -79,12 +83,16 @@ final class APIClient: APIClientProtocol {
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NetworkError.invalidResponse
         }
-        
+
         try validateStatusCode(httpResponse.statusCode)
-        
+
         do {
             return try JSONDecoder().decode(T.self, from: data)
-        } catch {
+        } catch let DecodingError.typeMismatch(_, context) {
+            // Handle URL decoding errors specifically
+            if context.codingPath.last?.stringValue == "profilePhotoUrl" {
+                throw NetworkError.invalidURLFormat
+            }
             throw NetworkError.decodingError
         }
     }
@@ -106,4 +114,9 @@ final class APIClient: APIClientProtocol {
         }
         return token
     }
+}
+
+enum NetworkConstants {
+    static let baseURL = "http://localhost:8080"
+    static let uploadsPath = "/uploads/"
 }

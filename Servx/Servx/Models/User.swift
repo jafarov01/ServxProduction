@@ -16,10 +16,14 @@ struct User: Codable, Identifiable {
     let address: Address
     let languagesSpoken: [String]
     let role: Role
-    let profilePhotoUrl: String?
+    var profilePhotoUrl: URL?
     
-    enum Role: String, Codable {
-        case serviceSeeker = "SERVICE_SEEKER"
-        case serviceProvider = "SERVICE_PROVIDER"
+    var fullName : String {
+        return "\(firstName) \(lastName)"
     }
+}
+
+enum Role: String, Codable {
+    case serviceSeeker = "SERVICE_SEEKER"
+    case serviceProvider = "SERVICE_PROVIDER"
 }

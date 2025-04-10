@@ -5,14 +5,17 @@
 //  Created by Makhlug Jafarov on 2025. 03. 29..
 //
 
+import Foundation
+
 final class AuthenticatedUser {
     static let shared = AuthenticatedUser()
 
     // User data properties
+    private(set) var user: User?
     private(set) var id: Int64?
     private(set) var email: String?
     private(set) var role: String?
-    private(set) var profilePhotoUrl: String?
+    private(set) var profilePhotoUrl: URL?
     private(set) var firstName: String?
     private(set) var lastName: String?
     private(set) var phoneNumber: String?
@@ -34,6 +37,7 @@ final class AuthenticatedUser {
         print("===== authenticateUser called =====")
         print("Received user details response: \(response)")
         
+        self.user = response.toEntity()
         self.id = response.id
         self.email = response.email
         self.role = response.role.rawValue
@@ -45,23 +49,10 @@ final class AuthenticatedUser {
         self.isAuthenticated = true
         self.isOnboardingRequired = false
 
-        self.address = mapToAddress(response.address)
+        self.address = response.address.toEntity()
         
         print("User authenticated successfully. User details set:")
         print("ID: \(self.id ?? -1), Email: \(self.email ?? "N/A"), Full Name: \(self.fullName)")
-    }
-    
-    // Method to map UserDetailsResponse.Address to Address entity
-    private func mapToAddress(_ userDetailsAddress: AddressResponse) -> Address {
-        print("===== mapToAddress called =====")
-        print("Mapping address: \(userDetailsAddress)")
-        
-        return Address(
-            addressLine: userDetailsAddress.addressLine,
-            city: userDetailsAddress.city,
-            zipCode: userDetailsAddress.zipCode,
-            country: userDetailsAddress.country
-        )
     }
 
     // Logout function - Reset all fields
@@ -93,10 +84,16 @@ final class AuthenticatedUser {
 
     // MARK: - Update Methods
 
+    // Update user
+    func updateUser(user: User?) {
+        self.user = user
+        print("User updated")
+    }
+    
     // Update Profile Photo
-    func updateProfilePhoto(url: String?) {
+    func updateProfilePhoto(url: URL?) {
         self.profilePhotoUrl = url
-        print("Profile photo updated to: \(url ?? "nil")")
+        print("Profile photo updated")
     }
 
     // Update first name
