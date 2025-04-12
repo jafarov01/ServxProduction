@@ -65,7 +65,7 @@ final class NavigationManager: ObservableObject {
         logNavigation("ServiceCategory: \(category.name)")
     }
     
-    func navigateTo(_ subcategory: Subcategory) {
+    func navigateTo(_ subcategory: ServiceArea) {
         mainPath.append(subcategory)
         logNavigation("Subcategory: \(subcategory.name)")
     }

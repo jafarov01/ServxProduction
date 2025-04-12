@@ -10,7 +10,7 @@ import Foundation
 //SubcategoriesViewModel: Fetches subcategories based on selected category.
 @MainActor
 class SubcategoriesViewModel: ObservableObject {
-    @Published var subcategories: [Subcategory] = []
+    @Published var subcategories: [ServiceArea] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
     

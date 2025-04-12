@@ -19,7 +19,7 @@ struct MoreView: View {
             Section { logoutOption }
         }
         .navigationTitle("More")
-        .task { await viewModel.loadUser() }
+        .task { viewModel.loadUser() }
     }
     
     private var profileHeader: some View {
@@ -77,6 +77,7 @@ struct MoreView: View {
         Button(role: .destructive) {
             AuthService().logout()
             navManager.resetAllNavigation()
+            print("logout tapped")
         } label: {
             Label("Log Out", systemImage: "door.left.hand.open")
         }

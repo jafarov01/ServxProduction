@@ -7,8 +7,7 @@
 
 import Foundation
 
-
-//ServicesViewModel: Retrieves services for a selected subcategory and handles search.
+// ServicesViewModel: Retrieves services for a selected subcategory and handles search.
 @MainActor
 class ServicesViewModel: ObservableObject {
     @Published var services: [ServiceProfile] = []
@@ -18,9 +17,9 @@ class ServicesViewModel: ObservableObject {
     @Published var errorMessage: String?
 
     private let service: ServicesServiceProtocol
-    let subcategory: Subcategory
+    let subcategory: ServiceArea
 
-    init(subcategory: Subcategory, service: ServicesServiceProtocol = ServicesService()) {
+    init(subcategory: ServiceArea, service: ServicesServiceProtocol = ServicesService()) {
         self.subcategory = subcategory
         self.service = service
         setupSearchListener()
@@ -40,23 +39,13 @@ class ServicesViewModel: ObservableObject {
         defer { isLoading = false }
 
         do {
-            var fetchedServices = try await service.fetchServices(
+            // Fetch services from the API
+            let fetchedServices = try await service.fetchServices(
                 categoryId: subcategory.categoryId,
                 subcategoryId: subcategory.id
             )
 
-            // Set the service title to subcategory name
-            for index in fetchedServices.indices {
-                fetchedServices[index].serviceTitle = subcategory.name
-            }
-
-            // Fetch provider names
-            for index in fetchedServices.indices {
-                if let userId = fetchedServices[index].userId {
-                    fetchedServices[index].providerName = try await fetchUserName(userId: userId)
-                }
-            }
-
+            // Assign the fetched services to `services` and `filteredServices`
             self.services = fetchedServices
             self.filteredServices = fetchedServices
         } catch {
@@ -65,18 +54,17 @@ class ServicesViewModel: ObservableObject {
         }
     }
 
-    private func fetchUserName(userId: Int64) async throws -> String {
-        return try await service.fetchUserName(userId: userId)
-    }
-
     private func filterServices(query: String) {
+        // Guard against empty search query
         guard !query.isEmpty else {
             filteredServices = services
             return
         }
-        filteredServices = services.filter {
-            $0.serviceTitle.localizedCaseInsensitiveContains(query) ||
-            ($0.providerName?.localizedCaseInsensitiveContains(query) ?? false)
+
+        // Filter services by matching query against serviceTitle or providerName (both case-insensitive)
+        filteredServices = services.filter { service in
+            service.serviceTitle.localizedCaseInsensitiveContains(query) ||
+            service.providerName.localizedCaseInsensitiveContains(query)
         }
     }
 }

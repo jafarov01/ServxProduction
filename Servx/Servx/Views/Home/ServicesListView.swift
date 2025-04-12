@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct ServicesListView: View {
-    let subcategory: Subcategory
+    let subcategory: ServiceArea
     @ObservedObject var viewModel: ServicesViewModel
 
     // Dependency Injection for ViewModel
-    init(subcategory: Subcategory, viewModel: ServicesViewModel) {
+    init(subcategory: ServiceArea, viewModel: ServicesViewModel) {
         self.subcategory = subcategory
         _viewModel = ObservedObject(wrappedValue: viewModel)
     }

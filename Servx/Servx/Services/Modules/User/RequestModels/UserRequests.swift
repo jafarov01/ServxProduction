@@ -18,3 +18,11 @@ struct AddressUpdateRequest: Encodable, APIRequest {
     let zipCode: String
     let country: String
 }
+
+struct UpgradeToProviderRequestDTO: Encodable, APIRequest {
+    let education: String
+
+    init(education: String) {
+        self.education = education
+    }
+}

@@ -19,6 +19,9 @@ enum Endpoint {
     case updateProfilePhoto
     case deleteProfilePhoto
     case updateUserDetails(request: UpdateUserRequest)
+    case upgradeToProvider(request: UpgradeToProviderRequestDTO)
+    case createServiceProfile(request: ServiceProfileRequestDTO)
+    case createBulkServices(categoryId: Int64, request: BulkServiceProfileRequest)
 
     var requiresAuth: Bool {
         switch self {
@@ -32,6 +35,8 @@ enum Endpoint {
     var url: String {
         let baseURL = "http://localhost:8080/api/"
         switch self {
+        case .createBulkServices(let categoryId, _):
+            return "\(baseURL)categories/\(categoryId)/service-offers/bulk"
         case .updateProfilePhoto: return "\(baseURL)user/me/photo"
         case .deleteProfilePhoto: return "\(baseURL)user/me/photo"
         case .authLogin: return "\(baseURL)auth/login"
@@ -41,6 +46,8 @@ enum Endpoint {
         case .fetchCategories: return "\(baseURL)categories"
         case .fetchRecommendedServices:
             return "\(baseURL)service-offers/recommended"
+        case .upgradeToProvider:
+            return "\(baseURL)user/me/upgrade-to-provider"
         case .fetchSubcategories(let categoryId):
             return "\(baseURL)categories/\(categoryId)/subcategories"
         case .fetchServices(let categoryId, let subcategoryId):
@@ -48,16 +55,16 @@ enum Endpoint {
                 "\(baseURL)categories/\(categoryId)/subcategories/\(subcategoryId)/service-offers"
         case .fetchUserDetails(let userId):
             return "\(baseURL)users/\(userId)"
+        case .createServiceProfile:
+            return "\(baseURL)user/me/service-profile"
         }
     }
 
     var method: HTTPMethod {
         switch self {
-        case .authLogin, .register:
+        case .authLogin, .register, .upgradeToProvider, .createServiceProfile, .createBulkServices:
             return .post
-        case .updateProfilePhoto:
-            return .put
-        case .updateUserDetails:
+        case .updateProfilePhoto, .updateUserDetails:
             return .put
         case .deleteProfilePhoto:
             return .delete
@@ -73,6 +80,12 @@ enum Endpoint {
         case .register(let body):
             return body as APIRequest
         case .updateUserDetails(let request):
+            return request
+        case .upgradeToProvider(let request):
+            return request
+        case .createServiceProfile(let request):
+            return request
+        case .createBulkServices(_, let request):
             return request
         default:
             return nil

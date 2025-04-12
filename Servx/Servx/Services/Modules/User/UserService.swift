@@ -13,6 +13,7 @@ protocol UserServiceProtocol {
     func updateProfilePhoto(_ image: UIImage) async throws -> URL
     func deleteProfilePhoto() async throws
     func updateUserDetails(_ request: UpdateUserRequest) async throws -> UserResponse
+    func upgradeToProvider(request: UpgradeToProviderRequestDTO) async throws
 }
 
 final class UserService: UserServiceProtocol {
@@ -21,6 +22,11 @@ final class UserService: UserServiceProtocol {
     // Dependency injection allows for testing or swapping with a mock client.
     init(apiClient: APIClientProtocol = APIClient()) {
         self.apiClient = apiClient
+    }
+    
+    func upgradeToProvider(request: UpgradeToProviderRequestDTO) async throws {
+        let endpoint = Endpoint.upgradeToProvider(request: request)
+        _ = try await apiClient.request(endpoint) as EmptyResponseDTO
     }
     
     /// Retrieves the current user's details.

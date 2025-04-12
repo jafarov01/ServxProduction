@@ -77,6 +77,7 @@ struct DeletePhotoResponse: Decodable {
     let message: String?
 }
 
+struct EmptyResponseDTO: Decodable { }
 
 extension AddressResponse {
     func toEntity() -> Address {

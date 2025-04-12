@@ -7,6 +7,16 @@
 
 import Foundation
 
+protocol ServicesServiceProtocol {
+    func fetchCategories() async throws -> [ServiceCategory]
+    func fetchRecommendedServices() async throws -> [ServiceProfile]
+    func fetchSubcategories(categoryId: Int64) async throws -> [ServiceArea]
+    func fetchServices(categoryId: Int64, subcategoryId: Int64) async throws -> [ServiceProfile]
+    func fetchUserName(userId: Int64) async throws -> String
+    func createServiceProfile(request: ServiceProfileRequestDTO) async throws -> ServiceProfileResponseDTO
+    func createBulkServiceProfiles(request: BulkServiceProfileRequest) async throws -> [ServiceProfileResponseDTO]
+}
+
 final class ServicesService: ServicesServiceProtocol {
     private let apiClient: APIClientProtocol
     private var categories: [ServiceCategory]?
@@ -15,6 +25,21 @@ final class ServicesService: ServicesServiceProtocol {
     
     init(apiClient: APIClientProtocol = APIClient()) {
         self.apiClient = apiClient
+    }
+    
+    func createBulkServiceProfiles(request: BulkServiceProfileRequest) async throws -> [ServiceProfileResponseDTO] {
+            let endpoint = Endpoint.createBulkServices(
+                categoryId: request.categoryId,
+                request: request
+            )
+            return try await apiClient.request(endpoint)
+        }
+    
+    // Create service profile (returns ServiceProfileDTO instead of ServiceProfileRequestDTO)
+    func createServiceProfile(request: ServiceProfileRequestDTO) async throws -> ServiceProfileResponseDTO {
+        let endpoint = Endpoint.createServiceProfile(request: request)
+        let response: ServiceProfileResponseDTO = try await apiClient.request(endpoint)
+        return response
     }
     
     func fetchCategories() async throws -> [ServiceCategory] {
@@ -39,7 +64,7 @@ final class ServicesService: ServicesServiceProtocol {
         return recommendedServicesResponse
     }
 
-    func fetchSubcategories(categoryId: Int64) async throws -> [Subcategory] {
+    func fetchSubcategories(categoryId: Int64) async throws -> [ServiceArea] {
         let endpoint = Endpoint.fetchSubcategories(categoryId: categoryId)
         return try await apiClient.request(endpoint)
     }

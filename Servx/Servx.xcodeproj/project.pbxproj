@@ -27,7 +27,6 @@
 		554C73852D9CC0F800145987 /* APIRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554C73842D9CC0F800145987 /* APIRequest.swift */; };
 		556C875E2D56A110005C824E /* ObjectOptionSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556C875D2D56A109005C824E /* ObjectOptionSelectionView.swift */; };
 		5574B7472D3DC7E700DF60ED /* ServicesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7462D3DC7E700DF60ED /* ServicesService.swift */; };
-		5574B7492D3DC80000DF60ED /* ServicesServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7482D3DC80000DF60ED /* ServicesServiceProtocol.swift */; };
 		5574B7572D3DC8B800DF60ED /* LoginRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7562D3DC8B800DF60ED /* LoginRequest.swift */; };
 		5574B7592D3DC8C600DF60ED /* RegisterRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7582D3DC8C600DF60ED /* RegisterRequest.swift */; };
 		5574B75D2D3DC8EA00DF60ED /* AuthResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B75C2D3DC8EA00DF60ED /* AuthResponse.swift */; };
@@ -38,6 +37,9 @@
 		5574B7672D3DC92100DF60ED /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7662D3DC91C00DF60ED /* Endpoint.swift */; };
 		5574B7692D3DC92800DF60ED /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7682D3DC92400DF60ED /* HTTPMethod.swift */; };
 		5574B76B2D3DC93900DF60ED /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B76A2D3DC93600DF60ED /* NetworkError.swift */; };
+		558F7CB12DAAAFE400F9125F /* ServiceProfileRequestDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558F7CB02DAAAFE400F9125F /* ServiceProfileRequestDTO.swift */; };
+		558F7CB32DAAB70600F9125F /* ServiceProfileResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558F7CB22DAAB70000F9125F /* ServiceProfileResponseDTO.swift */; };
+		558F7CB62DAAB7EF00F9125F /* BecomeServiceProviderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558F7CB52DAAB7EF00F9125F /* BecomeServiceProviderViewModel.swift */; };
 		559D3CDF2DA18AC700E3862F /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559D3CDE2DA18AC700E3862F /* AppState.swift */; };
 		559D3CE12DA18B4100E3862F /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559D3CE02DA18B4100E3862F /* MainTabView.swift */; };
 		559D3CE32DA18B4C00E3862F /* UnauthenticatedFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559D3CE22DA18B4C00E3862F /* UnauthenticatedFlowView.swift */; };
@@ -61,7 +63,7 @@
 		55D3D3462DA84D4F00799594 /* UserRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D3D3452DA84D4D00799594 /* UserRequests.swift */; };
 		55FBA2882D35EAE100F86201 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55FBA2672D35EAE100F86201 /* Preview Assets.xcassets */; };
 		55FBA2892D35EAE100F86201 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55FBA2862D35EAE100F86201 /* Assets.xcassets */; };
-		55FBA28A2D35EAE100F86201 /* Subcategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA25A2D35EAE100F86201 /* Subcategory.swift */; };
+		55FBA28A2D35EAE100F86201 /* ServiceArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA25A2D35EAE100F86201 /* ServiceArea.swift */; };
 		55FBA28D2D35EAE100F86201 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2792D35EAE100F86201 /* SplashView.swift */; };
 		55FBA28F2D35EAE100F86201 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA27B2D35EAE100F86201 /* RegisterView.swift */; };
 		55FBA2902D35EAE100F86201 /* ServxTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FBA2512D35EAE100F86201 /* ServxTheme.swift */; };
@@ -130,7 +132,6 @@
 		554C73842D9CC0F800145987 /* APIRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRequest.swift; sourceTree = "<group>"; };
 		556C875D2D56A109005C824E /* ObjectOptionSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectOptionSelectionView.swift; sourceTree = "<group>"; };
 		5574B7462D3DC7E700DF60ED /* ServicesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServicesService.swift; sourceTree = "<group>"; };
-		5574B7482D3DC80000DF60ED /* ServicesServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServicesServiceProtocol.swift; sourceTree = "<group>"; };
 		5574B7562D3DC8B800DF60ED /* LoginRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginRequest.swift; sourceTree = "<group>"; };
 		5574B7582D3DC8C600DF60ED /* RegisterRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterRequest.swift; sourceTree = "<group>"; };
 		5574B75C2D3DC8EA00DF60ED /* AuthResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthResponse.swift; sourceTree = "<group>"; };
@@ -141,6 +142,9 @@
 		5574B7662D3DC91C00DF60ED /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		5574B7682D3DC92400DF60ED /* HTTPMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPMethod.swift; sourceTree = "<group>"; };
 		5574B76A2D3DC93600DF60ED /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
+		558F7CB02DAAAFE400F9125F /* ServiceProfileRequestDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProfileRequestDTO.swift; sourceTree = "<group>"; };
+		558F7CB22DAAB70000F9125F /* ServiceProfileResponseDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProfileResponseDTO.swift; sourceTree = "<group>"; };
+		558F7CB52DAAB7EF00F9125F /* BecomeServiceProviderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BecomeServiceProviderViewModel.swift; sourceTree = "<group>"; };
 		559D3CDE2DA18AC700E3862F /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		559D3CE02DA18B4100E3862F /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		559D3CE22DA18B4C00E3862F /* UnauthenticatedFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnauthenticatedFlowView.swift; sourceTree = "<group>"; };
@@ -181,7 +185,7 @@
 		55FBA2532D35EAE100F86201 /* Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
 		55FBA2562D35EAE100F86201 /* ServiceCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceCategory.swift; sourceTree = "<group>"; };
 		55FBA2572D35EAE100F86201 /* ServiceProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProfile.swift; sourceTree = "<group>"; };
-		55FBA25A2D35EAE100F86201 /* Subcategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Subcategory.swift; sourceTree = "<group>"; };
+		55FBA25A2D35EAE100F86201 /* ServiceArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceArea.swift; sourceTree = "<group>"; };
 		55FBA25B2D35EAE100F86201 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		55FBA2672D35EAE100F86201 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		55FBA2692D35EAE100F86201 /* ForgotPasswordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewModel.swift; sourceTree = "<group>"; };
@@ -300,8 +304,9 @@
 		5574B7452D3DC7A800DF60ED /* ServiceCategories */ = {
 			isa = PBXGroup;
 			children = (
+				558F7CB22DAAB70000F9125F /* ServiceProfileResponseDTO.swift */,
 				5574B7462D3DC7E700DF60ED /* ServicesService.swift */,
-				5574B7482D3DC80000DF60ED /* ServicesServiceProtocol.swift */,
+				558F7CB02DAAAFE400F9125F /* ServiceProfileRequestDTO.swift */,
 			);
 			path = ServiceCategories;
 			sourceTree = "<group>";
@@ -421,6 +426,14 @@
 				55FBA2772D35EAE100F86201 /* Login */,
 			);
 			path = Auth;
+			sourceTree = "<group>";
+		};
+		558F7CB42DAAB7E000F9125F /* BecomeServiceProviderViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				558F7CB52DAAB7EF00F9125F /* BecomeServiceProviderViewModel.swift */,
+			);
+			path = BecomeServiceProviderViewModel;
 			sourceTree = "<group>";
 		};
 		55CF6E292DA333330045E240 /* Profile */ = {
@@ -562,7 +575,7 @@
 				55FBA2532D35EAE100F86201 /* Address.swift */,
 				55FBA2562D35EAE100F86201 /* ServiceCategory.swift */,
 				55FBA2572D35EAE100F86201 /* ServiceProfile.swift */,
-				55FBA25A2D35EAE100F86201 /* Subcategory.swift */,
+				55FBA25A2D35EAE100F86201 /* ServiceArea.swift */,
 				55FBA25B2D35EAE100F86201 /* User.swift */,
 			);
 			path = Models;
@@ -588,6 +601,7 @@
 		55FBA2702D35EAE100F86201 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				558F7CB42DAAB7E000F9125F /* BecomeServiceProviderViewModel */,
 				55D3D32F2DA7E99100799594 /* More */,
 				55CF6E292DA333330045E240 /* Profile */,
 				552F25AF2D988FAD00BF1234 /* Others */,
@@ -806,10 +820,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				55FBA28A2D35EAE100F86201 /* Subcategory.swift in Sources */,
+				558F7CB32DAAB70600F9125F /* ServiceProfileResponseDTO.swift in Sources */,
+				55FBA28A2D35EAE100F86201 /* ServiceArea.swift in Sources */,
 				55FBA28D2D35EAE100F86201 /* SplashView.swift in Sources */,
-				5574B7492D3DC80000DF60ED /* ServicesServiceProtocol.swift in Sources */,
 				55FBA28F2D35EAE100F86201 /* RegisterView.swift in Sources */,
+				558F7CB62DAAB7EF00F9125F /* BecomeServiceProviderViewModel.swift in Sources */,
 				55FBA2902D35EAE100F86201 /* ServxTheme.swift in Sources */,
 				554871582D9F54AC00AB1811 /* InboxView.swift in Sources */,
 				55FBA2912D35EAE100F86201 /* OTPInputView.swift in Sources */,
@@ -837,6 +852,7 @@
 				55FBA2A02D35EAE100F86201 /* TimerManager.swift in Sources */,
 				5574B76B2D3DC93900DF60ED /* NetworkError.swift in Sources */,
 				55CF6E3B2DA348C50045E240 /* UserResponse.swift in Sources */,
+				558F7CB12DAAAFE400F9125F /* ServiceProfileRequestDTO.swift in Sources */,
 				55FBA2A42D35EAE100F86201 /* ServxTextView.swift in Sources */,
 				5574B7592D3DC8C600DF60ED /* RegisterRequest.swift in Sources */,
 				559D3CE32DA18B4C00E3862F /* UnauthenticatedFlowView.swift in Sources */,

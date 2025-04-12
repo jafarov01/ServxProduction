@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SubcategoryRow: View {
-    let subcategory: Subcategory
+    let subcategory: ServiceArea
     
     var body: some View {
         Button(action: {}) {

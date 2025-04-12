@@ -7,55 +7,35 @@
 
 import Foundation
 
-struct Review: Codable, Identifiable {
-    let id: String
-    let userId: String
-    let rating: Double
-    let comment: String
-    let createdAt: Date
-}
-
 struct ServiceProfile: Codable, Identifiable {
-    let id: String
-    let userId: Int64?
-    let serviceCategoryId: String
-    let serviceAreaIds: [String]
+    let id: Int64
+    let providerName: String
+    let categoryName: String
+    let subcategoryName: String
     let workExperience: String
-    let reviews: [Review]
+    let price: Double
     let rating: Double
     let reviewCount: Int
-    let price: Double
 
-    var serviceTitle: String
-    var providerName: String?
+    // Additional derived fields
+    var serviceTitle: String {
+        return "\(categoryName) - \(subcategoryName)"
+    }
 
     private enum CodingKeys: String, CodingKey {
-        case id, userId, serviceCategoryId, serviceAreaIds, workExperience,
-            reviews, price
+        case id, providerName, categoryName, subcategoryName, workExperience, price, rating, reviewCount
     }
 
+    // Custom initializer if needed
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(String.self, forKey: .id)
-        userId = try container.decodeIfPresent(Int64.self, forKey: .userId)
-        serviceCategoryId = try container.decode(
-            String.self, forKey: .serviceCategoryId)
-        serviceAreaIds = try container.decode(
-            [String].self, forKey: .serviceAreaIds)
-        workExperience = try container.decode(
-            String.self, forKey: .workExperience)
-        reviews = try container.decode([Review].self, forKey: .reviews)
+        id = try container.decode(Int64.self, forKey: .id)
+        providerName = try container.decode(String.self, forKey: .providerName)
+        categoryName = try container.decode(String.self, forKey: .categoryName)
+        subcategoryName = try container.decode(String.self, forKey: .subcategoryName)
+        workExperience = try container.decode(String.self, forKey: .workExperience)
         price = try container.decode(Double.self, forKey: .price)
-
-        // Compute derived values
-        rating = reviews.map { $0.rating }.average
-        reviewCount = reviews.count
-        serviceTitle = "Unknown Service"
-    }
-}
-
-extension Array where Element == Double {
-    var average: Double {
-        return isEmpty ? 0 : reduce(0, +) / Double(count)
+        rating = try container.decode(Double.self, forKey: .rating)
+        reviewCount = try container.decode(Int.self, forKey: .reviewCount)
     }
 }

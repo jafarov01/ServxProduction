@@ -24,7 +24,7 @@ struct MainTabView: View {
                             )
                         )
                     }
-                    .navigationDestination(for: Subcategory.self) {
+                    .navigationDestination(for: ServiceArea.self) {
                         subcategory in
                         ServicesListView(
                             subcategory: subcategory,
