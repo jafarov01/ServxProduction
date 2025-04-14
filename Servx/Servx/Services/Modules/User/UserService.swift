@@ -26,7 +26,7 @@ final class UserService: UserServiceProtocol {
     
     func upgradeToProvider(request: UpgradeToProviderRequestDTO) async throws {
         let endpoint = Endpoint.upgradeToProvider(request: request)
-        _ = try await apiClient.request(endpoint) as EmptyResponseDTO
+        let _: EmptyResponseDTO = try await apiClient.request(endpoint)
     }
     
     /// Retrieves the current user's details.

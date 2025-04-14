@@ -8,7 +8,8 @@ import SwiftUI
 
 struct RegisterView: View {
     @ObservedObject private var viewModel: RegisterViewModel
-    @EnvironmentObject private var navigationManager: NavigationManager
+    @EnvironmentObject private var navigator: NavigationManager
+    @EnvironmentObject private var session: UserSessionManager
     
     init(viewModel: RegisterViewModel) {
         _viewModel = ObservedObject(wrappedValue: viewModel)
@@ -28,7 +29,7 @@ struct RegisterView: View {
     // MARK: - View Components
     private var navigationHeader: some View {
         HStack {
-            BackButton(action: navigationManager.goBack)
+            BackButton(action: navigator.goBack)
             Spacer()
         }
         .frame(height: 44)
@@ -62,13 +63,40 @@ struct RegisterView: View {
         .padding(.horizontal)
     }
     
+    private var continueButton: some View {
+        ServxButtonView(
+            title: "Continue",
+            width: 342,
+            height: 56,
+            frameColor: viewModel.isValid ? Color("primary500") : .gray,
+            innerColor: viewModel.isValid ? Color("primary500") : .gray,
+            textColor: .white,
+            isDisabled: !viewModel.isValid,
+            action: handleRegistration
+        )
+        .opacity(viewModel.isValid ? 1 : 0.6)
+        .padding(.top, 16)
+    }
+    
+    // MARK: - Actions
+    private func handleRegistration() {
+        viewModel.printValidationStatus()
+        guard viewModel.isValid else { return }
+        
+        viewModel.register { success in
+            if success {
+                navigator.navigate(to: AppRoute.Login.authentication)
+            }
+        }
+    }
+    
     private func inputFields() -> some View {
         VStack(spacing: 16) {
             // Personal Information
             ServxInputView(
                 text: $viewModel.firstName,
                 placeholder: "First Name",
-                frameColor: Color("primary100"),
+                frameColor: viewModel.firstName.isEmpty ? .red : Color("primary100"),
                 backgroundColor: .white,
                 textColor: Color("primary300")
             )
@@ -76,7 +104,7 @@ struct RegisterView: View {
             ServxInputView(
                 text: $viewModel.lastName,
                 placeholder: "Last Name",
-                frameColor: Color("primary100"),
+                frameColor: viewModel.lastName.isEmpty ? .red : Color("primary100"),
                 backgroundColor: .white,
                 textColor: Color("primary300")
             )
@@ -84,7 +112,7 @@ struct RegisterView: View {
             ServxInputView(
                 text: $viewModel.email,
                 placeholder: "Email",
-                frameColor: Color("primary100"),
+                frameColor: viewModel.isValidEmail ? Color("primary100") : .red,
                 backgroundColor: .white,
                 textColor: Color("primary300"),
                 keyboardType: .emailAddress
@@ -94,7 +122,7 @@ struct RegisterView: View {
                 text: $viewModel.password,
                 placeholder: "Password",
                 isSecure: true,
-                frameColor: Color("primary100"),
+                frameColor: viewModel.isValidPassword ? Color("primary100") : .red,
                 backgroundColor: .white,
                 textColor: Color("primary300")
             )
@@ -102,17 +130,20 @@ struct RegisterView: View {
             ServxInputView(
                 text: $viewModel.phoneNumber,
                 placeholder: "Phone Number",
-                frameColor: Color("primary100"),
+                frameColor: viewModel.isValidPhoneNumber ? Color("primary100") : .red,
                 backgroundColor: .white,
                 textColor: Color("primary300"),
                 keyboardType: .phonePad
             )
+            .onChange(of: viewModel.phoneNumber) { _ in
+                handlePhoneNumberFormatting()
+            }
             
             // Address Information
             ServxInputView(
                 text: $viewModel.addressLine,
                 placeholder: "Address Line",
-                frameColor: Color("primary100"),
+                frameColor: viewModel.addressLine.isEmpty ? .red : Color("primary100"),
                 backgroundColor: .white,
                 textColor: Color("primary300")
             )
@@ -132,7 +163,7 @@ struct RegisterView: View {
             ServxInputView(
                 text: $viewModel.zipCode,
                 placeholder: "Zip Code",
-                frameColor: Color("primary100"),
+                frameColor: viewModel.zipCode.isEmpty ? .red : Color("primary100"),
                 backgroundColor: .white,
                 textColor: Color("primary300"),
                 keyboardType: .numbersAndPunctuation
@@ -147,31 +178,16 @@ struct RegisterView: View {
         }
     }
     
-    private var continueButton: some View {
-        ServxButtonView(
-            title: "Continue",
-            width: 342,
-            height: 56,
-            frameColor: viewModel.isValid ? Color("primary500") : .gray,
-            innerColor: viewModel.isValid ? Color("primary500") : .gray,
-            textColor: .white,
-            isDisabled: !viewModel.isValid,
-            action: handleRegistration
-        )
-        .opacity(viewModel.isValid ? 1 : 0.6)
-        .padding(.top, 16)
-    }
-    
-    // MARK: - Actions
-    private func handleRegistration() {
-        guard viewModel.isValid else { return }
+    private func handlePhoneNumberFormatting() {
+        let filtered = viewModel.phoneNumber
+            .filter { $0.isNumber || $0 == "+" }
+            .prefix(16)
         
-        viewModel.register { success in
-            if success {
-                navigationManager.navigateTo(.authentication)
-            } else {
-                // Handle registration error
-            }
+        let formatted = filtered.isEmpty ? "" :
+            filtered.first == "+" ? String(filtered) : "+" + filtered
+        
+        if viewModel.phoneNumber != formatted {
+            viewModel.phoneNumber = formatted
         }
     }
 }

@@ -1,15 +1,15 @@
 //
-//  MoreViewModel.swift
+//  ProfilePhotoViewModel.swift
 //  Servx
 //
-//  Created by Makhlug Jafarov on 2025. 04. 10..
+//  Created by Makhlug Jafarov on 2025. 04. 14..
 //
 
-import SwiftUI
+import Foundation
 import Combine
 
 @MainActor
-class MoreViewModel: ObservableObject {
+class ProfilePhotoViewModel: ObservableObject {
     @Published private(set) var user: User?
     private var cancellables = Set<AnyCancellable>()
     
@@ -17,7 +17,7 @@ class MoreViewModel: ObservableObject {
         setupObservers()
     }
     
-    func setupObservers() {
+    private func setupObservers() {
         AuthenticatedUser.shared.$currentUser
             .receive(on: DispatchQueue.main)
             .sink { [weak self] user in

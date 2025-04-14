@@ -8,7 +8,7 @@ import SwiftUI
 
 struct ServiceAuthView: View {
     var hasAccount: Bool
-    @EnvironmentObject private var navigationManager: NavigationManager
+    @EnvironmentObject private var navigator: NavigationManager
 
     var body: some View {
         VStack(spacing: 16) {
@@ -61,7 +61,7 @@ struct ServiceAuthView: View {
                         innerColor: .clear,
                         textColor: Color("secondary500"),
                         action: {
-                            navigationManager.navigateTo(.register)
+                            navigator.navigate(to: AppRoute.Login.register)
                         }
                     )
                 } else {
@@ -79,7 +79,7 @@ struct ServiceAuthView: View {
                         innerColor: .clear,
                         textColor: Color("secondary500"),
                         action: {
-                            navigationManager.goBack()
+                            navigator.goBack()
                         }
                     )
                 }

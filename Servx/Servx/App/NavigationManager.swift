@@ -10,155 +10,166 @@ import SwiftUI
 import Combine
 
 // MARK: - Navigation Routes
-enum LoginRoute: Hashable {
-    case onboarding
-    case authentication
-    case register
-    case forgotPassword
-}
-
-enum MoreRoute: Hashable {
-    case profile
-    case editProfile
-    case photoEdit
-    case settings
-    case support
-    case becomeProvider
-    case manageServices
+enum AppRoute {
+    enum Login: Hashable {
+        case onboarding
+        case authentication
+        case register
+        case forgotPassword
+    }
+    
+    enum More: Hashable {
+        case profile
+        case editProfile
+        case photoEdit
+        case settings
+        case support
+        case becomeProvider
+        case manageServices
+    }
+    
+    enum Main: Hashable {
+        case category(ServiceCategory)
+        case subcategory(ServiceArea)
+    }
 }
 
 enum Tab: String, CaseIterable {
-    case home
-    case booking
-    case calendar
-    case inbox
-    case more
+    case home, booking, calendar, inbox, more
 }
 
 // MARK: - Navigation Manager
 @MainActor
 final class NavigationManager: ObservableObject {
-    // MARK: - Published Properties
-    @Published var mainPath = NavigationPath()    // Main app navigation stack
-    @Published var authPath = NavigationPath()   // Authentication flow stack
-    @Published var morePath = NavigationPath()
+    // MARK: - Navigation Stacks
+    @Published var mainStack = NavigationPath()
+    @Published var authStack = NavigationPath()
+    @Published var moreStack = NavigationPath()
     @Published var selectedTab: Tab = .home
-    @Published var isAuthenticated = false
     @Published var isSplashVisible = true
     
     // MARK: - Dependencies
-    private let userSessionManager: UserSessionManager
+    private let userSession: UserSessionManager
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initialization
-    init(userSessionManager: UserSessionManager) {
-        self.userSessionManager = userSessionManager
+    init(userSession: UserSessionManager) {
+        self.userSession = userSession
         setupObservers()
         print("✅ NavigationManager initialized")
     }
     
     // MARK: - Public Interface
-    
-    /// Main app navigation actions
-    func navigateTo(_ category: ServiceCategory) {
-        mainPath.append(category)
-        logNavigation("ServiceCategory: \(category.name)")
-    }
-    
-    func navigateTo(_ subcategory: ServiceArea) {
-        mainPath.append(subcategory)
-        logNavigation("Subcategory: \(subcategory.name)")
-    }
-    
-    /// Authentication flow navigation
-    func navigateTo(_ route: LoginRoute) {
-        authPath.append(route)
-        logNavigation("LoginRoute: \(route)")
-    }
-    
-    func navigateTo(_ route: MoreRoute) {
-        morePath.append(route)
+    func navigate(to route: any Hashable) {
+        switch route {
+        case let route as AppRoute.Login:
+            authStack.append(route)
+        case let route as AppRoute.More:
+            moreStack.append(route)
+        case let route as AppRoute.Main:
+            mainStack.append(route)
+        default:
+            logError("Attempted to navigate to invalid route type: \(type(of: route))")
+        }
+        logNavigation(route)
     }
     
     func switchTab(to tab: Tab) {
         guard selectedTab != tab else { return }
         selectedTab = tab
-        resetMainNavigation()
-        print("🔀 Switched to tab: \(tab.rawValue)")
+        resetMainStack()
     }
     
     func goBack() {
-        if !mainPath.isEmpty {
-            mainPath.removeLast()
-            print("↩️ Main navigation back")
-        } else if !authPath.isEmpty {
-            authPath.removeLast()
-            print("↩️ Auth navigation back")
-        } else if !morePath.isEmpty {
-            morePath.removeLast()
-            print("↩️ More navigation back")
+        if !mainStack.isEmpty {
+            mainStack.removeLast()
+        } else if !authStack.isEmpty {
+            authStack.removeLast()
+        } else if !moreStack.isEmpty {
+            moreStack.removeLast()
         }
     }
     
-    func resetAllNavigation() {
-        mainPath = NavigationPath()
-        morePath = NavigationPath()
-        authPath = NavigationPath()
-        print("🔄 Reset all navigation stacks")
+    func resetAllStacks() {
+        mainStack = NavigationPath()
+        authStack = NavigationPath()
+        moreStack = NavigationPath()
     }
     
-    // MARK: - Initial Setup
     func setupInitialNavigation() {
-        print("🚀 Setting up initial navigation...")
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
-            guard let self else { return }
-            
-            self.isSplashVisible = false
-            
-            if self.userSessionManager.isAuthenticated {
-                self.handleAuthenticatedState()
-            } else {
-                self.handleUnauthenticatedState()
-            }
+            self?.isSplashVisible = false
+            self?.handleInitialAuthState()
         }
-    }
-    
-    func resetMainNavigation() {
-        mainPath = NavigationPath()
-        print("🔄 Reset main navigation stack")
     }
 }
 
 // MARK: - Private Implementation
 private extension NavigationManager {
-    func handleAuthenticatedState() {
-        isAuthenticated = true
-        print("🔓 User authenticated")
-    }
-    
-    func handleUnauthenticatedState() {
-        isAuthenticated = false
-        navigateTo(.authentication)
-        print("🔒 User unauthenticated")
-    }
-    
-    func setupObservers() {
-        userSessionManager.$isAuthenticated
+    private func setupObservers() {
+        userSession.$authState
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] isAuthenticated in
-                guard let self else { return }
-                self.isAuthenticated = isAuthenticated
-                if isAuthenticated {
-                    self.resetAllNavigation()
+            .sink { [weak self] state in
+                switch state {
+                case .authenticated:
+                    self?.handleAuthenticatedState()
+                case .unauthenticated:
+                    self?.handleUnauthenticatedState()
+                case .unknown:
+                    self?.handleUnknownState()
                 }
             }
             .store(in: &cancellables)
     }
     
+    private func handleInitialAuthState() {
+        switch userSession.authState {
+        case .authenticated:
+            handleAuthenticatedState()
+        case .unauthenticated:
+            handleUnauthenticatedState()
+        case .unknown:
+            handleUnknownState()
+        }
+    }
+
+    private func handleAuthenticatedState() {
+        resetAllStacks()
+        logNavigation("User authenticated")
+    }
+
+    private func handleUnauthenticatedState() {
+        navigate(to: AppRoute.Login.authentication)
+        logNavigation("User unauthenticated")
+    }
+
+    private func handleUnknownState() {
+        // Handle initial unknown state if needed
+        logNavigation("Auth state unknown")
+    }
+    
+    func resetMainStack() {
+        mainStack = .init()
+    }
+}
+
+// MARK: - Logging
+private extension NavigationManager {
     func logNavigation(_ message: String) {
-        print("🧭 Navigation: \(message)")
-        print("Main Path: \(String(describing: mainPath))")
-        print("Auth Path: \(String(describing: authPath))")
-        print("More Path: \(String(describing: morePath))")
+        print("🧭 \(message)")
+    }
+    
+    func logNavigation(_ route: some Hashable) {
+        print("🧭 Navigating to: \(String(describing: route))")
+        print("""
+        Current Stacks:
+        - Main: \(mainStack.count) items
+        - Auth: \(authStack.count) items
+        - More: \(moreStack.count) items
+        """)
+    }
+    
+    func logError(_ message: String) {
+        print("🚨 Navigation Error: \(message)")
     }
 }

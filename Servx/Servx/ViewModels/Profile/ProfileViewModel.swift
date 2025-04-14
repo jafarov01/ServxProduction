@@ -11,27 +11,19 @@ import Combine
 
 @MainActor
 class ProfileViewModel: ObservableObject {
-    @Published var user: User?
-    var isLoading : Bool = false
-    var errorMessage : String = ""
-    private let userService: UserServiceProtocol
+    @Published private(set) var user: User?
+    private var cancellables = Set<AnyCancellable>()
     
-    init(userService: UserServiceProtocol = UserService()) {
-        self.userService = userService
+    init() {
+        setupObservers()
     }
     
-    func loadUser() async {
-        isLoading = true
-        do {
-            let response = try await userService.getUserDetails()
-            let user = response.toEntity()
-            await MainActor.run {
-                self.user = user
-                AuthenticatedUser.shared.updateUser(user: user)
+    private func setupObservers() {
+        AuthenticatedUser.shared.$currentUser
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] user in
+                self?.user = user
             }
-        } catch {
-            errorMessage = "Failed to load user: \(error.localizedDescription)"
-        }
-        isLoading = false
+            .store(in: &cancellables)
     }
 }

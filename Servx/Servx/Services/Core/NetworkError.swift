@@ -23,6 +23,7 @@ enum NetworkError: Error, LocalizedError {
     case invalidURLFormat
     case invalidImageData
     case conflict
+    case invalidRequest
     
     var errorDescription: String? {
         switch self {
@@ -41,6 +42,7 @@ enum NetworkError: Error, LocalizedError {
         case .invalidURLFormat: return "Invalid URL format"
         case .invalidImageData: return "Invalid image data"
         case .conflict: return "Conflict occurred - Role is already assigned"
+        case .invalidRequest: return "Invalid request"
         }
     }
     

@@ -8,41 +8,36 @@
 import SwiftUI
 
 struct ProfilePhotoEditView: View {
-    @EnvironmentObject private var editViewModel: ProfileEditViewModel
-    @Environment(\.dismiss) private var dismiss
-    @StateObject private var photoViewModel = ProfilePhotoEditViewModel()
+    @EnvironmentObject private var navigator: NavigationManager
+    @ObservedObject private var photoEditVM : ProfilePhotoEditViewModel
+    @ObservedObject private var photoVM : ProfilePhotoViewModel
     @State private var selectedImage: UIImage?
-
-    private enum PhotoSource: Identifiable {
-        case camera
-        case library
-
-        var id: Int {
-            switch self {
-            case .camera: return 0
-            case .library: return 1
-            }
-        }
+    
+    init(photoEditVM: ProfilePhotoEditViewModel, photoVM: ProfilePhotoViewModel) {
+        _photoEditVM = ObservedObject(wrappedValue: photoEditVM)
+        _photoVM = ObservedObject(wrappedValue: photoVM)
     }
-
+    
+    private enum PhotoSource: Identifiable {
+        case camera, library
+        var id: Self { self }
+    }
+    
     @State private var selectedSource: PhotoSource?
 
     var body: some View {
         VStack(spacing: 24) {
-            ServxTextView(
-                text: "Edit Profile Photo",
-                color: ServxTheme.primaryColor,
-                size: 20,
-                weight: .bold
-            )
-
-            photoPreview
-
-            VStack(spacing: 16) {
-                photoActionButtons
-                removePhotoButton
+            Button {
+                navigator.goBack()
+            } label: {
+                Image(systemName: "chevron.left")
+                    .foregroundColor(ServxTheme.primaryColor)
+                    .padding()
             }
-
+            
+            navigationHeader
+            photoPreview
+            actionButtons
             Spacer()
         }
         .padding()
@@ -53,12 +48,34 @@ struct ProfilePhotoEditView: View {
             )
         }
         .onChange(of: selectedImage) { _, newValue in
-            handleImageSelection(newValue)
+            guard let image = newValue else { return }
+            Task { await photoEditVM.savePhoto(image) }
         }
+        .onChange(of: photoEditVM.isLoading) { _, newValue in
+            if !newValue { navigator.goBack() }
+        }
+        .navigationBarHidden(true)
+        .debugRender("ProfilePhotoEditView")
     }
-
-    // MARK: - Subviews
-
+    
+    private var navigationHeader: some View {
+        HStack {
+            Button(action: { navigator.goBack() }) {
+                Image(systemName: "xmark")
+                    .foregroundColor(ServxTheme.primaryColor)
+            }
+            Spacer()
+            ServxTextView(
+                text: "Edit Profile Photo",
+                color: ServxTheme.primaryColor,
+                size: 20,
+                weight: .bold
+            )
+            Spacer()
+        }
+        .padding(.horizontal)
+    }
+    
     private var photoPreview: some View {
         Group {
             if let selectedImage {
@@ -68,14 +85,14 @@ struct ProfilePhotoEditView: View {
                     .frame(width: 200, height: 200)
                     .clipShape(Circle())
             } else {
-                ProfilePhotoView(imageUrl: editViewModel.user?.profilePhotoUrl)
+                ProfilePhotoView(imageUrl: AuthenticatedUser.shared.currentUser?.profilePhotoUrl)
                     .frame(width: 200, height: 200)
             }
         }
     }
-
-    private var photoActionButtons: some View {
-        Group {
+    
+    private var actionButtons: some View {
+        VStack(spacing: 16) {
             ServxButtonView(
                 title: "Take Photo",
                 width: 200,
@@ -85,7 +102,7 @@ struct ProfilePhotoEditView: View {
                 textColor: .white,
                 action: { selectedSource = .camera }
             )
-
+            
             ServxButtonView(
                 title: "Choose from Library",
                 width: 200,
@@ -95,12 +112,8 @@ struct ProfilePhotoEditView: View {
                 textColor: .white,
                 action: { selectedSource = .library }
             )
-        }
-    }
-
-    private var removePhotoButton: some View {
-        Group {
-            if editViewModel.user?.profilePhotoUrl != nil {
+            
+            if photoVM.user?.profilePhotoUrl != nil {
                 ServxButtonView(
                     title: "Remove Photo",
                     width: 200,
@@ -108,27 +121,9 @@ struct ProfilePhotoEditView: View {
                     frameColor: .red,
                     innerColor: .red,
                     textColor: .white,
-                    action: removePhoto
+                    action: { Task { await photoEditVM.removePhoto() } }
                 )
             }
-        }
-    }
-
-    // MARK: - Actions
-
-    private func handleImageSelection(_ image: UIImage?) {
-        guard let image else { return }
-        Task {
-            await photoViewModel.savePhoto(image)
-            await editViewModel.loadUser()
-        }
-    }
-
-    private func removePhoto() {
-        Task {
-            await photoViewModel.removePhoto()
-            await editViewModel.loadUser()
-            dismiss()
         }
     }
 }

@@ -15,7 +15,7 @@ struct ForgotPasswordView: View {
     @StateObject var viewModel = ForgotPasswordViewModel()
     @EnvironmentObject private var navigationManager: NavigationManager
     
-    @StateObject private var loginViewModel = LoginViewModel(authService: AuthService(), userService: UserService())
+    @StateObject private var loginViewModel = LoginViewModel(authService: AuthService())
         
     var body: some View {
         
@@ -93,7 +93,7 @@ struct ForgotPasswordView: View {
                 isDisabled: !viewModel.isFormValid,
                 action: {
                     viewModel.forgotPassword()
-                    navigationManager.navigateTo(.authentication)
+                    navigationManager.navigate(to: AppRoute.Login.authentication)
                 }
             )
         })

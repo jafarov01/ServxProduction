@@ -8,16 +8,15 @@ import SwiftUI
 
 struct LoginView: View {
     @ObservedObject private var viewModel: LoginViewModel
-    @EnvironmentObject private var navigationManager: NavigationManager
+    @EnvironmentObject private var navigator: NavigationManager
+    @EnvironmentObject private var session: UserSessionManager
 
-    // Dependency Injection for ViewModel
     init(viewModel: LoginViewModel) {
         _viewModel = ObservedObject(wrappedValue: viewModel)
     }
 
     var body: some View {
         VStack(spacing: 32) {
-
             // Title
             ServxTextView(
                 text: "Login to your Account",
@@ -70,23 +69,19 @@ struct LoginView: View {
             VStack(spacing: 16) {
                 // Sign-In Button
                 ServxButtonView(
-                        title: "Sign in",
-                        width: 342,
-                        height: 56,
-                        frameColor: viewModel.isFormValid ? ServxTheme.primaryColor : ServxTheme.buttonDisabledColor,
-                        innerColor: viewModel.isFormValid ? ServxTheme.primaryColor : ServxTheme.buttonDisabledColor,
-                        textColor: ServxTheme.backgroundColor,
-                        isDisabled: !viewModel.isFormValid,
-                        action: {
-                            viewModel.handleRememberMe()
-                            viewModel.login { success in
-                                if success {
-                                    navigationManager.isAuthenticated = true
-                                }
-                            }
-                        }
-                    )
-                    .opacity(viewModel.isFormValid ? 1 : 0.6) // Reduce opacity for disabled state
+                    title: "Sign in",
+                    width: 342,
+                    height: 56,
+                    frameColor: viewModel.isFormValid ? ServxTheme.primaryColor : ServxTheme.buttonDisabledColor,
+                    innerColor: viewModel.isFormValid ? ServxTheme.primaryColor : ServxTheme.buttonDisabledColor,
+                    textColor: ServxTheme.backgroundColor,
+                    isDisabled: !viewModel.isFormValid,
+                    action: {
+                        viewModel.handleRememberMe()
+                        viewModel.login()
+                    }
+                )
+                .opacity(viewModel.isFormValid ? 1 : 0.6)
 
                 // Forgot Password
                 ServxButtonView(
@@ -98,13 +93,19 @@ struct LoginView: View {
                     textColor: ServxTheme.primaryColor,
                     font: .subheadline,
                     action: {
-                        navigationManager.navigateTo(.forgotPassword)
+                        navigator.navigate(to: AppRoute.Login.forgotPassword)
                     }
                 )
             }
 
             // Social Login
             ServiceAuthView(hasAccount: true)
+        }
+        .onChange(of: viewModel.loginSuccess) { _, newValue in
+            if newValue {
+                session.checkInitialAuthState()
+                viewModel.loginSuccess = false
+            }
         }
         .padding(.horizontal, 24)
         .padding(.bottom, 40)

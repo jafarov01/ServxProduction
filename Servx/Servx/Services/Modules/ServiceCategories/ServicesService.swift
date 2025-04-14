@@ -28,12 +28,19 @@ final class ServicesService: ServicesServiceProtocol {
     }
     
     func createBulkServiceProfiles(request: BulkServiceProfileRequest) async throws -> [ServiceProfileResponseDTO] {
-            let endpoint = Endpoint.createBulkServices(
-                categoryId: request.categoryId,
-                request: request
-            )
-            return try await apiClient.request(endpoint)
-        }
+        print("\n===== ServicesService =====")
+        print("🚀 Starting Bulk Service Profile Creation")
+        
+        let endpoint = Endpoint.createBulkServices(
+            categoryId: request.categoryId,
+            request: request
+        )
+        
+        // Explicit type specification for generic parameter
+        let response: [ServiceProfileResponseDTO] = try await apiClient.request(endpoint)
+        print("🎉 Bulk Service Creation Successful (\(response.count) services created)")
+        return response
+    }
     
     // Create service profile (returns ServiceProfileDTO instead of ServiceProfileRequestDTO)
     func createServiceProfile(request: ServiceProfileRequestDTO) async throws -> ServiceProfileResponseDTO {
@@ -65,8 +72,10 @@ final class ServicesService: ServicesServiceProtocol {
     }
 
     func fetchSubcategories(categoryId: Int64) async throws -> [ServiceArea] {
+        print("\n===== ServicesService =====")
+        print("🔍 Fetching Subcategories for Category ID: \(categoryId)")
         let endpoint = Endpoint.fetchSubcategories(categoryId: categoryId)
-        return try await apiClient.request(endpoint)
+        return try await withLoggedErrorHandling(endpoint: endpoint)
     }
 
     func fetchServices(categoryId: Int64, subcategoryId: Int64) async throws -> [ServiceProfile] {
@@ -78,5 +87,15 @@ final class ServicesService: ServicesServiceProtocol {
         let endpoint = Endpoint.fetchUserDetails(userId: userId)
         let user: User = try await apiClient.request(endpoint)
         return user.firstName
+    }
+    
+    private func withLoggedErrorHandling<T: Decodable>(endpoint: Endpoint) async throws -> T {
+        do {
+            // Now properly constrained to Decodable
+            return try await apiClient.request(endpoint)
+        } catch {
+            print("🚨 API Error for \(endpoint.url): \(error.localizedDescription)")
+            throw error
+        }
     }
 }

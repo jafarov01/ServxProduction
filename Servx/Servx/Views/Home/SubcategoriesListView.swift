@@ -10,64 +10,61 @@ import SwiftUI
 struct SubcategoriesListView: View {
     let category: ServiceCategory
     @ObservedObject var viewModel: SubcategoriesViewModel
-    @EnvironmentObject var navigationManager: NavigationManager
-
-    init(category: ServiceCategory, viewModel: SubcategoriesViewModel) {
-        self.category = category
-        _viewModel = ObservedObject(wrappedValue: viewModel)
-    }
+    @EnvironmentObject private var navigator: NavigationManager
 
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                if viewModel.isLoading {
-                    ProgressView("Loading subcategories...")
-                        .padding()
-                        .onAppear {
-                            print("Loading subcategories for category: \(category.name)")
-                        }
-                } else if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                        .padding()
-                        .onAppear {
-                            print("Error loading subcategories: \(errorMessage)")
-                        }
-                } else if viewModel.subcategories.isEmpty {
-                    Text("No subcategories available.")
-                        .padding()
-                        .onAppear {
-                            print("No subcategories found for category: \(category.name)")
-                        }
-                } else {
-                    VStack(spacing: 12) {
-                        ForEach(viewModel.subcategories) { subcategory in
-                            Button(action: {
-                                print("Navigating to services for subcategory: \(subcategory.name)")
-                                navigationManager.navigateTo(subcategory)
-                            }) {
-                                SubcategoryRow(subcategory: subcategory)
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 20)
-                    .onAppear {
-                        print("Displaying subcategories for category: \(category.name)")
-                    }
+                navigationHeader
+                contentState
+            }
+        }
+        .navigationBarBackButtonHidden(true)
+        .task {
+            if viewModel.subcategories.isEmpty {
+                await viewModel.loadSubcategories()
+            }
+        }
+    }
+    
+    private var navigationHeader: some View {
+        HStack {
+            Button(action: navigator.goBack) {
+                Image(systemName: "chevron.left")
+                    .foregroundColor(.blue)
+            }
+            Spacer()
+        }
+        .padding()
+    }
+    
+    @ViewBuilder
+    private var contentState: some View {
+        if viewModel.isLoading {
+            ProgressView("Loading subcategories...")
+                .padding()
+        } else if let error = viewModel.errorMessage {
+            Text(error)
+                .foregroundColor(.red)
+                .padding()
+        } else if viewModel.subcategories.isEmpty {
+            Text("No subcategories available.")
+                .padding()
+        } else {
+            subcategoriesGrid
+        }
+    }
+    
+    private var subcategoriesGrid: some View {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 160))], spacing: 12) {
+            ForEach(viewModel.subcategories) { subcategory in
+                Button {
+                    navigator.navigate(to: AppRoute.Main.subcategory(subcategory))
+                } label: {
+                    SubcategoryRow(subcategory: subcategory)
                 }
             }
         }
-        .navigationBarBackButtonHidden(true)  // Hide the default back button
-        .navigationBarItems(leading: Button(action: {
-            print("Back button tapped.")
-            navigationManager.goBack()  // Manually call goBack() when custom back button is tapped
-        }) {
-            Image(systemName: "chevron.left")  // Use the back arrow image for the custom button
-                .foregroundColor(.blue)
-        })
-        .task(id: category.id) {
-            print("Fetching subcategories for category: \(category.name)")
-            await viewModel.loadSubcategories()
-        }
+        .padding(.horizontal, 20)
     }
 }

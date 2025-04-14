@@ -10,97 +10,85 @@ import Combine
 
 @MainActor
 class ProfileEditViewModel: ObservableObject {
-    @Published var user: User?
+    @Published private(set) var user: User?
+
     @Published var firstName = ""
     @Published var lastName = ""
     @Published var phoneNumber = ""
     @Published var streetAddress = ""
     @Published var city = ""
     @Published var zipCode = ""
-    @Published var isLoading = false
-    @Published var isValid = false
-    
+    @Published private(set) var isLoading = false
+    @Published private(set) var isValid = false
+    @Published var didComplete = false
+
     private let userService: UserServiceProtocol
     private var cancellables = Set<AnyCancellable>()
-    
+
     init(userService: UserServiceProtocol = UserService()) {
         self.userService = userService
-        setupValidation()
         setupObservers()
+        setupValidation()
+        setupInitialUser()
     }
 
     private func setupObservers() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleUserDataUpdate),
-            name: .userDataUpdated,
-            object: nil
-        )
+        // 🟢 Live updates from global user state
+        AuthenticatedUser.shared.$currentUser
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] user in
+                self?.user = user
+                if let user = user {
+                    self?.updateFormFields(with: user)
+                }
+            }
+            .store(in: &cancellables)
     }
 
-    @objc private func handleUserDataUpdate() {
-        Task {
-            await loadUser()
+    private func setupInitialUser() {
+        if let user = AuthenticatedUser.shared.currentUser {
+            self.user = user
+            updateFormFields(with: user)
         }
     }
-    
-    func loadUser() async {
-        isLoading = true
-        defer { isLoading = false }
-        
-        do {
-            let response = try await userService.getUserDetails()
-            let user = response.toEntity()
-            
-            await MainActor.run {
-                updateFormFields(with: user)
-                self.user = user
-            }
-        } catch {
-            print("Error loading user: \(error.localizedDescription)")
-        }
-    }
-    
+
     func saveChanges() async {
-            guard isValid else { return }
-            isLoading = true
-            
-            do {
-                guard let user = user else {
-                    throw ValidationError.invalidUserState
-                }
-                
-                let request = UpdateUserRequest(
-                    firstName: firstName,
-                    lastName: lastName,
-                    phoneNumber: phoneNumber,
-                    address: AddressUpdateRequest(
-                        addressLine: streetAddress,
-                        city: city,
-                        zipCode: zipCode,
-                        country: user.address.country // Preserve existing country
-                    )
+        guard isValid, let currentUser = AuthenticatedUser.shared.currentUser else { return }
+        isLoading = true
+
+        do {
+            let request = UpdateUserRequest(
+                firstName: firstName,
+                lastName: lastName,
+                phoneNumber: phoneNumber,
+                address: AddressUpdateRequest(
+                    addressLine: streetAddress,
+                    city: city,
+                    zipCode: zipCode,
+                    country: currentUser.address.country
                 )
-                
-                let updatedResponse = try await userService.updateUserDetails(request)
-                let updatedUser = updatedResponse.toEntity()
-                
-                await MainActor.run {
-                    self.user = updatedUser
-                    AuthenticatedUser.shared.updateUser(user: updatedUser)
-                    NotificationCenter.default.post(name: .userDataUpdated, object: nil)
-                }
-                
-            } catch {
-                await MainActor.run {
-                    // Handle error (e.g., show alert)
-                    print("Save failed: \(error.localizedDescription)")
-                }
-            }
-            
-            isLoading = false
+            )
+
+            let updatedResponse = try await userService.updateUserDetails(request)
+            await updateAuthenticatedUser(with: updatedResponse)
+
+        } catch {
+            print("Save failed: \(error.localizedDescription)")
         }
-    
+
+        isLoading = false
+    }
+
+    private func updateAuthenticatedUser(with response: UserResponse) async {
+        let updatedUser = response.toEntity()
+        AuthenticatedUser.shared.authenticate(with: response)
+        await MainActor.run {
+            self.user = updatedUser
+            updateFormFields(with: updatedUser)
+            didComplete = true
+        }
+    }
+
     private func updateFormFields(with user: User) {
         firstName = user.firstName
         lastName = user.lastName
@@ -109,7 +97,7 @@ class ProfileEditViewModel: ObservableObject {
         city = user.address.city
         zipCode = user.address.zipCode
     }
-    
+
     private func setupValidation() {
         Publishers.CombineLatest4(
             $firstName,
@@ -117,16 +105,12 @@ class ProfileEditViewModel: ObservableObject {
             $streetAddress,
             $city
         )
-        .map { values in
-            !values.0.isEmpty &&
-            !values.1.isEmpty &&
-            !values.2.isEmpty &&
-            !values.3.isEmpty
-        }
+        .map { !$0.isEmpty && !$1.isEmpty && !$2.isEmpty && !$3.isEmpty }
         .assign(to: &$isValid)
     }
-}
 
-enum ValidationError: Error {
-    case invalidUserState
+    // 🟢 New helper
+    var profilePhotoURL: URL? {
+        user?.profilePhotoUrl
+    }
 }

@@ -8,8 +8,14 @@
 import SwiftUI
 
 struct MoreView: View {
-    @EnvironmentObject private var navManager: NavigationManager
-    @StateObject private var viewModel = MoreViewModel()
+    @EnvironmentObject private var navigator: NavigationManager
+    @EnvironmentObject private var session: UserSessionManager
+    @ObservedObject private var viewModel : MoreViewModel
+    @ObservedObject private var auth = AuthenticatedUser.shared
+    
+    init(viewModel: MoreViewModel) {
+        _viewModel = ObservedObject(wrappedValue: viewModel)
+    }
     
     var body: some View {
         List {
@@ -19,54 +25,63 @@ struct MoreView: View {
             Section { logoutOption }
         }
         .navigationTitle("More")
-        .task { viewModel.loadUser() }
+        .task { viewModel.setupObservers() }
+        .debugRender("MoreView")
     }
     
+    @ViewBuilder
     private var profileHeader: some View {
         if let user = viewModel.user {
-            return AnyView(
-                Button(action: { navManager.navigateTo(.profile) }) {
-                    HStack {
-                        ProfilePhotoView(imageUrl: user.profilePhotoUrl)
-                            .frame(width: 60, height: 60)
-                        
-                        VStack(alignment: .leading) {
-                            Text(user.fullName)
-                                .font(.headline)
-                            Text(user.role.rawValue)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
+            Button {
+                navigator.navigate(to: AppRoute.More.profile)
+            } label: {
+                HStack {
+                    ProfilePhotoView(imageUrl: auth.currentUser?.profilePhotoUrl)
+                        .frame(width: 60, height: 60)
+                    
+                    VStack(alignment: .leading) {
+                        Text(user.fullName)
+                            .font(.headline)
+                        Text(user.role.rawValue)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
                     }
                 }
-            )
-        } else {
-            return AnyView(EmptyView())
+            }
         }
     }
     
     private var commonOptions: some View {
         Group {
-            Button(action: { navManager.navigateTo(.settings) }) {
+            Button {
+                navigator.navigate(to: AppRoute.More.settings)
+            } label: {
                 Label("Settings", systemImage: "gear")
             }
             
-            Button(action: { navManager.navigateTo(.support) }) {
+            Button {
+                navigator.navigate(to: AppRoute.More.support)
+            } label: {
                 Label("Support", systemImage: "questionmark.circle")
             }
         }
     }
     
+    @ViewBuilder
     private var roleSpecificOptions: some View {
-        Group {
-            if viewModel.user?.role == .serviceSeeker {
-                Button(action: { navManager.navigateTo(.becomeProvider) }) {
+        if let role = viewModel.user?.role {
+            if role == .serviceSeeker {
+                Button {
+                    navigator.navigate(to: AppRoute.More.becomeProvider)
+                } label: {
                     Label("Become Provider", systemImage: "arrowshape.up")
                 }
             }
             
-            if viewModel.user?.role == .serviceProvider {
-                Button(action: { navManager.navigateTo(.manageServices) }) {
+            if role == .serviceProvider {
+                Button {
+                    navigator.navigate(to: AppRoute.More.manageServices)
+                } label: {
                     Label("Manage Services", systemImage: "briefcase")
                 }
             }
@@ -75,9 +90,10 @@ struct MoreView: View {
     
     private var logoutOption: some View {
         Button(role: .destructive) {
-            AuthService().logout()
-            navManager.resetAllNavigation()
-            print("logout tapped")
+            Task {
+                await session.logout()
+                navigator.resetAllStacks()
+            }
         } label: {
             Label("Log Out", systemImage: "door.left.hand.open")
         }

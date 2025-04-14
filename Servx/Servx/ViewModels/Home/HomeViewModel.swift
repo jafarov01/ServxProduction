@@ -7,50 +7,42 @@
 
 import SwiftUI
 import Foundation
+import Combine
 
 // HomeViewModel: Manages categories and recommended services.
-
 @MainActor
 class HomeViewModel: ObservableObject {
-    @Published var categories: [ServiceCategory] = []
-    @Published var recommendedServices: [ServiceProfile] = []
-    @Published var isLoading = false
-
+    @Published private(set) var categories: [ServiceCategory] = []
+    @Published private(set) var recommendedServices: [ServiceProfile] = []
+    @Published private(set) var isLoading = false
+    
     private let service: ServicesServiceProtocol
-
+    private var cancellables = Set<AnyCancellable>()
+    
+    var shouldLoadData: Bool { categories.isEmpty }
+    
     init(service: ServicesServiceProtocol = ServicesService()) {
         self.service = service
-        print("HomeViewModel initialized - checking if data is loaded.")
-        // Only load data if categories are not already loaded
-        if categories.isEmpty {
-            Task {
-                await loadData()
-            }
-        }
     }
-
+    
     func loadData() async {
+        guard !isLoading else { return }
+        
         isLoading = true
         defer { isLoading = false }
-
-        // Only fetch if categories are not already loaded
-        if categories.isEmpty {
-            do {
-                // Fetch categories and recommended services concurrently
-                async let categoriesTask = service.fetchCategories()
-                async let recommendedServicesTask = service.fetchRecommendedServices()
-
-                // Await results for categories and services
-                let (fetchedCategories, fetchedServices) = await (try categoriesTask, try recommendedServicesTask)
-
-                categories = fetchedCategories
-                recommendedServices = fetchedServices
-
-                print("Data loaded successfully. Categories count: \(categories.count), Services count: \(recommendedServices.count)")
-
-            } catch {
-                print("Error loading data: \(error.localizedDescription)")
+        
+        do {
+            async let categories = service.fetchCategories()
+            async let services = service.fetchRecommendedServices()
+            
+            let (loadedCategories, loadedServices) = await (try categories, try services)
+            
+            await MainActor.run {
+                self.categories = loadedCategories
+                self.recommendedServices = loadedServices
             }
+        } catch {
+            print("Error loading home data: \(error.localizedDescription)")
         }
     }
 }

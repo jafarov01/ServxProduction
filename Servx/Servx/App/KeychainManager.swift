@@ -98,6 +98,7 @@ enum KeychainError: Error, LocalizedError {
     case loadFailed(status: OSStatus)
     case deleteFailed(status: OSStatus)
     case invalidDataFormat
+    case tokenNotFound
     
     var errorDescription: String? {
         switch self {
@@ -109,6 +110,8 @@ enum KeychainError: Error, LocalizedError {
             return "Failed to delete token (OSStatus: \(status))"
         case .invalidDataFormat:
             return "Token data format is invalid"
+        case .tokenNotFound:
+            return "Token not found"
         }
     }
 }

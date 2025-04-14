@@ -12,119 +12,50 @@ import SwiftUI
 struct HomeView: View {
     @State private var searchInput: String = ""
     @ObservedObject private var viewModel: HomeViewModel
-    @EnvironmentObject private var navigationManager: NavigationManager
-
+    @EnvironmentObject private var navigator: NavigationManager
+    
     init(viewModel: HomeViewModel) {
         _viewModel = ObservedObject(wrappedValue: viewModel)
     }
 
-    let itemsPerRow = 4
-
     var body: some View {
-        VStack {
+        Group {
             if viewModel.isLoading {
                 ProgressView("Loading...")
                     .progressViewStyle(CircularProgressViewStyle())
                     .padding()
             } else {
-                ScrollView {
-                    VStack(spacing: 20) {
-                        HeaderView()
-
-                        ServxInputView(
-                            text: $searchInput,
-                            placeholder: "Search for services",
-                            isSecure: false,
-                            frameWidth: nil,
-                            frameColor: Color("greyScale400"),
-                            backgroundColor: Color("greyScale100"),
-                            textColor: Color("greyScale900")
-                        )
-                        .padding(.top, 20)
-
-                        HorizontalScrollView()
-
-                        CategoriesSection(viewModel: viewModel)
-
-                        RecommendedServicesSection(viewModel: viewModel)
-                    }
-                    .padding(.horizontal, 20)
-                }
+                contentView
             }
         }
-        .onAppear {
-            // Data should already be loaded in the viewModel
-            if viewModel.categories.isEmpty {
-                Task {
-                    await viewModel.loadData()
-                }
+        .task {
+            if viewModel.shouldLoadData {
+                await viewModel.loadData()
             }
         }
         .navigationBarBackButtonHidden()
+        .debugRender("HomeView")
     }
-}
-
-struct CategoriesSection: View {
-    @ObservedObject var viewModel: HomeViewModel
-    @EnvironmentObject var navigationManager: NavigationManager
-
-    let itemsPerRow = 4
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                ServxTextView(
-                    text: "Category",
-                    color: Color("greyScale900"),
-                    size: 18,
-                    weight: .bold,
-                    alignment: .leading
+    
+    private var contentView: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                HeaderView()
+                
+                ServxInputView(
+                    text: $searchInput,
+                    placeholder: "Search for services",
+                    frameColor: Color("greyScale400"),
+                    backgroundColor: Color("greyScale100"),
+                    textColor: Color("greyScale900")
                 )
-
-                Spacer()
-
-                ServxTextView(
-                    text: "View all",
-                    color: Color("primary500"),
-                    size: 14,
-                    weight: .regular,
-                    alignment: .leading
-                )
+                .padding(.top, 20)
+                
+                HorizontalScrollView()
+                CategoriesSection(viewModel: viewModel)
+                RecommendedServicesSection(viewModel: viewModel)
             }
             .padding(.horizontal, 20)
-
-            LazyVGrid(
-                columns: Array(repeating: GridItem(), count: itemsPerRow),
-                spacing: 10
-            ) {
-                ForEach(viewModel.categories) { category in
-                    Button(action: {
-                        print(
-                            "Navigating to subcategories for category: \(category.name)"
-                        )
-                        navigationManager.navigateTo(category)
-                    }) {
-                        CategoryCard(category: category)
-                    }
-                }
-            }
-        }
-    }
-}
-
-private func HorizontalScrollView() -> some View {
-    ScrollView(.horizontal, showsIndicators: false) {
-        HStack {
-            ForEach(0..<10) { index in
-                RoundedRectangle(cornerRadius: 24)
-                    .fill(Color("primary300"))
-                    .frame(width: 280, height: 134)
-                    .padding(10)
-                    .overlay(
-                        Text("This is the \(index)th page here")
-                            .foregroundColor(.white)
-                    )
-            }
         }
     }
 }
@@ -132,8 +63,12 @@ private func HorizontalScrollView() -> some View {
 struct HeaderView: View {
     var body: some View {
         HStack {
-            // Profile photo on the left
-            //ProfilePhotoView(viewModel: HomeViewModel().profilePhotoViewModel, width: 48, height: 48)
+            ProfilePhotoView(imageUrl: AuthenticatedUser.shared.currentUser?.profilePhotoUrl)
+                .frame(width: 48, height: 48)
+                .overlay(
+                    Circle()
+                        .stroke(ServxTheme.inputFieldBorderColor, lineWidth: 2)
+                )
 
             VStack(alignment: .leading) {
                 // Greeting text
@@ -173,38 +108,62 @@ struct HeaderView: View {
     }
 }
 
-struct RecommendedServicesSection: View {
+struct CategoriesSection: View {
     @ObservedObject var viewModel: HomeViewModel
+    @EnvironmentObject var navigator: NavigationManager
+    private let gridColumns = [GridItem(.adaptive(minimum: 80))]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                ServxTextView(
-                    text: "Recommended Services",
-                    color: Color("greyScale900"),
-                    size: 18,
-                    weight: .bold,
-                    alignment: .leading
-                )
-
-                Spacer()
-
-                ServxTextView(
-                    text: "View all",
-                    color: Color("primary500"),
-                    size: 14,
-                    weight: .regular,
-                    alignment: .leading
-                )
-                .onTapGesture {
-                    // Handle View All action
+            SectionHeader(
+                title: "Category",
+                actionTitle: "View all",
+                action: { /* Handle category view all */ }
+            )
+            
+            LazyVGrid(columns: gridColumns, spacing: 10) {
+                ForEach(viewModel.categories) { category in
+                    Button {
+                        navigator.navigate(to: AppRoute.Main.category(category))
+                    } label: {
+                        CategoryCard(category: category)
+                    }
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 32)
+        }
+    }
+}
 
-            // Add services here
-            VStack(spacing: 16) {
+private func HorizontalScrollView() -> some View {
+    ScrollView(.horizontal, showsIndicators: false) {
+        HStack {
+            ForEach(0..<10) { index in
+                RoundedRectangle(cornerRadius: 24)
+                    .fill(Color("primary300"))
+                    .frame(width: 280, height: 134)
+                    .padding(10)
+                    .overlay(
+                        Text("This is the \(index)th page here")
+                            .foregroundColor(.white)
+                    )
+            }
+        }
+    }
+}
+
+struct RecommendedServicesSection: View {
+    @ObservedObject var viewModel: HomeViewModel
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            SectionHeader(
+                title: "Recommended Services",
+                actionTitle: "View all",
+                action: { /* Handle services view all */ }
+            )
+            .padding(.top, 32)
+            
+            LazyVStack(spacing: 16) {
                 ForEach(viewModel.recommendedServices) { service in
                     ServiceDetailedCard(service: service)
                 }
@@ -217,7 +176,7 @@ struct SectionHeader: View {
     let title: String
     let actionTitle: String?
     var action: (() -> Void)?
-
+    
     var body: some View {
         HStack {
             ServxTextView(
@@ -227,16 +186,27 @@ struct SectionHeader: View {
                 weight: .bold,
                 alignment: .leading
             )
+            
             Spacer()
+            
             if let actionTitle = actionTitle, let action = action {
                 ServxTextView(
                     text: actionTitle,
                     color: Color("primary500"),
                     size: 14,
-                    alignment: .leading
+                    weight: .regular,
+                    alignment: .trailing
                 )
                 .onTapGesture(perform: action)
             }
         }
+    }
+}
+
+extension View {
+    /// Logs when the view's body is recomputed
+    func debugRender(_ tag: String) -> some View {
+        viewLogger.info("issue01: \(tag) re-rendered")
+        return self
     }
 }

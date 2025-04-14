@@ -8,28 +8,24 @@
 import Foundation
 import Combine
 
-
-
 @MainActor
 class LoginViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var password: String = ""
     @Published var isRememberMe: Bool = false
-    
     @Published var isFormValid: Bool = false
     @Published var isLoading: Bool = false
+    @Published var loginSuccess = false
     
     private let authService: AuthServiceProtocol
-    private let userService: UserServiceProtocol
     private var cancellables = Set<AnyCancellable>()
     
-    init(authService: AuthServiceProtocol, userService: UserServiceProtocol) {
+    init(authService: AuthServiceProtocol) {
         self.authService = authService
-        self.userService = userService
         setupValidation()
     }
     
-    func setupValidation() {
+    private func setupValidation() {
         Publishers.CombineLatest(
             $email.map { !$0.isEmpty && $0.contains("@") },
             $password.map { $0.count >= 6 }
@@ -39,50 +35,28 @@ class LoginViewModel: ObservableObject {
         .assign(to: &$isFormValid)
     }
     
-    func login(completion: @escaping (Bool) -> Void) {
-            guard isFormValid else { return }
-
-            isLoading = true
-            Task { [weak self] in
-                guard let self = self else { return }
-                do {
-                    // Perform login and retrieve authResponse
-                    _ = try await self.authService.login(email: self.email, password: self.password)
-                    
-                    // Fetch user details using the getUserDetails API call
-                    let userDetails = try await self.userService.getUserDetails()
-
-                    // Populate AuthenticatedUser with fetched user details
-                    print("AuthenticaedUser is set")
-                    AuthenticatedUser.shared.authenticateUser(from: userDetails)
-                    
-                    print("login success")
-                    
-                    self.isLoading = false
-                    completion(true)
-                } catch {
-                    self.isLoading = false
-                    completion(false)
-                }
+    func login() {
+        guard isFormValid else { return }
+        
+        isLoading = true
+        Task {
+            do {
+                try await authService.login(email: email, password: password)
+                loginSuccess = true // Set on success
+            } catch {
+                handleLoginError(error)
             }
-        }
-    
-    // MARK: - Load Remembered Credentials
-    /// Loads remembered email into the ViewModel if "Remember Me" is enabled
-    private func loadRememberedCredentials() {
-        if isRememberMe, let rememberedEmail = UserDefaultsManager.rememberedEmail {
-            email = rememberedEmail
+            isLoading = false
         }
     }
-
-    // MARK: - Handle Remember Me
-    /// Handles "Remember Me" functionality
+    
+    private func handleLoginError(_ error: Error) {
+        // Implement proper error handling
+        print("Login failed: \(error.localizedDescription)")
+    }
+    
     func handleRememberMe() {
-        if isRememberMe {
-            UserDefaultsManager.rememberedEmail = email
-        } else {
-            UserDefaultsManager.rememberedEmail = nil
-        }
+        UserDefaultsManager.rememberedEmail = isRememberMe ? email : nil
         UserDefaultsManager.rememberMe = isRememberMe
     }
 }

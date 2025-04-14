@@ -12,14 +12,13 @@ struct UnauthenticatedFlowView: View {
     @EnvironmentObject private var navManager: NavigationManager
     
     var body: some View {
-        NavigationStack(path: $navManager.authPath) {
+        NavigationStack(path: $navManager.authStack) {
             LoginView(
                 viewModel: LoginViewModel(
                     authService: AuthService(),
-                    userService: UserService()
                 )
             )
-            .navigationDestination(for: LoginRoute.self) { route in
+            .navigationDestination(for: AppRoute.Login.self) { route in
                 switch route {
                 case .onboarding:
                     OnboardingView()
@@ -29,7 +28,6 @@ struct UnauthenticatedFlowView: View {
                     LoginView(
                         viewModel: LoginViewModel(
                             authService: AuthService(),
-                            userService: UserService()
                         )
                     )
                     
@@ -49,8 +47,8 @@ struct UnauthenticatedFlowView: View {
         }
         .onAppear {
             // Clear any previous navigation state when flow appears
-            if !navManager.authPath.isEmpty {
-                navManager.authPath.removeLast(navManager.authPath.count)
+            if !navManager.authStack.isEmpty {
+                navManager.authStack.removeLast(navManager.authStack.count)
             }
         }
     }

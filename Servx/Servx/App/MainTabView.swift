@@ -8,73 +8,85 @@
 import SwiftUI
 
 struct MainTabView: View {
-    @EnvironmentObject private var navManager: NavigationManager
-
+    @EnvironmentObject private var navigator: NavigationManager
+    @EnvironmentObject private var session: UserSessionManager
+    
     var body: some View {
-        TabView(selection: $navManager.selectedTab) {
-            // Home Tab with main navigation stack
-            NavigationStack(path: $navManager.mainPath) {
-                HomeView(viewModel: HomeViewModel())
-                    .navigationDestination(for: ServiceCategory.self) {
-                        category in
+        TabView(selection: $navigator.selectedTab) {
+            homeTab
+            bookingTab
+            calendarTab
+            inboxTab
+            moreTab
+        }
+        .tint(Color("primary500"))
+        .onChange(of: navigator.selectedTab) {
+            navigator.resetAllStacks()
+        }
+    }
+    
+    private var homeTab: some View {
+        NavigationStack(path: $navigator.mainStack) {
+            HomeView(viewModel: HomeViewModel())
+                .navigationDestination(for: AppRoute.Main.self) { route in
+                    switch route {
+                    case .category(let category):
                         SubcategoriesListView(
                             category: category,
-                            viewModel: SubcategoriesViewModel(
-                                category: category
-                            )
+                            viewModel: SubcategoriesViewModel(category: category)
                         )
-                    }
-                    .navigationDestination(for: ServiceArea.self) {
-                        subcategory in
+                    case .subcategory(let subcategory):
                         ServicesListView(
                             subcategory: subcategory,
-                            viewModel: ServicesViewModel(
-                                subcategory: subcategory
-                            )
+                            viewModel: ServicesViewModel(subcategory: subcategory)
                         )
                     }
-            }
-            .tabItem { Label("Home", systemImage: "house.fill") }
-            .tag(Tab.home)
-
-            // Independent tabs with their own navigation
-            NavigationStack {
-                BookingView()
-            }
-            .tabItem { Label("Booking", systemImage: "calendar.badge.plus") }
-            .tag(Tab.booking)
-
-            NavigationStack {
-                CalendarView()
-            }
-            .tabItem { Label("Calendar", systemImage: "calendar.circle") }
-            .tag(Tab.calendar)
-
-            NavigationStack {
-                InboxView()
-            }
-            .tabItem { Label("Inbox", systemImage: "tray") }
-            .tag(Tab.inbox)
-
-            NavigationStack(path: $navManager.morePath) {
-                            MoreView()
-                                .navigationDestination(for: MoreRoute.self) { route in
-                                    switch route {
-                                    case .profile: ProfileView()
-                                    case .editProfile: ProfileEditView()
-                                    case .photoEdit: ProfilePhotoEditView()
-                                    case .settings: SettingsView()
-                                    case .support: SupportView()
-                                    case .becomeProvider: BecomeServiceProviderView()
-                                    case .manageServices: ManageServicesView()
-                                    }
-                                }
-                        }
-                        .tabItem { Label("More", systemImage: "ellipsis.circle") }
-                        .tag(Tab.more)
+                }
         }
-        .onChange(of: navManager.selectedTab) {
-            navManager.resetMainNavigation()
+        .tabItem { Label("Home", systemImage: "house.fill") }
+        .tag(Tab.home)
+    }
+    
+    private var moreTab: some View {
+        NavigationStack(path: $navigator.moreStack) {
+            MoreView(viewModel: MoreViewModel())
+                .navigationDestination(for: AppRoute.More.self) { route in
+                    switch route {
+                    case .profile: ProfileView(viewModel: ProfileViewModel())
+                    case .editProfile: ProfileEditView(viewModel: ProfileEditViewModel())
+                    case .photoEdit: ProfilePhotoEditView(photoEditVM: ProfilePhotoEditViewModel(), photoVM: ProfilePhotoViewModel())
+                    case .settings: SettingsView()
+                    case .support: SupportView()
+                    case .becomeProvider: BecomeServiceProviderView()
+                    case .manageServices: ManageServicesView()
+                    }
+                }
         }
+        .tabItem { Label("More", systemImage: "ellipsis.circle") }
+        .tag(Tab.more)
+    }
+    
+    private var bookingTab: some View {
+        NavigationStack {
+            BookingView()
+        }
+        .tabItem { Label("Booking", systemImage: "calendar.badge.plus") }
+        .tag(Tab.booking)
+    }
+    
+    private var calendarTab: some View {
+        NavigationStack {
+            CalendarView()
+        }
+        .tabItem { Label("Calendar", systemImage: "calendar.circle") }
+        .tag(Tab.calendar)
+    }
+    
+    private var inboxTab: some View {
+        NavigationStack {
+            InboxView()
+        }
+        .tabItem { Label("Inbox", systemImage: "tray") }
+        .tag(Tab.inbox)
     }
 }

@@ -8,9 +8,14 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @StateObject private var viewModel = ProfileViewModel()
-    @EnvironmentObject private var navManager: NavigationManager
-
+    @EnvironmentObject private var navigator: NavigationManager
+    @ObservedObject private var viewModel : ProfileViewModel
+    
+    
+    init(viewModel: ProfileViewModel) {
+        _viewModel = ObservedObject(wrappedValue: viewModel)
+    }
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
@@ -22,38 +27,41 @@ struct ProfileView: View {
         }
         .background(ServxTheme.backgroundColor)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar(content: {
+        .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 ServxButtonView(
                     title: "Edit",
                     width: 80,
                     height: 40,
                     frameColor: ServxTheme.primaryColor,
-                    innerColor: Color.clear, 
+                    innerColor: Color.clear,
                     textColor: ServxTheme.primaryColor,
-                    action: { navManager.navigateTo(.editProfile) }
+                    action: { navigator.navigate(to: AppRoute.More.editProfile) }
                 )
             }
-        })
-        .task { await viewModel.loadUser() }
+        }
+        .debugRender("ProfileView")
     }
     
+    @ViewBuilder
     private var profileHeader: some View {
-        VStack(spacing: 16) {
-            ProfilePhotoView(imageUrl: viewModel.user?.profilePhotoUrl)
-                .frame(width: 120, height: 120)
-                .overlay(
-                    Circle()
-                        .stroke(ServxTheme.inputFieldBorderColor, lineWidth: 2)
+        if let user = viewModel.user {
+            VStack(spacing: 16) {
+                ProfilePhotoView(imageUrl: AuthenticatedUser.shared.currentUser?.profilePhotoUrl)
+                    .frame(width: 120, height: 120)
+                    .overlay(
+                        Circle()
+                            .stroke(ServxTheme.inputFieldBorderColor, lineWidth: 2)
+                    )
+                
+                ServxTextView(
+                    text: user.fullName,
+                    color: ServxTheme.primaryColor,
+                    size: 24,
+                    weight: .bold,
+                    alignment: .center
                 )
-            
-            ServxTextView(
-                text: viewModel.user?.fullName ?? "",
-                color: ServxTheme.primaryColor,
-                size: 24,
-                weight: .bold,
-                alignment: .center
-            )
+            }
         }
     }
     

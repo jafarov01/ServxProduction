@@ -8,13 +8,17 @@
 import SwiftUI
 
 struct ProfileEditView: View {
-    @StateObject private var viewModel = ProfileEditViewModel()
-    @State private var showPhotoEditor = false
-    @EnvironmentObject private var navManager: NavigationManager
+    @ObservedObject private var viewModel : ProfileEditViewModel
+    @EnvironmentObject private var navigator: NavigationManager
     
+    init(viewModel: ProfileEditViewModel) {
+        _viewModel = ObservedObject(wrappedValue: viewModel)
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
+                navigationHeader
                 photoSection
                 personalInfoSection
                 addressSection
@@ -22,65 +26,61 @@ struct ProfileEditView: View {
             }
             .padding()
         }
+        .onChange(of: viewModel.didComplete) { _, newValue in
+            if newValue {
+                navigator.goBack()
+            }
+        }
         .background(ServxTheme.backgroundColor)
         .navigationBarHidden(true)
-        .task { await viewModel.loadUser() }
-        .sheet(isPresented: $showPhotoEditor) {
-            ProfilePhotoEditView()
-                .environmentObject(viewModel)
+        .debugRender("ProfileEditView")
+    }
+    
+    private var photoSection: some View {
+        VStack(spacing: 16) {
+            ServxTextView(
+                text: "Profile Photo",
+                color: ServxTheme.primaryColor,
+                size: 18,
+                weight: .semibold
+            )
+
+            Button {
+                navigator.navigate(to: AppRoute.More.photoEdit)
+            } label: {
+                ProfilePhotoView(imageUrl: AuthenticatedUser.shared.currentUser?.profilePhotoUrl)
+                    .overlay(
+                        Circle()
+                            .stroke(ServxTheme.inputFieldBorderColor, lineWidth: 2)
+                    )
+            }
+            .buttonStyle(.plain)
         }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.05), radius: 8)
     }
     
     private var navigationHeader: some View {
         HStack {
-            HStack {
-                Button(action: {
-                    navManager.goBack()
-                }) {
-                    Image(systemName: "chevron.left")
-                        .foregroundColor(.blue)
-                        .padding()
-                }
-                .padding(.leading, 10)
-                
-                Spacer()
+            Button {
+                navigator.goBack()
+            } label: {
+                Image(systemName: "chevron.left")
+                    .foregroundColor(ServxTheme.primaryColor)
+                    .padding()
             }
-            .frame(height: 44)
-            Spacer()
+            
             ServxTextView(
                 text: "Edit Profile",
                 color: ServxTheme.primaryColor,
                 size: 20,
                 weight: .bold
             )
-            Spacer()
+            .frame(maxWidth: .infinity)
         }
     }
-    
-    private var photoSection: some View {
-            VStack(spacing: 16) {
-                ServxTextView(
-                    text: "Profile Photo",
-                    color: ServxTheme.primaryColor,
-                    size: 18,
-                    weight: .semibold
-                )
-                
-                Button(action: { showPhotoEditor = true }) {
-                    ProfilePhotoView(imageUrl: viewModel.user?.profilePhotoUrl)
-                        .frame(width: 120, height: 120)
-                        .overlay(
-                            Circle()
-                                .stroke(ServxTheme.inputFieldBorderColor, lineWidth: 2)
-                        )
-                }
-                .buttonStyle(.plain)
-            }
-            .padding()
-            .background(Color.white)
-            .cornerRadius(12)
-            .shadow(color: Color.black.opacity(0.05), radius: 8)
-        }
     
     private var personalInfoSection: some View {
         VStack(spacing: 16) {

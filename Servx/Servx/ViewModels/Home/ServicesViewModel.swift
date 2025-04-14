@@ -6,65 +6,62 @@
 //
 
 import Foundation
+import Combine
 
-// ServicesViewModel: Retrieves services for a selected subcategory and handles search.
 @MainActor
 class ServicesViewModel: ObservableObject {
-    @Published var services: [ServiceProfile] = []
-    @Published var filteredServices: [ServiceProfile] = []
+    @Published private(set) var services: [ServiceProfile] = []
+    @Published private(set) var filteredServices: [ServiceProfile] = []
     @Published var searchQuery = ""
-    @Published var isLoading = false
-    @Published var errorMessage: String?
-
+    @Published private(set) var isLoading = false
+    @Published private(set) var errorMessage: String?
+    
     private let service: ServicesServiceProtocol
     let subcategory: ServiceArea
-
+    private var cancellables = Set<AnyCancellable>()
+    
     init(subcategory: ServiceArea, service: ServicesServiceProtocol = ServicesService()) {
         self.subcategory = subcategory
         self.service = service
-        setupSearchListener()
+        setupObservers()
     }
 
-    private func setupSearchListener() {
-        Task {
-            for await query in $searchQuery.values {
-                filterServices(query: query)
+    private func setupObservers() {
+        $searchQuery
+            .debounce(for: 0.3, scheduler: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.filterServices()
             }
-        }
+            .store(in: &cancellables)
     }
 
     func loadServices() async {
+        guard !isLoading else { return }
+        
         isLoading = true
-        errorMessage = nil
         defer { isLoading = false }
 
         do {
-            // Fetch services from the API
             let fetchedServices = try await service.fetchServices(
                 categoryId: subcategory.categoryId,
                 subcategoryId: subcategory.id
             )
-
-            // Assign the fetched services to `services` and `filteredServices`
-            self.services = fetchedServices
-            self.filteredServices = fetchedServices
+            services = fetchedServices
+            filteredServices = fetchedServices
         } catch {
             errorMessage = "Failed to load services. Please try again."
-            print("Error fetching services: \(error.localizedDescription)")
         }
     }
 
-    private func filterServices(query: String) {
-        // Guard against empty search query
-        guard !query.isEmpty else {
+    private func filterServices() {
+        guard !searchQuery.isEmpty else {
             filteredServices = services
             return
         }
-
-        // Filter services by matching query against serviceTitle or providerName (both case-insensitive)
-        filteredServices = services.filter { service in
-            service.serviceTitle.localizedCaseInsensitiveContains(query) ||
-            service.providerName.localizedCaseInsensitiveContains(query)
+        
+        filteredServices = services.filter {
+            $0.serviceTitle.localizedCaseInsensitiveContains(searchQuery) ||
+            $0.providerName.localizedCaseInsensitiveContains(searchQuery)
         }
     }
 }

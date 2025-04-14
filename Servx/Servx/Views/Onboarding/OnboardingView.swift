@@ -56,7 +56,7 @@ struct OnboardingView: View {
                     if currentPage < 3 {
                         currentPage += 1
                     } else {
-                        navigationManager.navigateTo(.authentication)
+                        navigationManager.navigate(to: AppRoute.Login.authentication)
                     }
                 }
             )

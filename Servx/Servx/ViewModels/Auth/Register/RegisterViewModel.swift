@@ -24,7 +24,7 @@ class RegisterViewModel: ObservableObject {
     @Published var education: String = ""
     @Published var isRememberMe: Bool = false
     var isLoading = false
-
+    
     // Dropdown options
     @Published var countryOptions: [String] = ["Azerbaijan", "Estonia", "Hungary"]
     @Published var cityDictionary: [String: [String]] = [
@@ -51,16 +51,16 @@ class RegisterViewModel: ObservableObject {
         "German": "de",
         "Turkish": "tr"
     ]
-
+    
     // Dependencies
     private let authService: AuthServiceProtocol
     private var cancellables = Set<AnyCancellable>()
-
+    
     // MARK: - Initialization
     init(authService: AuthServiceProtocol) {
         self.authService = authService
     }
-
+    
     // MARK: - Registration Actions
     func register(completion: @escaping (Bool) -> Void) {
         // Convert selected country name to code
@@ -88,7 +88,7 @@ class RegisterViewModel: ObservableObject {
             ),
             languagesSpoken: languageCodes
         )
-
+        
         // Debug print the request
         print("Sending country code:", countryCode)
         print("Sending language codes:", languageCodes)
@@ -107,32 +107,49 @@ class RegisterViewModel: ObservableObject {
             }
         }
     }
-}
-
-// MARK: - Validation Logic
-extension RegisterViewModel {
+    
+    // MARK: - Validation Logic
     var isValid: Bool {
         !firstName.isEmpty &&
         !lastName.isEmpty &&
-        isValidEmail(email) &&
-        isValidPhoneNumber(phoneNumber) &&
+        isValidEmail &&
+        isValidPassword &&
+        isValidPhoneNumber &&
         !addressLine.isEmpty &&
         !zipCode.isEmpty &&
         !selectedCountry.isEmpty &&
         !selectedCity.isEmpty &&
-        !selectedLanguages.isEmpty // Now checks array count
+        !selectedLanguages.isEmpty
     }
     
-    private func isValidEmail(_ email: String) -> Bool {
+    var isValidEmail: Bool {
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        return emailPred.evaluate(with: email)
+        return NSPredicate(format: "SELF MATCHES %@", emailRegEx).evaluate(with: email)
     }
     
-    private func isValidPhoneNumber(_ phone: String) -> Bool {
-        // Match Spring Boot's @Pattern(regexp = "^\\+[0-9]{10,15}$")
+    var isValidPassword: Bool {
+        // Simplified for testing: minimum 8 characters
+        password.count >= 8
+    }
+    
+    var isValidPhoneNumber: Bool {
         let phoneRegEx = "^\\+[0-9]{10,15}$"
-        let phonePred = NSPredicate(format:"SELF MATCHES %@", phoneRegEx)
-        return phonePred.evaluate(with: phone)
+        return NSPredicate(format: "SELF MATCHES %@", phoneRegEx).evaluate(with: phoneNumber)
+    }
+    
+    func printValidationStatus() {
+        print("""
+        Validation Status:
+        - First Name: \(!firstName.isEmpty)
+        - Last Name: \(!lastName.isEmpty)
+        - Email: \(isValidEmail)
+        - Password: \(isValidPassword)
+        - Phone: \(isValidPhoneNumber)
+        - Address: \(!addressLine.isEmpty)
+        - Zip: \(!zipCode.isEmpty)
+        - Country: \(!selectedCountry.isEmpty)
+        - City: \(!selectedCity.isEmpty)
+        - Languages: \(!selectedLanguages.isEmpty)
+        """)
     }
 }

@@ -27,6 +27,13 @@ final class APIClient: APIClientProtocol {
     
     func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T {
         let urlRequest = try await createRequest(for: endpoint)
+        print("\n===== APIClient Request =====")
+        print("📤 \(endpoint.method.rawValue) \(endpoint.url)")
+        print("🔑 Requires Auth: \(endpoint.requiresAuth)")
+        if let body = endpoint.body {
+            let jsonData = try JSONEncoder().encode(body)
+            print("📦 Request Body: \(String(data: jsonData, encoding: .utf8) ?? "Invalid JSON")")
+        }
         return try await handleDataTask(with: urlRequest)
     }
     
@@ -55,6 +62,7 @@ final class APIClient: APIClientProtocol {
     
     private func createRequest(for endpoint: Endpoint) async throws -> URLRequest {
         guard let url = URL(string: endpoint.url) else {
+            print("🚨 APIClient Error: Invalid URL for endpoint - \(endpoint.url)")
             throw NetworkError.invalidURL
         }
         
@@ -64,10 +72,7 @@ final class APIClient: APIClientProtocol {
         if endpoint.requiresAuth {
             let token = try await getAuthToken()
             urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-        
-        if endpoint.method != .get && endpoint.body == nil {
-            urlRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+            print("🔐 Auth Token: \(token.prefix(6))...")  // Partial token for security
         }
         
         if let body = endpoint.body {
@@ -75,29 +80,67 @@ final class APIClient: APIClientProtocol {
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         }
         
+        print("🧠 Request Headers:")
+        urlRequest.allHTTPHeaderFields?.forEach { print("   \($0.key): \($0.value)") }
+        
         return urlRequest
     }
     
     private func handleDataTask<T: Decodable>(with urlRequest: URLRequest) async throws -> T {
+        print("\n===== APIClient Response =====")
         let (data, response) = try await session.data(for: urlRequest)
+        
+        // Response Metadata
+        if let httpResponse = response as? HTTPURLResponse {
+            print("ℹ️ Status Code: \(httpResponse.statusCode)")
+            print("🔗 URL: \(httpResponse.url?.absoluteString ?? "N/A")")
+        }
+        
+        // Response Body
+        let jsonString = String(data: data, encoding: .utf8) ?? "Non-UTF8 Data"
+        print("📥 Raw Response (\(data.count) bytes):")
+        print(jsonString.prefix(1000))  // Limit to first 1000 chars
+        
+        // Validate Status Code
         guard let httpResponse = response as? HTTPURLResponse else {
+            print("🚨 Invalid Response Format")
             throw NetworkError.invalidResponse
         }
-
-        try validateStatusCode(httpResponse.statusCode)
-
+        
         do {
-            return try JSONDecoder().decode(T.self, from: data)
-        } catch let DecodingError.typeMismatch(_, context) {
-            // Handle URL decoding errors specifically
-            if context.codingPath.last?.stringValue == "profilePhotoUrl" {
-                throw NetworkError.invalidURLFormat
-            }
+            try validateStatusCode(httpResponse.statusCode)
+        } catch {
+            print("🚨 Status Code Error: \(error)")
+            throw error
+        }
+        
+        if data.isEmpty && T.self == EmptyResponseDTO.self {
+            print("✅ Empty response handled successfully")
+            return EmptyResponseDTO() as! T
+        }
+        
+        // Decoding
+        do {
+            let decoded = try JSONDecoder().decode(T.self, from: data)
+            print("✅ Successfully Decoded \(T.self)")
+            return decoded
+        } catch let DecodingError.typeMismatch(expectedType, context) {
+            print("🚨 DECODING ERROR: Type mismatch")
+            print("🔍 Expected Type: \(expectedType)")
+            print("📜 Context: \(context.debugDescription)")
+            print("🗺 Coding Path: \(context.codingPath)")
             throw NetworkError.decodingError
+        } catch let error as DecodingError {
+            print("🚨 DECODING ERROR: \(error.errorDescription ?? "Unknown decoding error")")
+            throw NetworkError.decodingError
+        } catch {
+            print("🚨 UNEXPECTED ERROR: \(error.localizedDescription)")
+            throw error
         }
     }
     
     private func validateStatusCode(_ statusCode: Int) throws {
+        print("🔍 Validating Status Code: \(statusCode)")
         switch statusCode {
         case 200...299: return
         case 401: throw NetworkError.unauthorized

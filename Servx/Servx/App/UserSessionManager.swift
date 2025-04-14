@@ -7,89 +7,120 @@
 
 import Foundation
 import Combine
+import SwiftUI
 
 @MainActor
 final class UserSessionManager: ObservableObject {
-    @Published var isAuthenticated: Bool = false
-    @Published var hasFetchedUserData = false
-    private let userDetailsService: UserServiceProtocol
+    // MARK: - Published Properties
+    @Published private(set) var authState: AuthState = .unknown
+    @Published private(set) var lastAuthError: AuthError?
+    
+    // MARK: - Dependencies
+    private let userService: UserServiceProtocol
     private var cancellables = Set<AnyCancellable>()
-
-    init(userDetailsService: UserServiceProtocol) {
-        self.userDetailsService = userDetailsService
-        setupAuthObservers()
-        checkAuthenticationStatus()
+    
+    // MARK: - State Management
+    enum AuthState {
+        case authenticated(UserResponse)
+        case unauthenticated
+        case unknown
     }
-
-    private func setupAuthObservers() {
-        $isAuthenticated
-            .removeDuplicates()
+    
+    enum AuthError: Error, LocalizedError {
+        case invalidToken
+        case networkError(Error)
+        case keychainError(KeychainError)
+        case unauthorized
+        
+        var errorDescription: String? {
+            switch self {
+            case .invalidToken: return "Invalid session token"
+            case .networkError(let error): return "Network error: \(error.localizedDescription)"
+            case .keychainError(let error): return "Security error: \(error.localizedDescription)"
+            case .unauthorized: return "Authentication required"
+            }
+        }
+    }
+    
+    // MARK: - Initialization
+    init(userService: UserServiceProtocol) {
+        self.userService = userService
+        setupObservers()
+        checkInitialAuthState()
+    }
+    
+    // MARK: - Public Interface
+    func checkInitialAuthState() {
+        Task {
+            do {
+                let token = try KeychainManager.getToken(service: "auth")
+                try await handleToken(token)
+            } catch let error as KeychainError {
+                await handleError(.keychainError(error))
+            } catch {
+                await handleError(.networkError(error))
+            }
+        }
+    }
+    
+    func logout() async {
+        do {
+            try KeychainManager.deleteToken(service: "auth")
+            AuthenticatedUser.shared.logout()
+            updateAuthState(.unauthenticated)
+        } catch {
+            await handleError(.keychainError(error as! KeychainError))
+        }
+    }
+    
+    // MARK: - Private Methods
+    private func setupObservers() {
+        AuthenticatedUser.shared.$isAuthenticated
+            .dropFirst()
             .sink { [weak self] authenticated in
-                guard let self else { return }
                 if !authenticated {
-                    self.cleanupSession()
+                    self?.updateAuthState(.unauthenticated)
                 }
             }
             .store(in: &cancellables)
     }
-
-    private func checkAuthenticationStatus() {
-        Task {
-            do {
-                if let token = try KeychainManager.getToken(service: "auth") {
-                    await handleValidToken(token)
-                } else {
-                    handleMissingToken()
-                }
-            } catch {
-                await handleAuthError(error)
-            }
+    
+    private func handleToken(_ token: String?) async throws {
+        guard let token = token else {
+            return await handleError(.unauthorized)
         }
-    }
-
-    private func handleValidToken(_ token: String) async {
-        if !isAuthenticated {
-            do {
-                let userDetails = try await userDetailsService.getUserDetails()
-                AuthenticatedUser.shared.authenticateUser(from: userDetails)
-                await MainActor.run {
-                    isAuthenticated = true
-                    hasFetchedUserData = true
-                }
-            } catch {
-                await handleAuthError(error)
-            }
-        } else {
-            await MainActor.run {
-                hasFetchedUserData = true
-            }
-        }
-    }
-
-    private func handleMissingToken() {
-        isAuthenticated = false
-        hasFetchedUserData = false
-    }
-
-    private func handleAuthError(_ error: Error) async {
-        await MainActor.run {
-            isAuthenticated = false
-            hasFetchedUserData = false
-        }
-        print("Auth error: \(error.localizedDescription)")
-    }
-
-    private func cleanupSession() {
-        AuthenticatedUser.shared.logout()
-        hasFetchedUserData = false
-    }
-
-    func logout() {
+        
         do {
-            try KeychainManager.deleteToken(service: "auth")
-            isAuthenticated = false
+            let userDetails = try await userService.getUserDetails()
+            await validateUserDetails(userDetails)
         } catch {
-            print("Logout error: \(error.localizedDescription)")
+            if case KeychainError.tokenNotFound = error {
+                await handleError(.unauthorized)
+            } else {
+                await handleError(.networkError(error))
+            }
+        }
+    }
+    
+    private func validateUserDetails(_ response: UserResponse) async {
+        AuthenticatedUser.shared.authenticate(with: response)
+        updateAuthState(.authenticated(response))
+    }
+    
+    private func updateAuthState(_ state: AuthState) {
+        withAnimation {
+            authState = state
+            lastAuthError = nil
+        }
+    }
+    
+    private func handleError(_ error: AuthError) async {
+        await MainActor.run {
+            lastAuthError = error
+            if case .unauthorized = error {
+                authState = .unauthenticated
+                AuthenticatedUser.shared.logout()
+            }
         }
     }
 }
