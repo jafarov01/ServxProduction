@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ServiceDetailedCard: View {
     let service: ServiceProfile
+    @State private var isRequested = false
     
     var body: some View {
         VStack(spacing: 16) {
@@ -18,7 +19,7 @@ struct ServiceDetailedCard: View {
                         .font(.system(size: 16, weight: .bold))
                         .foregroundColor(Color("greyScale900"))
                     
-                    Text(service.providerName ?? "Unknown Provider")
+                    Text(service.providerName)
                         .font(.system(size: 14))
                         .foregroundColor(Color("greyScale700"))
                     
@@ -40,8 +41,10 @@ struct ServiceDetailedCard: View {
                         .font(.system(size: 18, weight: .bold))
                         .foregroundColor(Color("primary500"))
                     
-                    Button(action: { /* Add to cart logic here */ }) {
-                        Text("Add")
+                    Button(action: {
+                        isRequested = true
+                    }) {
+                        Text("Request for Service")
                             .font(.system(size: 14, weight: .medium))
                             .padding(.horizontal, 16)
                             .padding(.vertical, 8)

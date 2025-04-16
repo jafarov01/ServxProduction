@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ServiceProfile: Codable, Identifiable {
+struct ServiceProfile: Codable, Identifiable, Equatable, Hashable {
     let id: Int64
     let providerName: String
     let categoryName: String

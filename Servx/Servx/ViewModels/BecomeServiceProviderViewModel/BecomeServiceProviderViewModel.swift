@@ -89,10 +89,14 @@ extension BecomeServiceProviderViewModel {
         defer { isLoading = false }
         
         do {
-            // 1. Upgrade user role
-            try await userService.upgradeToProvider(
+            // 1. Upgrade user role - FIXED SYNTAX
+            let userResponse = try await userService.upgradeToProvider(
                 request: UpgradeToProviderRequestDTO(education: education)
             )
+            
+            await MainActor.run {
+                AuthenticatedUser.shared.authenticate(with: userResponse)
+            }
             
             // 2. Create service profiles
             try await servicesService.createBulkServiceProfiles(
@@ -108,7 +112,6 @@ extension BecomeServiceProviderViewModel {
             await MainActor.run {
                 didCompleteRegistration = true
                 submissionError = nil
-                // Add success state if needed
             }
             
         } catch let error as NetworkError {

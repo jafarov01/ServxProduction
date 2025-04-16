@@ -18,13 +18,14 @@ struct UserResponse: Decodable {
     let address: AddressResponse
     let languagesSpoken: [String]
     let role: RoleResponse
+    let education: String?  // Add this line
     let profilePhotoUrl: URL?
     
     enum CodingKeys: String, CodingKey {
         case id, email, firstName, lastName,
              phoneNumber, address,
              languagesSpoken, role,
-             profilePhotoUrl
+             education, profilePhotoUrl
     }
     
     init(from decoder: Decoder) throws {
@@ -39,16 +40,14 @@ struct UserResponse: Decodable {
         address = try container.decode(AddressResponse.self, forKey: .address)
         languagesSpoken = try container.decode([String].self, forKey: .languagesSpoken)
         role = try container.decode(RoleResponse.self, forKey: .role)
+        education = try container.decodeIfPresent(String.self, forKey: .education)
         
         // Handle profile photo URL construction
         let baseURL = URL(string: "http://localhost:8080")!
         let photoPath = try container.decode(String.self, forKey: .profilePhotoUrl)
         profilePhotoUrl = URL(string: photoPath, relativeTo: baseURL)!
-        
-        print("Constructed profile URL: \(profilePhotoUrl?.absoluteString ?? "nil")")
     }
 }
-
 struct AddressResponse: Decodable {
     let addressLine: String
     let city: String
@@ -107,7 +106,8 @@ extension UserResponse {
             address: address.toEntity(),
             languagesSpoken: languagesSpoken,
             role: role.toEntity(),
-            profilePhotoUrl: profilePhotoUrl
+            profilePhotoUrl: profilePhotoUrl,
+            education: education
         )
     }
 }

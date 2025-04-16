@@ -20,7 +20,7 @@ class ProfilePhotoEditViewModel: ObservableObject {
         isLoading = true
         do {
             // 1. Upload new photo
-            let url = try await userService.updateProfilePhoto(image)
+            _ = try await userService.updateProfilePhoto(image)
             
             // 2. Get updated user data
             let updatedUser = try await userService.getUserDetails()

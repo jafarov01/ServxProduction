@@ -6,4 +6,4 @@
 //
 
 
-protocol APIRequest: Encodable {}
+protocol APIRequest: Encodable, Decodable {}

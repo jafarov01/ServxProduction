@@ -15,12 +15,14 @@ class HomeViewModel: ObservableObject {
     @Published private(set) var categories: [ServiceCategory] = []
     @Published private(set) var recommendedServices: [ServiceProfile] = []
     @Published private(set) var isLoading = false
+
     
     private let service: ServicesServiceProtocol
     private var cancellables = Set<AnyCancellable>()
     
-    var shouldLoadData: Bool { categories.isEmpty }
-    
+    var shouldLoadData: Bool {
+        categories.isEmpty || recommendedServices.isEmpty
+    }
     init(service: ServicesServiceProtocol = ServicesService()) {
         self.service = service
     }

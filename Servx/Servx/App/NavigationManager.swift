@@ -31,6 +31,11 @@ enum AppRoute {
     enum Main: Hashable {
         case category(ServiceCategory)
         case subcategory(ServiceArea)
+        case serviceRequest(ServiceProfile)
+        case notifications
+        case serviceRequestDetail(id: Int64)  // For NEW_REQUEST/REQUEST_ACCEPTED
+        case bookingDetail(id: Int64)         // For BOOKING_CONFIRMED
+        case serviceReview(bookingId: Int64)  // For SERVICE_COMPLETED
     }
 }
 
@@ -77,7 +82,7 @@ final class NavigationManager: ObservableObject {
     func switchTab(to tab: Tab) {
         guard selectedTab != tab else { return }
         selectedTab = tab
-        resetMainStack()
+        resetAllStacks()
     }
     
     func goBack() {
@@ -91,9 +96,8 @@ final class NavigationManager: ObservableObject {
     }
     
     func resetAllStacks() {
-        mainStack = NavigationPath()
-        authStack = NavigationPath()
-        moreStack = NavigationPath()
+        authStack.removeLast(authStack.count)
+        moreStack.removeLast(moreStack.count)
     }
     
     func setupInitialNavigation() {

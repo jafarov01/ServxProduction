@@ -13,3 +13,18 @@ struct Address: Codable {
     let zipCode: String
     let country: String
 }
+
+extension Address {
+    var formattedAddress: String {
+        "\(addressLine), \(city), \(zipCode), \(country)"
+    }
+    
+    static func defaultAddress() -> Address {
+        Address(
+            addressLine: "Not specified",
+            city: "Unknown",
+            zipCode: "00000",
+            country: "Unknown"
+        )
+    }
+}

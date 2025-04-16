@@ -86,7 +86,7 @@ final class UserSessionManager: ObservableObject {
     }
     
     private func handleToken(_ token: String?) async throws {
-        guard let token = token else {
+        guard token != nil else {
             return await handleError(.unauthorized)
         }
         

@@ -17,9 +17,16 @@ struct User: Codable, Identifiable {
     let languagesSpoken: [String]
     let role: Role
     var profilePhotoUrl: URL?
+    let education: String?
     
-    var fullName : String {
+    var fullName: String {
         return "\(firstName) \(lastName)"
+    }
+    
+    // Optional computed property for cleaner access
+    var formattedEducation: String? {
+        guard role == .serviceProvider else { return nil }
+        return education
     }
 }
 

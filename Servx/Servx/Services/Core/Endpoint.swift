@@ -21,7 +21,14 @@ enum Endpoint {
     case updateUserDetails(request: UpdateUserRequest)
     case upgradeToProvider(request: UpgradeToProviderRequestDTO)
     case createServiceProfile(request: ServiceProfileRequestDTO)
-    case createBulkServices(categoryId: Int64, request: BulkServiceProfileRequest)
+    case createBulkServices(
+        categoryId: Int64,
+        request: BulkServiceProfileRequest
+    )
+    case createServiceRequest(request: ServiceRequestDTO)
+    case createNotification(Notification)
+    case getNotifications
+    case markNotificationAsRead(notificationId: Int64)
 
     var requiresAuth: Bool {
         switch self {
@@ -35,6 +42,12 @@ enum Endpoint {
     var url: String {
         let baseURL = "http://localhost:8080/api/"
         switch self {
+        case .createNotification:
+            return "\(baseURL)notifications"
+        case .getNotifications:
+            return "\(baseURL)notifications"
+        case .markNotificationAsRead(let notificationId):
+            return "\(baseURL)notifications/\(notificationId)/read"
         case .createBulkServices(let categoryId, _):
             return "\(baseURL)categories/\(categoryId)/service-offers/bulk"
         case .updateProfilePhoto: return "\(baseURL)user/me/photo"
@@ -57,17 +70,22 @@ enum Endpoint {
             return "\(baseURL)users/\(userId)"
         case .createServiceProfile:
             return "\(baseURL)user/me/service-profile"
+        case .createServiceRequest:
+            return "\(baseURL)service-requests"
         }
     }
 
     var method: HTTPMethod {
         switch self {
-        case .authLogin, .register, .upgradeToProvider, .createServiceProfile, .createBulkServices:
+        case .authLogin, .register, .upgradeToProvider, .createServiceProfile,
+            .createBulkServices, .createServiceRequest, .createNotification:
             return .post
         case .updateProfilePhoto, .updateUserDetails:
             return .put
         case .deleteProfilePhoto:
             return .delete
+        case .markNotificationAsRead:
+            return .patch
         default:
             return .get
         }
@@ -87,6 +105,10 @@ enum Endpoint {
             return request
         case .createBulkServices(_, let request):
             return request
+        case .createServiceRequest(let request):
+            return request
+        case .createNotification(let notification):
+            return notification
         default:
             return nil
         }

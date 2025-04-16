@@ -13,7 +13,7 @@ protocol UserServiceProtocol {
     func updateProfilePhoto(_ image: UIImage) async throws -> URL
     func deleteProfilePhoto() async throws
     func updateUserDetails(_ request: UpdateUserRequest) async throws -> UserResponse
-    func upgradeToProvider(request: UpgradeToProviderRequestDTO) async throws
+    func upgradeToProvider(request: UpgradeToProviderRequestDTO) async throws -> UserResponse
 }
 
 final class UserService: UserServiceProtocol {
@@ -24,9 +24,10 @@ final class UserService: UserServiceProtocol {
         self.apiClient = apiClient
     }
     
-    func upgradeToProvider(request: UpgradeToProviderRequestDTO) async throws {
+    func upgradeToProvider(request: UpgradeToProviderRequestDTO) async throws -> UserResponse {
         let endpoint = Endpoint.upgradeToProvider(request: request)
-        let _: EmptyResponseDTO = try await apiClient.request(endpoint)
+        let response: UserResponse = try await apiClient.request(endpoint)
+        return response
     }
     
     /// Retrieves the current user's details.

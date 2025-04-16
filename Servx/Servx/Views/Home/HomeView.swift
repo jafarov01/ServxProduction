@@ -28,8 +28,8 @@ struct HomeView: View {
                 contentView
             }
         }
-        .task {
-            if viewModel.shouldLoadData {
+        .task(id: navigator.selectedTab) {
+            if navigator.selectedTab == .home && viewModel.shouldLoadData {
                 await viewModel.loadData()
             }
         }
@@ -60,54 +60,6 @@ struct HomeView: View {
     }
 }
 
-struct HeaderView: View {
-    var body: some View {
-        HStack {
-            ProfilePhotoView(imageUrl: AuthenticatedUser.shared.currentUser?.profilePhotoUrl)
-                .frame(width: 48, height: 48)
-                .overlay(
-                    Circle()
-                        .stroke(ServxTheme.inputFieldBorderColor, lineWidth: 2)
-                )
-
-            VStack(alignment: .leading) {
-                // Greeting text
-                ServxTextView(
-                    text: "Good Morning 👋🏻",
-                    color: Color("greyScale900"),
-                    size: 14,
-                    weight: .regular,
-                    alignment: .leading
-                )
-
-                // User's full name
-                ServxTextView(
-                    text: AuthenticatedUser.shared.fullName,
-                    color: Color("primary500"),
-                    size: 18,
-                    weight: .bold,
-                    alignment: .leading
-                )
-            }
-
-            Spacer()
-
-            // Notification and bookmark icons
-            Image("notificationIcon")
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 28, height: 28)
-                .padding(.horizontal, 16)
-
-            Image("bookmarkIcon")
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 28, height: 28)
-        }
-        .padding(.horizontal, 20)
-    }
-}
-
 struct CategoriesSection: View {
     @ObservedObject var viewModel: HomeViewModel
     @EnvironmentObject var navigator: NavigationManager
@@ -131,6 +83,59 @@ struct CategoriesSection: View {
                 }
             }
         }
+    }
+}
+
+struct HeaderView: View {
+    @EnvironmentObject private var navigator: NavigationManager
+    
+    var body: some View {
+        HStack {
+            ProfilePhotoView(imageUrl: AuthenticatedUser.shared.currentUser?.profilePhotoUrl)
+                .frame(width: 48, height: 48)
+                .overlay(
+                    Circle()
+                        .stroke(ServxTheme.inputFieldBorderColor, lineWidth: 2)
+                )
+            
+            VStack(alignment: .leading) {
+                // Greeting text
+                ServxTextView(
+                    text: "Good Morning 👋🏻",
+                    color: Color("greyScale900"),
+                    size: 14,
+                    weight: .regular,
+                    alignment: .leading
+                )
+                
+                // User's full name
+                ServxTextView(
+                    text: AuthenticatedUser.shared.fullName,
+                    color: Color("primary500"),
+                    size: 18,
+                    weight: .bold,
+                    alignment: .leading
+                )
+            }
+            
+            Spacer()
+            
+            // Notification and bookmark icons
+            Image("notificationIcon")
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 28, height: 28)
+                .padding(.horizontal, 16)
+                .onTapGesture {
+                    navigator.navigate(to: AppRoute.Main.notifications)  // Navigate to NotificationListView
+                }
+            
+            Image("bookmarkIcon")
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 28, height: 28)
+        }
+        .padding(.horizontal, 20)
     }
 }
 

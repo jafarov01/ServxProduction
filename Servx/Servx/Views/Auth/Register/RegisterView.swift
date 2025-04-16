@@ -135,7 +135,7 @@ struct RegisterView: View {
                 textColor: Color("primary300"),
                 keyboardType: .phonePad
             )
-            .onChange(of: viewModel.phoneNumber) { _ in
+            .onChange(of: viewModel.phoneNumber) {
                 handlePhoneNumberFormatting()
             }
             

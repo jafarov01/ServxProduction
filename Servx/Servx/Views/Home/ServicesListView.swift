@@ -98,11 +98,11 @@ struct ServicesListView: View {
     private var servicesList: some View {
             LazyVStack(spacing: 16) {
                 ForEach(viewModel.filteredServices) { service in
-                    ServiceDetailedCard(service: service)
-                        .padding(.horizontal, 20)
-                        .onTapGesture {
-                            // Handle service selection
-                        }
+                    NavigationLink(value: AppRoute.Main.serviceRequest(service)) {
+                        ServiceDetailedCard(service: service)
+                            .padding(.horizontal, 20)
+                    }
+                        
                 }
             }
             .transition(.opacity)
