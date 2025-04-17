@@ -14,16 +14,19 @@ struct ServiceProfileResponseDTO: Decodable {
     let price: Double
     let rating: Double
     let reviewCount: Int
-    
-    // Initialization from backend ServiceProfileDTO response
-    init(service: ServiceProfile) {
-        self.id = service.id
-        self.providerName = service.providerName
-        self.categoryName = service.categoryName
-        self.subcategoryName = service.subcategoryName
-        self.workExperience = service.workExperience
-        self.price = service.price
-        self.rating = service.rating
-        self.reviewCount = service.reviewCount
+}
+
+extension ServiceProfileResponseDTO {
+    func toEntity() -> ServiceProfile {
+        ServiceProfile(
+            id: id,
+            providerName: providerName,
+            categoryName: categoryName,
+            subcategoryName: subcategoryName,
+            workExperience: workExperience,
+            price: price,
+            rating: rating,
+            reviewCount: reviewCount
+        )
     }
 }

@@ -119,19 +119,48 @@ final class APIClient: APIClientProtocol {
             return EmptyResponseDTO() as! T
         }
         
-        // Decoding
+        // Enhanced Decoding Error Handling
         do {
-            let decoded = try JSONDecoder().decode(T.self, from: data)
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .formatted(DateFormatter.iso8601Full)
+            let decoded = try decoder.decode(T.self, from: data)
             print("✅ Successfully Decoded \(T.self)")
             return decoded
-        } catch let DecodingError.typeMismatch(expectedType, context) {
-            print("🚨 DECODING ERROR: Type mismatch")
-            print("🔍 Expected Type: \(expectedType)")
-            print("📜 Context: \(context.debugDescription)")
-            print("🗺 Coding Path: \(context.codingPath)")
-            throw NetworkError.decodingError
         } catch let error as DecodingError {
-            print("🚨 DECODING ERROR: \(error.errorDescription ?? "Unknown decoding error")")
+            print("\n🚨 DECODING ERROR DETAILS:")
+            switch error {
+            case .typeMismatch(let type, let context):
+                print("TYPE MISMATCH:")
+                print("Expected Type: \(type)")
+                print("Coding Path: \(context.codingPath.map { $0.stringValue }.joined(separator: " → "))")
+                print("Debug Description: \(context.debugDescription)")
+                if let key = context.codingPath.last?.stringValue {
+                    print("Offending Key: \(key)")
+                }
+                
+            case .valueNotFound(let type, let context):
+                print("VALUE NOT FOUND:")
+                print("Expected Type: \(type)")
+                print("Coding Path: \(context.codingPath.map { $0.stringValue }.joined(separator: " → "))")
+                
+            case .keyNotFound(let key, let context):
+                print("KEY NOT FOUND:")
+                print("Missing Key: \(key.stringValue)")
+                print("Coding Path: \(context.codingPath.map { $0.stringValue }.joined(separator: " → "))")
+                
+            case .dataCorrupted(let context):
+                print("DATA CORRUPTED:")
+                print("Context: \(context.debugDescription)")
+                if let underlyingError = context.underlyingError {
+                    print("Underlying Error: \(underlyingError)")
+                }
+                
+            @unknown default:
+                print("UNKNOWN DECODING ERROR: \(error.localizedDescription)")
+            }
+            
+            print("Full Error: \(error)")
+            print("Response Data: \(String(data: data, encoding: .utf8) ?? "Invalid encoding")")
             throw NetworkError.decodingError
         } catch {
             print("🚨 UNEXPECTED ERROR: \(error.localizedDescription)")

@@ -29,6 +29,8 @@ enum Endpoint {
     case createNotification(Notification)
     case getNotifications
     case markNotificationAsRead(notificationId: Int64)
+    case fetchServiceRequest(id: Int64)
+    case acceptServiceRequest(id: Int64)
 
     var requiresAuth: Bool {
         switch self {
@@ -42,6 +44,10 @@ enum Endpoint {
     var url: String {
         let baseURL = "http://localhost:8080/api/"
         switch self {
+        case .fetchServiceRequest(let id):
+            return "\(baseURL)service-requests/\(id)"
+        case .acceptServiceRequest(let id):
+            return "\(baseURL)service-requests/\(id)/accept"
         case .createNotification:
             return "\(baseURL)notifications"
         case .getNotifications:
@@ -84,7 +90,7 @@ enum Endpoint {
             return .put
         case .deleteProfilePhoto:
             return .delete
-        case .markNotificationAsRead:
+        case .markNotificationAsRead, .acceptServiceRequest:
             return .patch
         default:
             return .get

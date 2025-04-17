@@ -19,7 +19,10 @@ struct ServiceRequest: Codable, Identifiable {
     let createdAt: Date
     
     enum RequestStatus: String, Codable {
-        case pending, accepted, declined, completed
+        case pending = "PENDING"
+        case accepted = "ACCEPTED"
+        case declined = "DECLINED"
+        case completed = "COMPLETED"
     }
     
     enum SeverityLevel: String, Codable, CaseIterable {

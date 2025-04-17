@@ -49,6 +49,9 @@
 		557A17312DAFF65C00971872 /* NotificationServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557A17302DAFF65C00971872 /* NotificationServiceProtocol.swift */; };
 		557A17332DAFFC1E00971872 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557A17322DAFFC1E00971872 /* Notification.swift */; };
 		557A17352DB0579D00971872 /* ServiceRequestDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557A17342DB0579D00971872 /* ServiceRequestDetailViewModel.swift */; };
+		557A17372DB059D000971872 /* ServiceRequestDetailDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557A17362DB059D000971872 /* ServiceRequestDetailDTO.swift */; };
+		557A17392DB05A6800971872 /* ServiceRequestDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557A17382DB05A6800971872 /* ServiceRequestDetailView.swift */; };
+		557A173B2DB0604200971872 /* ServiceRequestDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557A173A2DB0604100971872 /* ServiceRequestDetail.swift */; };
 		558F7CB12DAAAFE400F9125F /* ServiceProfileRequestDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558F7CB02DAAAFE400F9125F /* ServiceProfileRequestDTO.swift */; };
 		558F7CB32DAAB70600F9125F /* ServiceProfileResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558F7CB22DAAB70000F9125F /* ServiceProfileResponseDTO.swift */; };
 		558F7CB62DAAB7EF00F9125F /* BecomeServiceProviderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558F7CB52DAAB7EF00F9125F /* BecomeServiceProviderViewModel.swift */; };
@@ -165,6 +168,9 @@
 		557A17302DAFF65C00971872 /* NotificationServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationServiceProtocol.swift; sourceTree = "<group>"; };
 		557A17322DAFFC1E00971872 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
 		557A17342DB0579D00971872 /* ServiceRequestDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceRequestDetailViewModel.swift; sourceTree = "<group>"; };
+		557A17362DB059D000971872 /* ServiceRequestDetailDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceRequestDetailDTO.swift; sourceTree = "<group>"; };
+		557A17382DB05A6800971872 /* ServiceRequestDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceRequestDetailView.swift; sourceTree = "<group>"; };
+		557A173A2DB0604100971872 /* ServiceRequestDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceRequestDetail.swift; sourceTree = "<group>"; };
 		558F7CB02DAAAFE400F9125F /* ServiceProfileRequestDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProfileRequestDTO.swift; sourceTree = "<group>"; };
 		558F7CB22DAAB70000F9125F /* ServiceProfileResponseDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProfileResponseDTO.swift; sourceTree = "<group>"; };
 		558F7CB52DAAB7EF00F9125F /* BecomeServiceProviderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BecomeServiceProviderViewModel.swift; sourceTree = "<group>"; };
@@ -253,6 +259,7 @@
 		551FE7DC2DADAB1A000972A2 /* RequestService */ = {
 			isa = PBXGroup;
 			children = (
+				557A17382DB05A6800971872 /* ServiceRequestDetailView.swift */,
 				551FE7EB2DADB835000972A2 /* RatingView.swift */,
 				551FE7DD2DADAB28000972A2 /* RequestServiceView.swift */,
 			);
@@ -269,7 +276,6 @@
 		551FE7E22DADABB5000972A2 /* RequestService */ = {
 			isa = PBXGroup;
 			children = (
-				551FE7E82DADACDB000972A2 /* Responses */,
 				551FE7E72DADACD4000972A2 /* Requests */,
 				551FE7E32DADABBE000972A2 /* ServiceRequestServiceProtocol.swift */,
 			);
@@ -279,16 +285,10 @@
 		551FE7E72DADACD4000972A2 /* Requests */ = {
 			isa = PBXGroup;
 			children = (
+				557A17362DB059D000971872 /* ServiceRequestDetailDTO.swift */,
 				551FE7E92DADACEA000972A2 /* ServiceRequestDTO.swift */,
 			);
 			path = Requests;
-			sourceTree = "<group>";
-		};
-		551FE7E82DADACDB000972A2 /* Responses */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Responses;
 			sourceTree = "<group>";
 		};
 		552F25AF2D988FAD00BF1234 /* Others */ = {
@@ -646,6 +646,7 @@
 		55FBA25C2D35EAE100F86201 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				557A173A2DB0604100971872 /* ServiceRequestDetail.swift */,
 				551FE7E52DADABD5000972A2 /* ServiceRequest.swift */,
 				55FBA2532D35EAE100F86201 /* Address.swift */,
 				55FBA2562D35EAE100F86201 /* ServiceCategory.swift */,
@@ -902,6 +903,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				558F7CB32DAAB70600F9125F /* ServiceProfileResponseDTO.swift in Sources */,
+				557A173B2DB0604200971872 /* ServiceRequestDetail.swift in Sources */,
 				55FBA28A2D35EAE100F86201 /* ServiceArea.swift in Sources */,
 				55FBA28D2D35EAE100F86201 /* SplashView.swift in Sources */,
 				55FBA28F2D35EAE100F86201 /* RegisterView.swift in Sources */,
@@ -945,6 +947,7 @@
 				55FBA2A42D35EAE100F86201 /* ServxTextView.swift in Sources */,
 				5574B7592D3DC8C600DF60ED /* RegisterRequest.swift in Sources */,
 				559D3CE32DA18B4C00E3862F /* UnauthenticatedFlowView.swift in Sources */,
+				557A17372DB059D000971872 /* ServiceRequestDetailDTO.swift in Sources */,
 				55D3D33D2DA7F4E800799594 /* ProfilePhotoEditView.swift in Sources */,
 				55D3D3392DA7F4B700799594 /* ProfileView.swift in Sources */,
 				552F25B32D98993200BF1234 /* AuthenticatedUser.swift in Sources */,
@@ -965,6 +968,7 @@
 				552F25A42D98886600BF1234 /* ServiceDetailedCard.swift in Sources */,
 				552F25A82D9888C400BF1234 /* SubcategoriesViewModel.swift in Sources */,
 				55FBA2AB2D35EAE100F86201 /* Address.swift in Sources */,
+				557A17392DB05A6800971872 /* ServiceRequestDetailView.swift in Sources */,
 				5574B7652D3DC91500DF60ED /* APIClient.swift in Sources */,
 				55385E9B2D40857100CA96D6 /* MultiSelectDropdownView.swift in Sources */,
 				55FBA2AE2D35EAE100F86201 /* LoginViewModel.swift in Sources */,

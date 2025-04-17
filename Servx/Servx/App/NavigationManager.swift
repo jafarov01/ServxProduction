@@ -37,6 +37,10 @@ enum AppRoute {
         case bookingDetail(id: Int64)         // For BOOKING_CONFIRMED
         case serviceReview(bookingId: Int64)  // For SERVICE_COMPLETED
     }
+    
+    enum Inbox: Hashable {
+            case chat(requestId: Int64)
+        }
 }
 
 enum Tab: String, CaseIterable {
@@ -50,6 +54,7 @@ final class NavigationManager: ObservableObject {
     @Published var mainStack = NavigationPath()
     @Published var authStack = NavigationPath()
     @Published var moreStack = NavigationPath()
+    @Published var inboxStack = NavigationPath()
     @Published var selectedTab: Tab = .home
     @Published var isSplashVisible = true
     
@@ -83,6 +88,17 @@ final class NavigationManager: ObservableObject {
         guard selectedTab != tab else { return }
         selectedTab = tab
         resetAllStacks()
+    }
+    
+    func navigateToChat(requestId: Int64) {
+        // Switch to Inbox tab
+        selectedTab = .inbox
+        
+        // Clear existing navigation stack
+        inboxStack.removeLast(inboxStack.count)
+        
+        // Navigate to chat view
+        inboxStack.append(AppRoute.Inbox.chat(requestId: requestId))
     }
     
     func goBack() {

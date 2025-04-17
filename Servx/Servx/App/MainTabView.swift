@@ -34,16 +34,12 @@ struct MainTabView: View {
                     case .category(let category):
                         SubcategoriesListView(
                             category: category,
-                            viewModel: SubcategoriesViewModel(
-                                category: category
-                            )
+                            viewModel: SubcategoriesViewModel(category: category)
                         )
                     case .subcategory(let subcategory):
                         ServicesListView(
                             subcategory: subcategory,
-                            viewModel: ServicesViewModel(
-                                subcategory: subcategory
-                            )
+                            viewModel: ServicesViewModel(subcategory: subcategory)
                         )
                     case .serviceRequest(let service):
                         RequestServiceView(
@@ -52,10 +48,10 @@ struct MainTabView: View {
                     case .notifications:
                         NotificationListView(viewModel: NotificationViewModel())
                     case .serviceRequestDetail(let id):
-                        Text("ServiceRequestDetail")
-                    case .bookingDetail(let id):
+                        ServiceRequestDetailView(vm: ServiceRequestDetailViewModel(requestId: id))
+                    case .bookingDetail:
                         Text("BookingDetailView")
-                    case .serviceReview(let bookingId):
+                    case .serviceReview:
                         Text("ServiceReviewView")
                     }
                 }
@@ -81,8 +77,15 @@ struct MainTabView: View {
     }
 
     private var inboxTab: some View {
-        NavigationStack {
+        NavigationStack(path: $navigator.inboxStack) {
             InboxView()
+                .navigationDestination(for: AppRoute.Inbox.self) { route in
+                    switch route {
+                    case .chat(let requestId):
+                        Text("ChatView with id: \(requestId)")
+                            .navigationTitle("Chat")
+                    }
+                }
         }
         .tabItem { Label("Inbox", systemImage: "tray") }
         .tag(Tab.inbox)
@@ -94,13 +97,11 @@ struct MainTabView: View {
                 .navigationDestination(for: AppRoute.More.self) { route in
                     switch route {
                     case .profile: ProfileView(viewModel: ProfileViewModel())
-                    case .editProfile:
-                        ProfileEditView(viewModel: ProfileEditViewModel())
-                    case .photoEdit:
-                        ProfilePhotoEditView(
-                            photoEditVM: ProfilePhotoEditViewModel(),
-                            photoVM: ProfilePhotoViewModel()
-                        )
+                    case .editProfile: ProfileEditView(viewModel: ProfileEditViewModel())
+                    case .photoEdit: ProfilePhotoEditView(
+                        photoEditVM: ProfilePhotoEditViewModel(),
+                        photoVM: ProfilePhotoViewModel()
+                    )
                     case .settings: SettingsView()
                     case .support: SupportView()
                     case .becomeProvider: BecomeServiceProviderView()

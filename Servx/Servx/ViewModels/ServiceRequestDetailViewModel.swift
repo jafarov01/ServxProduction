@@ -8,15 +8,16 @@
 import SwiftUI
 
 @MainActor
-class ServiceRequestDetailViewModel: ObservableObject {
-    @Published var request: ServiceRequestResponseDTO?
+final class ServiceRequestDetailViewModel: ObservableObject {
+    @Published var request: ServiceRequestDetail?
     @Published var isLoading = false
+    @Published var errorMessage: String?
     @Published var showError = false
-    @Published var errorMessage = ""
+    @Published var submissionSuccess: Bool = false
     
     private let service: ServiceRequestServiceProtocol
-    private let requestId: Int64
     private let notificationService: NotificationServiceProtocol
+    let requestId: Int64
     
     init(
         requestId: Int64,
@@ -33,30 +34,32 @@ class ServiceRequestDetailViewModel: ObservableObject {
         defer { isLoading = false }
         
         do {
-            request = try await service.fetchServiceRequest(id: requestId)
+            request = try await service.fetchRequestDetails(id: requestId)
         } catch {
             handleError(error)
         }
     }
     
     func acceptRequest() async {
-        guard let request = request else { return }
+        guard request?.status == .pending else { return }
         
         isLoading = true
         defer { isLoading = false }
         
         do {
-            try await service.acceptServiceRequest(id: requestId)
-            try await notificationService.createNotification(
-                recipientId: request.seeker.id,
-                type: .requestAccepted,
-                payload: NotificationPayload(
-                    serviceRequestId: requestId,
-                    message: "Your request was accepted"
-                )
-            )
+            // Update backend
+            let updatedRequest = try await service.acceptRequest(id: requestId)
+            
             // Update local state
-            self.request?.status = .accepted
+            request = updatedRequest
+            
+            // Mark notification as read
+            try await notificationService.markNotificationAsRead(notificationId: requestId)
+            
+            // Navigate to chat
+            await MainActor.run {
+                submissionSuccess = true
+            }
         } catch {
             handleError(error)
         }
