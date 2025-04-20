@@ -41,6 +41,9 @@
 		556FF0E32DB305150037704D /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556FF0E22DB3050B0037704D /* ChatViewModel.swift */; };
 		556FF0E52DB3058E0037704D /* MessageBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556FF0E42DB3058E0037704D /* MessageBubbleView.swift */; };
 		556FF0E72DB305980037704D /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556FF0E62DB305980037704D /* ChatView.swift */; };
+		556FF0E92DB481FC0037704D /* BookingProposalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556FF0E82DB481FC0037704D /* BookingProposalViewModel.swift */; };
+		556FF0EB2DB482180037704D /* BookingProposalSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556FF0EA2DB482180037704D /* BookingProposalSheet.swift */; };
+		556FF0ED2DB484EF0037704D /* BookingConfirmationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556FF0EC2DB484EF0037704D /* BookingConfirmationSheet.swift */; };
 		5574B7472D3DC7E700DF60ED /* ServicesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7462D3DC7E700DF60ED /* ServicesService.swift */; };
 		5574B7572D3DC8B800DF60ED /* LoginRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7562D3DC8B800DF60ED /* LoginRequest.swift */; };
 		5574B7592D3DC8C600DF60ED /* RegisterRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7582D3DC8C600DF60ED /* RegisterRequest.swift */; };
@@ -166,6 +169,9 @@
 		556FF0E22DB3050B0037704D /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 		556FF0E42DB3058E0037704D /* MessageBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubbleView.swift; sourceTree = "<group>"; };
 		556FF0E62DB305980037704D /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		556FF0E82DB481FC0037704D /* BookingProposalViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookingProposalViewModel.swift; sourceTree = "<group>"; };
+		556FF0EA2DB482180037704D /* BookingProposalSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookingProposalSheet.swift; sourceTree = "<group>"; };
+		556FF0EC2DB484EF0037704D /* BookingConfirmationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookingConfirmationSheet.swift; sourceTree = "<group>"; };
 		5574B7462D3DC7E700DF60ED /* ServicesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServicesService.swift; sourceTree = "<group>"; };
 		5574B7562D3DC8B800DF60ED /* LoginRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginRequest.swift; sourceTree = "<group>"; };
 		5574B7582D3DC8C600DF60ED /* RegisterRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterRequest.swift; sourceTree = "<group>"; };
@@ -331,6 +337,8 @@
 		5548714E2D9F540600AB1811 /* Inbox */ = {
 			isa = PBXGroup;
 			children = (
+				556FF0EC2DB484EF0037704D /* BookingConfirmationSheet.swift */,
+				556FF0EA2DB482180037704D /* BookingProposalSheet.swift */,
 				556FF0E62DB305980037704D /* ChatView.swift */,
 				556FF0E42DB3058E0037704D /* MessageBubbleView.swift */,
 				554871572D9F54AA00AB1811 /* InboxView.swift */,
@@ -712,6 +720,7 @@
 		55FBA2702D35EAE100F86201 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				556FF0E82DB481FC0037704D /* BookingProposalViewModel.swift */,
 				556FF0DA2DB1AC5C0037704D /* Inbox */,
 				557A172E2DAFF64600971872 /* NotificationViewModel.swift */,
 				551FE7E02DADAB71000972A2 /* RequestServiceViewModel.swift */,
@@ -964,6 +973,7 @@
 				55FBA2992D35EAE100F86201 /* RegisterViewModel.swift in Sources */,
 				554C737D2D9CBE9700145987 /* KeychainManager.swift in Sources */,
 				557A17352DB0579D00971872 /* ServiceRequestDetailViewModel.swift in Sources */,
+				556FF0E92DB481FC0037704D /* BookingProposalViewModel.swift in Sources */,
 				554871522D9F546700AB1811 /* BookingView.swift in Sources */,
 				55FBA29A2D35EAE100F86201 /* UserDefaultsManager.swift in Sources */,
 				557A172D2DAFF50300971872 /* NotificationListView.swift in Sources */,
@@ -999,6 +1009,7 @@
 				55FBA2A62D35EAE100F86201 /* ForgotPasswordView.swift in Sources */,
 				55D3D3312DA7E99900799594 /* MoreViewModel.swift in Sources */,
 				552F25A02D98879600BF1234 /* SubcategoriesListView.swift in Sources */,
+				556FF0ED2DB484EF0037704D /* BookingConfirmationSheet.swift in Sources */,
 				55FBA2A72D35EAE100F86201 /* HomeViewModel.swift in Sources */,
 				552F25A22D9887D100BF1234 /* ServicesListView.swift in Sources */,
 				55FBA2A82D35EAE100F86201 /* User.swift in Sources */,
@@ -1045,6 +1056,7 @@
 				559D3CE52DA18B7D00E3862F /* MainBottomNavBar.swift in Sources */,
 				557A17312DAFF65C00971872 /* NotificationServiceProtocol.swift in Sources */,
 				55D3D33F2DA7F51000799594 /* ProfileEditViewModel.swift in Sources */,
+				556FF0EB2DB482180037704D /* BookingProposalSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -34,6 +34,8 @@ enum Endpoint {
     case fetchConversations  // GET /api/chats
     case fetchMessages(requestId: Int64, page: Int, size: Int)
     case markConversationAsRead(requestId: Int64)
+    case confirmBooking(requestId: Int64)
+    case rejectBooking(requestId: Int64)
 
     var requiresAuth: Bool {
         switch self {
@@ -88,13 +90,18 @@ enum Endpoint {
                 "\(baseURL)chats/\(requestId)/messages?page=\(page)&size=\(size)&sort=timestamp,desc"
         case .markConversationAsRead(let requestId):
             return "\(baseURL)chats/\(requestId)/read"
+        case .confirmBooking(let requestId):
+             return "\(baseURL)service-requests/\(requestId)/confirm-booking"
+        case .rejectBooking(let requestId):
+             return "\(baseURL)service-requests/\(requestId)/reject-booking"
         }
     }
 
     var method: HTTPMethod {
         switch self {
         case .authLogin, .register, .upgradeToProvider, .createServiceProfile,
-            .createBulkServices, .createServiceRequest, .createNotification:
+            .createBulkServices, .createServiceRequest, .createNotification,
+            .confirmBooking, .rejectBooking:
             return .post
         case .updateProfilePhoto, .updateUserDetails:
             return .put

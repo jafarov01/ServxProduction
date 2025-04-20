@@ -16,7 +16,7 @@ struct PageWrapper<T: Codable>: Codable {
     var size: Int { page.size }
     var number: Int { page.number }
     var first: Bool { page.first ?? (page.number == 0) }
-    var last: Bool { page.last ?? (page.number >= page.totalPages - 1 && page.totalPages > 0) } // Ensure totalPages > 0
+    var last: Bool { page.last ?? (page.number >= page.totalPages - 1 && page.totalPages > 0) }
     var numberOfElements: Int { page.numberOfElements ?? content.count }
     var empty: Bool { page.empty ?? content.isEmpty }
 
@@ -41,7 +41,9 @@ struct ChatMessageDTO: Codable, Identifiable, Hashable {
     let senderName: String?
     let content: String
     let timestamp: String
-    let isRead: Bool // Swift property name
+    var isRead: Bool
+    let bookingPayload: BookingRequestPayload?
+    var bookingProposalStatus: BookingProposalState? = nil
 
     // Maps JSON keys to Swift properties
     enum CodingKeys: String, CodingKey {
@@ -53,6 +55,7 @@ struct ChatMessageDTO: Codable, Identifiable, Hashable {
         case content
         case timestamp
         case isRead = "read"
+        case bookingPayload
     }
 
     var identifier: Int64 { id }
@@ -89,4 +92,28 @@ struct ChatConversationDTO: Codable, Identifiable, Hashable {
         formatter.formatOptions = [.withInternetDateTime]
         return formatter.date(from: lastMessageTimestamp) ?? .distantPast
     }
+}
+
+struct BookingRequestPayload: Codable, Hashable {
+    let agreedDateTime: String
+    let serviceRequestDetailsText: String
+    let priceMin: Double?
+    let priceMax: Double?
+    let notes: String?
+
+    var agreedDate: Date? {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let date = formatter.date(from: agreedDateTime) {
+            return date
+        }
+        formatter.formatOptions = [.withInternetDateTime]
+        return formatter.date(from: agreedDateTime)
+    }
+}
+
+enum BookingProposalState: String, Codable, Hashable {
+    case pending // Default state when proposal is received/sent
+    case accepted
+    case rejected
 }

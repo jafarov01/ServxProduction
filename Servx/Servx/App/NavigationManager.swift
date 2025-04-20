@@ -98,7 +98,7 @@ final class NavigationManager: ObservableObject {
         inboxStack.removeLast(inboxStack.count)
         
         // Navigate to chat view
-        inboxStack.append(AppRoute.Inbox.chat(requestId: requestId))
+        navigate(to: AppRoute.Inbox.chat(requestId: requestId));
     }
     
     func goBack() {
