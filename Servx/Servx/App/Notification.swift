@@ -101,27 +101,42 @@ protocol NotificationRouterProtocol {
 struct NotificationRouter: NotificationRouterProtocol {
     @MainActor
     func handleNavigation(for notification: Notification, navigator: NavigationManager) {
-        guard !notification.isRead else { return }
-        
+        // --- REMOVED: guard !notification.isRead else { return } ---
+        // Allow tapping regardless of read status
+
         switch notification.type {
-        case .newRequest, .requestAccepted, .requestDeclined:
+        case .newRequest, .requestDeclined: // Keep these going to detail view
             if let requestId = notification.payload.serviceRequestId {
+                // Navigate using the appropriate stack if needed, or a generic navigate
+                // Assuming navigate(to: AppRoute.Main...) adds to mainStack
                 navigator.navigate(to: AppRoute.Main.serviceRequestDetail(id: requestId))
             }
-            
-        case .bookingConfirmed:
-            if let bookingId = notification.payload.bookingId {
-                navigator.navigate(to: AppRoute.Main.bookingDetail(id: bookingId))
+
+        case .requestAccepted: // --- CHANGED: Go directly to Chat ---
+            if let requestId = notification.payload.serviceRequestId {
+                 // This switches to Inbox tab and pushes chat view onto inboxStack
+                navigator.navigateToChat(requestId: requestId)
             }
-            
+
+        case .bookingConfirmed:
+            if let bookingId = notification.payload.bookingId,
+               let requestId = notification.payload.serviceRequestId { // Assuming payload includes requestId too
+                 // Option 1: Go to Booking Detail (Current behavior based on AppRoute)
+                  navigator.navigate(to: AppRoute.Main.bookingDetail(id: bookingId))
+                 // Option 2: Or maybe go to chat if chat is primary interaction?
+                 // navigator.navigateToChat(requestId: requestId)
+            }
+
         case .serviceCompleted:
             if let bookingId = notification.payload.bookingId {
+                // Assuming payload contains bookingId needed for review route
                 navigator.navigate(to: AppRoute.Main.serviceReview(bookingId: bookingId))
             }
-            
+
         case .systemAlert:
-            // No navigation, just mark as read
+            // No navigation action needed
             break
         }
     }
+    
 }

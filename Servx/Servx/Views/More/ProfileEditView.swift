@@ -8,12 +8,8 @@
 import SwiftUI
 
 struct ProfileEditView: View {
-    @ObservedObject private var viewModel : ProfileEditViewModel
+    @StateObject private var viewModel = ProfileEditViewModel()
     @EnvironmentObject private var navigator: NavigationManager
-    
-    init(viewModel: ProfileEditViewModel) {
-        _viewModel = ObservedObject(wrappedValue: viewModel)
-    }
 
     var body: some View {
         ScrollView {

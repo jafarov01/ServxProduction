@@ -9,12 +9,8 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject private var navigator: NavigationManager
-    @ObservedObject private var viewModel : ProfileViewModel
-    
-    
-    init(viewModel: ProfileViewModel) {
-        _viewModel = ObservedObject(wrappedValue: viewModel)
-    }
+    @StateObject private var viewModel = ProfileViewModel()
+
     
     var body: some View {
         ScrollView {

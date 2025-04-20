@@ -33,22 +33,18 @@ struct MainTabView: View {
                     switch route {
                     case .category(let category):
                         SubcategoriesListView(
-                            category: category,
-                            viewModel: SubcategoriesViewModel(category: category)
+                            category: category
                         )
                     case .subcategory(let subcategory):
                         ServicesListView(
-                            subcategory: subcategory,
-                            viewModel: ServicesViewModel(subcategory: subcategory)
+                            subcategory: subcategory
                         )
                     case .serviceRequest(let service):
-                        RequestServiceView(
-                            viewModel: RequestServiceViewModel(service: service)
-                        )
+                        RequestServiceView(serviceProfile: service)
                     case .notifications:
-                        NotificationListView(viewModel: NotificationViewModel())
+                        NotificationListView()
                     case .serviceRequestDetail(let id):
-                        ServiceRequestDetailView(vm: ServiceRequestDetailViewModel(requestId: id))
+                        ServiceRequestDetailView(requestId: id)
                     case .bookingDetail:
                         Text("BookingDetailView")
                     case .serviceReview:
@@ -82,8 +78,7 @@ struct MainTabView: View {
                 .navigationDestination(for: AppRoute.Inbox.self) { route in
                     switch route {
                     case .chat(let requestId):
-                        Text("ChatView with id: \(requestId)")
-                            .navigationTitle("Chat")
+                        ChatView(requestId: requestId)
                     }
                 }
         }
@@ -96,12 +91,9 @@ struct MainTabView: View {
             MoreView(viewModel: MoreViewModel())
                 .navigationDestination(for: AppRoute.More.self) { route in
                     switch route {
-                    case .profile: ProfileView(viewModel: ProfileViewModel())
-                    case .editProfile: ProfileEditView(viewModel: ProfileEditViewModel())
-                    case .photoEdit: ProfilePhotoEditView(
-                        photoEditVM: ProfilePhotoEditViewModel(),
-                        photoVM: ProfilePhotoViewModel()
-                    )
+                    case .profile: ProfileView()
+                    case .editProfile: ProfileEditView()
+                    case .photoEdit: ProfilePhotoEditView()
                     case .settings: SettingsView()
                     case .support: SupportView()
                     case .becomeProvider: BecomeServiceProviderView()

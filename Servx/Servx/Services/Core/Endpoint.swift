@@ -31,6 +31,9 @@ enum Endpoint {
     case markNotificationAsRead(notificationId: Int64)
     case fetchServiceRequest(id: Int64)
     case acceptServiceRequest(id: Int64)
+    case fetchConversations  // GET /api/chats
+    case fetchMessages(requestId: Int64, page: Int, size: Int)
+    case markConversationAsRead(requestId: Int64)
 
     var requiresAuth: Bool {
         switch self {
@@ -78,6 +81,13 @@ enum Endpoint {
             return "\(baseURL)user/me/service-profile"
         case .createServiceRequest:
             return "\(baseURL)service-requests"
+        case .fetchConversations:
+            return "\(baseURL)chats"
+        case .fetchMessages(let requestId, let page, let size):
+            return
+                "\(baseURL)chats/\(requestId)/messages?page=\(page)&size=\(size)&sort=timestamp,desc"
+        case .markConversationAsRead(let requestId):
+            return "\(baseURL)chats/\(requestId)/read"
         }
     }
 
@@ -90,7 +100,7 @@ enum Endpoint {
             return .put
         case .deleteProfilePhoto:
             return .delete
-        case .markNotificationAsRead, .acceptServiceRequest:
+        case .markNotificationAsRead, .acceptServiceRequest, .markConversationAsRead:
             return .patch
         default:
             return .get

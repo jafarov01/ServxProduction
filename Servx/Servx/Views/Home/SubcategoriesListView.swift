@@ -9,9 +9,17 @@ import SwiftUI
 
 struct SubcategoriesListView: View {
     let category: ServiceCategory
-    @ObservedObject var viewModel: SubcategoriesViewModel
+
     @EnvironmentObject private var navigator: NavigationManager
 
+    @StateObject private var viewModel: SubcategoriesViewModel
+
+    init(category: ServiceCategory) {
+        self.category = category
+        _viewModel = StateObject(wrappedValue: SubcategoriesViewModel(category: category))
+        print("SubcategoriesListView initialized for category: \(category.name)") // Added print for debug
+    }
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {

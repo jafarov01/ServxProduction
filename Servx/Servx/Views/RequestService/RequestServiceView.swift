@@ -8,8 +8,14 @@
 import SwiftUI
 
 struct RequestServiceView: View {
-    @ObservedObject var viewModel: RequestServiceViewModel
+    @StateObject private var viewModel: RequestServiceViewModel
     @EnvironmentObject private var navigator: NavigationManager
+
+    // Initializer takes the ServiceProfile data needed by the ViewModel
+    init(serviceProfile: ServiceProfile) {
+        _viewModel = StateObject(wrappedValue: RequestServiceViewModel(service: serviceProfile))
+        print("RequestServiceView initialized for service: \(serviceProfile.providerName)")
+    }
     
     var body: some View {
         VStack(spacing: 16) {

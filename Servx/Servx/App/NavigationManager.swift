@@ -114,6 +114,8 @@ final class NavigationManager: ObservableObject {
     func resetAllStacks() {
         authStack.removeLast(authStack.count)
         moreStack.removeLast(moreStack.count)
+        mainStack.removeLast(mainStack.count)
+        inboxStack.removeLast(inboxStack.count)
     }
     
     func setupInitialNavigation() {

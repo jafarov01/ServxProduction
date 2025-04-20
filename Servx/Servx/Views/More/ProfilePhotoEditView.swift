@@ -9,14 +9,9 @@ import SwiftUI
 
 struct ProfilePhotoEditView: View {
     @EnvironmentObject private var navigator: NavigationManager
-    @ObservedObject private var photoEditVM : ProfilePhotoEditViewModel
-    @ObservedObject private var photoVM : ProfilePhotoViewModel
+    @StateObject private var photoEditVM = ProfilePhotoEditViewModel()
+    @StateObject private var photoVM = ProfilePhotoViewModel()
     @State private var selectedImage: UIImage?
-    
-    init(photoEditVM: ProfilePhotoEditViewModel, photoVM: ProfilePhotoViewModel) {
-        _photoEditVM = ObservedObject(wrappedValue: photoEditVM)
-        _photoVM = ObservedObject(wrappedValue: photoVM)
-    }
     
     private enum PhotoSource: Identifiable {
         case camera, library

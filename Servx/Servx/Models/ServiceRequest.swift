@@ -23,6 +23,7 @@ struct ServiceRequest: Codable, Identifiable {
         case accepted = "ACCEPTED"
         case declined = "DECLINED"
         case completed = "COMPLETED"
+        case bookingConfirmed = "BOOKING_CONFIRMED"
     }
     
     enum SeverityLevel: String, Codable, CaseIterable {

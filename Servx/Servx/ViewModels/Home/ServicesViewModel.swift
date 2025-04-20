@@ -5,7 +5,8 @@
 //  Created by Makhlug Jafarov on 2025. 03. 29..
 //
 
-import Foundation
+
+import SwiftUI
 import Combine
 
 @MainActor
@@ -14,22 +15,29 @@ class ServicesViewModel: ObservableObject {
     @Published private(set) var filteredServices: [ServiceProfile] = []
     @Published var searchQuery = ""
     @Published private(set) var isLoading = false
-    @Published private(set) var errorMessage: String?
-    
+
+
+    @Published var errorWrapper: ErrorWrapper? = nil
+
+
+
     private let service: ServicesServiceProtocol
     let subcategory: ServiceArea
     private var cancellables = Set<AnyCancellable>()
-    
+
     init(subcategory: ServiceArea, service: ServicesServiceProtocol = ServicesService()) {
         self.subcategory = subcategory
         self.service = service
+        print("ServicesViewModel initialized for subcategory: \(subcategory.name)")
         setupObservers()
     }
 
     private func setupObservers() {
         $searchQuery
-            .debounce(for: 0.3, scheduler: DispatchQueue.main)
-            .sink { [weak self] _ in
+            .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
+            .removeDuplicates()
+            .sink { [weak self] query in // Capture query to use in print
+                print("Filtering services based on query: \(query)")
                 self?.filterServices()
             }
             .store(in: &cancellables)
@@ -37,8 +45,9 @@ class ServicesViewModel: ObservableObject {
 
     func loadServices() async {
         guard !isLoading else { return }
-        
+        print("Loading services for subcategory: \(subcategory.name)")
         isLoading = true
+        errorWrapper = nil // Clear error before loading
         defer { isLoading = false }
 
         do {
@@ -46,22 +55,33 @@ class ServicesViewModel: ObservableObject {
                 categoryId: subcategory.categoryId,
                 subcategoryId: subcategory.id
             )
-            services = fetchedServices
-            filteredServices = fetchedServices
+            self.services = fetchedServices
+            self.filterServices() // Apply initial filter
+            print("Loaded \(fetchedServices.count) services.")
         } catch {
-            errorMessage = "Failed to load services. Please try again."
+            let errorMsg = "Failed to load services. Please try again."
+            print("Error loading services: \(error)")
+            // --- CHANGE: Set errorWrapper ---
+            self.errorWrapper = ErrorWrapper(message: errorMsg)
+            // --- End Change ---
         }
     }
 
     private func filterServices() {
-        guard !searchQuery.isEmpty else {
+        if searchQuery.isEmpty {
             filteredServices = services
-            return
+        } else {
+            let lowercasedQuery = searchQuery.lowercased()
+            filteredServices = services.filter { service in
+                service.serviceTitle.lowercased().contains(lowercasedQuery) ||
+                service.providerName.lowercased().contains(lowercasedQuery)
+            }
         }
-        
-        filteredServices = services.filter {
-            $0.serviceTitle.localizedCaseInsensitiveContains(searchQuery) ||
-            $0.providerName.localizedCaseInsensitiveContains(searchQuery)
-        }
+         print("Filtering complete. Filtered count: \(filteredServices.count)")
     }
+}
+
+struct ErrorWrapper: Identifiable {
+    let id = UUID() // Conforms to Identifiable
+    let message: String
 }
