@@ -14,7 +14,7 @@ struct MoreView: View {
     @ObservedObject private var auth = AuthenticatedUser.shared
     
     init(viewModel: MoreViewModel) {
-        _viewModel = ObservedObject(wrappedValue: viewModel)
+            self.viewModel = viewModel
     }
     
     var body: some View {

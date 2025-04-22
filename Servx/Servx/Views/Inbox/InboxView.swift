@@ -34,8 +34,7 @@ struct InboxView: View {
                     if let requestId = newRequestId {
                         print("InboxView: Navigating via manager to chat: \(requestId)")
                         navigator.inboxStack.append(AppRoute.Inbox.chat(requestId: requestId))
-                        // Resetting selection here is optional, handled by loadConversations too
-                        // viewModel.selectedRequestId = nil
+                        viewModel.selectedRequestId = nil
                     }
                 }
             } else {

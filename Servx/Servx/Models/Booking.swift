@@ -26,11 +26,11 @@ struct Booking: Codable, Identifiable, Hashable {
     let providerId: Int64
     let providerFirstName: String
     let providerLastName: String
-    let providerProfilePhotoUrl: String?
+    let providerProfilePhotoUrl: URL?
     let seekerId: Int64
     let seekerFirstName: String
     let seekerLastName: String
-    let seekerProfilePhotoUrl: String?
+    let seekerProfilePhotoUrl: URL?
     let serviceRequestId: Int64
     let createdAt: String?
     let updatedAt: String?
@@ -59,11 +59,11 @@ struct Booking: Codable, Identifiable, Hashable {
         self.providerId = providerId
         self.providerFirstName = providerFirstName
         self.providerLastName = providerLastName
-        self.providerProfilePhotoUrl = providerProfilePhotoUrl
+        self.providerProfilePhotoUrl = URL(string: providerProfilePhotoUrl ?? "")
         self.seekerId = seekerId
         self.seekerFirstName = seekerFirstName
         self.seekerLastName = seekerLastName
-        self.seekerProfilePhotoUrl = seekerProfilePhotoUrl
+        self.seekerProfilePhotoUrl = URL(string: seekerProfilePhotoUrl ?? "")
         self.serviceRequestId = serviceRequestId
         self.createdAt = createdAt
         self.updatedAt = updatedAt
@@ -82,6 +82,17 @@ enum BookingStatus: String, Codable, Hashable, CaseIterable {
         case .completed: return "Completed"
         case .cancelledBySeeker: return "Cancelled" // Simplified display
         case .cancelledByProvider: return "Cancelled" // Simplified display
+        }
+    }
+    
+    var displayTab: DisplayTab {
+        switch self {
+        case .upcoming:
+            return .upcoming
+        case .completed:
+            return .completed
+        case .cancelledBySeeker, .cancelledByProvider:
+            return .cancelled
         }
     }
 }

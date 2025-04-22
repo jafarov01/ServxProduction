@@ -10,6 +10,10 @@ import SwiftUI
 struct MainTabView: View {
     @EnvironmentObject private var navigator: NavigationManager
     @EnvironmentObject private var session: UserSessionManager
+    
+    @StateObject private var homeViewModel = HomeViewModel()
+    @StateObject private var moreViewModel = MoreViewModel()
+    @StateObject private var bookingViewModel = BookingViewModel(authenticatedUser: AuthenticatedUser.shared)
 
     var body: some View {
         TabView(selection: $navigator.selectedTab) {
@@ -27,7 +31,7 @@ struct MainTabView: View {
 
     private var homeTab: some View {
         NavigationStack(path: $navigator.mainStack) {
-            HomeView(viewModel: HomeViewModel())
+            HomeView(viewModel: homeViewModel)
                 .environmentObject(navigator)
                 .navigationDestination(for: AppRoute.Main.self) { route in
                     switch route {
@@ -58,7 +62,7 @@ struct MainTabView: View {
 
     private var bookingTab: some View {
         NavigationStack {
-            BookingView()
+            BookingView(viewModel: bookingViewModel)
         }
         .tabItem { Label("Booking", systemImage: "calendar.badge.plus") }
         .tag(Tab.booking)

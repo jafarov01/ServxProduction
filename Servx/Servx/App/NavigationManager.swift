@@ -78,6 +78,8 @@ final class NavigationManager: ObservableObject {
             moreStack.append(route)
         case let route as AppRoute.Main:
             mainStack.append(route)
+        case let route as AppRoute.Inbox:
+            inboxStack.append(route)
         default:
             logError("Attempted to navigate to invalid route type: \(type(of: route))")
         }
@@ -108,6 +110,8 @@ final class NavigationManager: ObservableObject {
             authStack.removeLast()
         } else if !moreStack.isEmpty {
             moreStack.removeLast()
+        } else if !inboxStack.isEmpty {
+            inboxStack.removeLast()
         }
     }
     

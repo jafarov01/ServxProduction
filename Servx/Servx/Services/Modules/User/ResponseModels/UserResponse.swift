@@ -19,7 +19,7 @@ struct UserResponse: Decodable {
     let languagesSpoken: [String]
     let role: RoleResponse
     let education: String?  // Add this line
-    let profilePhotoUrl: URL?
+    let profilePhotoUrl: String?
     
     enum CodingKeys: String, CodingKey {
         case id, email, firstName, lastName,
@@ -28,25 +28,20 @@ struct UserResponse: Decodable {
              education, profilePhotoUrl
     }
     
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        
-        // Decode primitive values
-        id = try container.decode(Int64.self, forKey: .id)
-        email = try container.decode(String.self, forKey: .email)
-        firstName = try container.decode(String.self, forKey: .firstName)
-        lastName = try container.decode(String.self, forKey: .lastName)
-        phoneNumber = try container.decode(String.self, forKey: .phoneNumber)
-        address = try container.decode(AddressResponse.self, forKey: .address)
-        languagesSpoken = try container.decode([String].self, forKey: .languagesSpoken)
-        role = try container.decode(RoleResponse.self, forKey: .role)
-        education = try container.decodeIfPresent(String.self, forKey: .education)
-        
-        // Handle profile photo URL construction
-        let baseURL = URL(string: "http://localhost:8080")!
-        let photoPath = try container.decode(String.self, forKey: .profilePhotoUrl)
-        profilePhotoUrl = URL(string: photoPath, relativeTo: baseURL)!
-    }
+    func toEntity() -> User {
+         return User(
+             id: id,
+             email: email,
+             firstName: firstName,
+             lastName: lastName,
+             phoneNumber: phoneNumber,
+             address: address.toEntity(), // Assuming AddressResponse has toEntity()
+             languagesSpoken: languagesSpoken,
+             role: role.toEntity(), // Assuming RoleResponse has toEntity()
+             education: education,
+             profilePhotoUrl: profilePhotoUrl // Pass the String?
+         )
+     }
 }
 struct AddressResponse: Decodable {
     let addressLine: String
@@ -92,22 +87,5 @@ extension AddressResponse {
 extension RoleResponse {
     func toEntity() -> Role {
         Role(rawValue: self.rawValue) ?? .serviceSeeker
-    }
-}
-
-extension UserResponse {
-    func toEntity() -> User {
-        User(
-            id: id,
-            email: email,
-            firstName: firstName,
-            lastName: lastName,
-            phoneNumber: phoneNumber,
-            address: address.toEntity(),
-            languagesSpoken: languagesSpoken,
-            role: role.toEntity(),
-            profilePhotoUrl: profilePhotoUrl,
-            education: education
-        )
     }
 }

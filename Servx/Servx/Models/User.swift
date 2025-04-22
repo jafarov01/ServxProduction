@@ -28,6 +28,19 @@ struct User: Codable, Identifiable {
         guard role == .serviceProvider else { return nil }
         return education
     }
+    
+    init(id: Int64, email: String, firstName: String, lastName: String, phoneNumber: String, address: Address, languagesSpoken: [String], role: Role, education: String?, profilePhotoUrl: String?) {
+             self.id = id
+             self.email = email
+             self.firstName = firstName
+             self.lastName = lastName
+             self.phoneNumber = phoneNumber
+             self.address = address
+             self.languagesSpoken = languagesSpoken
+             self.role = role
+             self.education = education
+             self.profilePhotoUrl = URL(string: profilePhotoUrl ?? "")
+         }
 }
 
 enum Role: String, Codable {

@@ -39,7 +39,7 @@ enum Endpoint {
     case fetchBookings(status: BookingStatus, page: Int, size: Int)
     case cancelBooking(bookingId: Int64)
     case fetchServiceProfile(profileId: Int64)
-    
+    case fetchBookingsByDateRange(startDate: Date, endDate: Date)
 
     var requiresAuth: Bool {
         switch self {
@@ -96,19 +96,29 @@ enum Endpoint {
                 "\(baseURL)chats/\(requestId)/messages?page=\(page)&size=\(size)&sort=timestamp,desc"
         case .markConversationAsRead(let requestId):
             return "\(baseURL)chats/\(requestId)/read"
-        case .confirmBooking(let requestId, let messageId): // Updated path
-            return "\(baseURL)service-requests/\(requestId)/confirm-booking/\(messageId)"
+        case .confirmBooking(let requestId, let messageId):  // Updated path
+            return
+                "\(baseURL)service-requests/\(requestId)/confirm-booking/\(messageId)"
         case .rejectBooking(let requestId):
-             return "\(baseURL)service-requests/\(requestId)/reject-booking"
+            return "\(baseURL)service-requests/\(requestId)/reject-booking"
         case .fetchBookings(let status, let page, let size):
-            let statusQuery = "status=\(status.rawValue)" // Use backend status values
+            let statusQuery = "status=\(status.rawValue)"  // Use backend status values
             let pageQuery = "page=\(page)"
             let sizeQuery = "size=\(size)"
             // Match the sort parameter used in @PageableDefault in controller
             let sortQuery = "sort=scheduledStartTime,asc"
-            return "\(baseURL)bookings?\(statusQuery)&\(pageQuery)&\(sizeQuery)&\(sortQuery)"
+            return
+                "\(baseURL)bookings?\(statusQuery)&\(pageQuery)&\(sizeQuery)&\(sortQuery)"
         case .cancelBooking(let bookingId):
-              return "\(baseURL)bookings/\(bookingId)/cancel"
+            return "\(baseURL)bookings/\(bookingId)/cancel"
+        case .fetchBookingsByDateRange(let startDate, let endDate):
+            let startDateString = DateFormatter.yyyyMMdd.string(from: startDate)
+            let endDateString = DateFormatter.yyyyMMdd.string(from: endDate)
+            // Use ascending sort for calendar view typically
+            let sortQuery = "sort=scheduledStartTime,asc"
+            // Construct the URL for the assumed backend endpoint
+            return
+                "\(baseURL)bookings/by-date?startDate=\(startDateString)&endDate=\(endDateString)&\(sortQuery)"
         }
     }
 
@@ -122,7 +132,8 @@ enum Endpoint {
             return .put
         case .deleteProfilePhoto:
             return .delete
-        case .markNotificationAsRead, .acceptServiceRequest, .markConversationAsRead:
+        case .markNotificationAsRead, .acceptServiceRequest,
+            .markConversationAsRead:
             return .patch
         default:
             return .get
