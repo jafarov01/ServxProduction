@@ -100,6 +100,7 @@ struct BookingRequestPayload: Codable, Hashable {
     let priceMin: Double?
     let priceMax: Double?
     let notes: String?
+    let durationMinutes: Int?
 
     var agreedDate: Date? {
         let formatter = ISO8601DateFormatter()

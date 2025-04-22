@@ -85,3 +85,50 @@ extension ServiceRequestDetailDTO {
         )
     }
 }
+
+struct BookingDTO: Codable, Identifiable {
+    let id: Int64
+    let bookingNumber: String
+    let status: BookingStatus
+    let scheduledStartTime: String
+    let durationMinutes: Int
+    let priceMin: Double
+    let priceMax: Double
+    let notes: String?
+    let locationAddressLine: String
+    let locationCity: String
+    let locationZipCode: String
+    let locationCountry: String
+    let serviceId: Int64 // <<< ADDED
+    let serviceName: String
+    let serviceCategoryName: String
+    let providerId: Int64
+    let providerFirstName: String
+    let providerLastName: String
+    let providerProfilePhotoUrl: String?
+    let seekerId: Int64
+    let seekerFirstName: String
+    let seekerLastName: String
+    let seekerProfilePhotoUrl: String?
+    let serviceRequestId: Int64
+    let createdAt: String?
+    let updatedAt: String?
+
+    func toEntity() -> Booking {
+        return Booking(
+            id: id, bookingNumber: bookingNumber, status: status,
+            scheduledStartTime: scheduledStartTime,
+            durationMinutes: durationMinutes, priceMin: priceMin, priceMax: priceMax,
+            notes: notes, locationAddressLine: locationAddressLine, locationCity: locationCity,
+            locationZipCode: locationZipCode, locationCountry: locationCountry,
+            serviceId: serviceId, // Pass serviceId
+            serviceName: serviceName, serviceCategoryName: serviceCategoryName,
+            providerId: providerId, providerFirstName: providerFirstName, providerLastName: providerLastName,
+            providerProfilePhotoUrl: providerProfilePhotoUrl,
+            seekerId: seekerId, seekerFirstName: seekerFirstName, seekerLastName: seekerLastName,
+            seekerProfilePhotoUrl: seekerProfilePhotoUrl,
+            serviceRequestId: serviceRequestId,
+            createdAt: createdAt, updatedAt: updatedAt
+        )
+    }
+}

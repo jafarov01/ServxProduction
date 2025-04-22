@@ -178,3 +178,4 @@ struct InfoRow: View {
         .padding(.vertical, 4)
     }
 }
+

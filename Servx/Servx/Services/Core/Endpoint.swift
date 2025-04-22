@@ -34,8 +34,12 @@ enum Endpoint {
     case fetchConversations  // GET /api/chats
     case fetchMessages(requestId: Int64, page: Int, size: Int)
     case markConversationAsRead(requestId: Int64)
-    case confirmBooking(requestId: Int64)
+    case confirmBooking(requestId: Int64, messageId: Int64)
     case rejectBooking(requestId: Int64)
+    case fetchBookings(status: BookingStatus, page: Int, size: Int)
+    case cancelBooking(bookingId: Int64)
+    case fetchServiceProfile(profileId: Int64)
+    
 
     var requiresAuth: Bool {
         switch self {
@@ -49,6 +53,8 @@ enum Endpoint {
     var url: String {
         let baseURL = "http://localhost:8080/api/"
         switch self {
+        case .fetchServiceProfile(let profileId):
+            return "\(baseURL)service-profiles/\(profileId)"
         case .fetchServiceRequest(let id):
             return "\(baseURL)service-requests/\(id)"
         case .acceptServiceRequest(let id):
@@ -90,10 +96,19 @@ enum Endpoint {
                 "\(baseURL)chats/\(requestId)/messages?page=\(page)&size=\(size)&sort=timestamp,desc"
         case .markConversationAsRead(let requestId):
             return "\(baseURL)chats/\(requestId)/read"
-        case .confirmBooking(let requestId):
-             return "\(baseURL)service-requests/\(requestId)/confirm-booking"
+        case .confirmBooking(let requestId, let messageId): // Updated path
+            return "\(baseURL)service-requests/\(requestId)/confirm-booking/\(messageId)"
         case .rejectBooking(let requestId):
              return "\(baseURL)service-requests/\(requestId)/reject-booking"
+        case .fetchBookings(let status, let page, let size):
+            let statusQuery = "status=\(status.rawValue)" // Use backend status values
+            let pageQuery = "page=\(page)"
+            let sizeQuery = "size=\(size)"
+            // Match the sort parameter used in @PageableDefault in controller
+            let sortQuery = "sort=scheduledStartTime,asc"
+            return "\(baseURL)bookings?\(statusQuery)&\(pageQuery)&\(sizeQuery)&\(sortQuery)"
+        case .cancelBooking(let bookingId):
+              return "\(baseURL)bookings/\(bookingId)/cancel"
         }
     }
 
@@ -101,7 +116,7 @@ enum Endpoint {
         switch self {
         case .authLogin, .register, .upgradeToProvider, .createServiceProfile,
             .createBulkServices, .createServiceRequest, .createNotification,
-            .confirmBooking, .rejectBooking:
+            .confirmBooking, .rejectBooking, .cancelBooking:
             return .post
         case .updateProfilePhoto, .updateUserDetails:
             return .put

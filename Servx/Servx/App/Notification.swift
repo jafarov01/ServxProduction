@@ -24,6 +24,7 @@ struct Notification: Identifiable, Codable, APIRequest {
         case requestDeclined = "REQUEST_DECLINED"
         case bookingConfirmed = "BOOKING_CONFIRMED"
         case serviceCompleted = "SERVICE_COMPLETED"
+        case bookingCancelled = "BOOKING_CANCELLED"
         case systemAlert = "SYSTEM_ALERT"
     }
     
@@ -70,6 +71,7 @@ extension Notification {
         case .bookingConfirmed: return "Booking Confirmed"
         case .serviceCompleted: return "Service Completed"
         case .systemAlert: return "System Alert"
+        case .bookingCancelled: return "Booking Cancelled"
         case .requestDeclined: return "Request Declined"
         }
     }
@@ -86,6 +88,8 @@ extension Notification {
             return "Your service request was accepted"
         case .requestDeclined:
             return "Your service request was declined"
+        case .bookingCancelled:
+            return "Your booking has been cancelled"
         case .serviceCompleted:
             return "Service has been completed"
         }
@@ -112,19 +116,10 @@ struct NotificationRouter: NotificationRouterProtocol {
                 navigator.navigate(to: AppRoute.Main.serviceRequestDetail(id: requestId))
             }
 
-        case .requestAccepted: // --- CHANGED: Go directly to Chat ---
+        case .requestAccepted:
             if let requestId = notification.payload.serviceRequestId {
                  // This switches to Inbox tab and pushes chat view onto inboxStack
                 navigator.navigateToChat(requestId: requestId)
-            }
-
-        case .bookingConfirmed:
-            if let bookingId = notification.payload.bookingId,
-               let requestId = notification.payload.serviceRequestId { // Assuming payload includes requestId too
-                 // Option 1: Go to Booking Detail (Current behavior based on AppRoute)
-                  navigator.navigate(to: AppRoute.Main.bookingDetail(id: bookingId))
-                 // Option 2: Or maybe go to chat if chat is primary interaction?
-                 // navigator.navigateToChat(requestId: requestId)
             }
 
         case .serviceCompleted:
@@ -132,6 +127,18 @@ struct NotificationRouter: NotificationRouterProtocol {
                 // Assuming payload contains bookingId needed for review route
                 navigator.navigate(to: AppRoute.Main.serviceReview(bookingId: bookingId))
             }
+        case .bookingConfirmed:
+             print("Routing to Booking Tab (Upcoming)")
+             // Switch to the booking tab. The view's .task should load upcoming.
+            navigator.switchTab(to: .booking)
+             // Clear any potential sub-navigation stack on that tab
+
+        case .bookingCancelled:
+             print("Routing to Booking Tab (Cancelled)")
+             // Switch to the booking tab. We'll need VM logic to default to cancelled here.
+             // For now, just switch tab, user might need to select filter manually.
+             // TODO: Enhance this later to pre-select the 'Cancelled' filter in BookingViewModel
+            navigator.switchTab(to: .booking)
 
         case .systemAlert:
             // No navigation action needed

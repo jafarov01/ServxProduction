@@ -15,6 +15,7 @@ protocol ServicesServiceProtocol {
     func fetchUserName(userId: Int64) async throws -> String
     func createServiceProfile(request: ServiceProfileRequestDTO) async throws -> ServiceProfileResponseDTO
     func createBulkServiceProfiles(request: BulkServiceProfileRequest) async throws -> [ServiceProfileResponseDTO]
+    func fetchServiceProfile(id: Int64) async throws -> ServiceProfile // <<< ADDED
 }
 
 final class ServicesService: ServicesServiceProtocol {
@@ -25,6 +26,14 @@ final class ServicesService: ServicesServiceProtocol {
     
     init(apiClient: APIClientProtocol = APIClient()) {
         self.apiClient = apiClient
+    }
+    
+    func fetchServiceProfile(id: Int64) async throws -> ServiceProfile {
+        print("ServicesService: Fetching service profile ID: \(id)")
+        let endpoint = Endpoint.fetchServiceProfile(profileId: id)
+        let dto: ServiceProfileResponseDTO = try await apiClient.request(endpoint)
+        print("ServicesService: Fetched service profile successfully.")
+        return dto.toEntity() // Map DTO to domain model
     }
     
     func createBulkServiceProfiles(request: BulkServiceProfileRequest) async throws -> [ServiceProfileResponseDTO] {

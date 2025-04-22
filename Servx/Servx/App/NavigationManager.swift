@@ -39,8 +39,8 @@ enum AppRoute {
     }
     
     enum Inbox: Hashable {
-            case chat(requestId: Int64)
-        }
+        case chat(requestId: Int64)
+    }
 }
 
 enum Tab: String, CaseIterable {

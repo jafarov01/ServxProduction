@@ -44,6 +44,9 @@ struct BookingProposalSheet: View {
                          TextField("Max Price ($)", text: $viewModel.priceMaxString)
                              .keyboardType(.decimalPad)
                     }
+                    
+                    TextField("Duration (minutes)", text: $viewModel.durationString)
+                                            .keyboardType(.numberPad)
 
                     TextEditor(text: $viewModel.notes)
                         .frame(height: 100)

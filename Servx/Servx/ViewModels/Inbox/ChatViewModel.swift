@@ -221,7 +221,10 @@ class ChatViewModel: ObservableObject {
             var success = false
             var finalStatus: ServiceRequest.RequestStatus? = nil
             do {
-                let updatedRequestDto = try await self.serviceRequestService.confirmBooking(requestId: self.requestId)
+                let updatedRequestDto = try await self.serviceRequestService.confirmBooking(
+                                    requestId: self.requestId,
+                                    messageId: messageId // Pass the ID of the message being accepted
+                                )
                 print("ChatViewModel: Booking confirmed via API. Status: \(updatedRequestDto.status)")
                 finalStatus = updatedRequestDto.status
                 success = true
@@ -232,11 +235,11 @@ class ChatViewModel: ObservableObject {
 
             self.isLoadingDetails = false
             if success, let status = finalStatus {
-                self.currentRequestStatus = status
-                self.canSendMessage = self.isChatActiveByStatus(status)
-                self.updateLocalMessageProposalStatus(messageId: messageId, newStatus: .accepted) // Use Enum
-                Task { await self.loadInitialData() } // Keep reload for now
-            }
+                             self.currentRequestStatus = status
+                             self.canSendMessage = self.isChatActiveByStatus(status)
+                             self.updateLocalMessageProposalStatus(messageId: messageId, newStatus: .accepted)
+                             Task { await self.loadInitialData() }
+                        }
         }
     }
 

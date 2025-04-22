@@ -162,6 +162,7 @@ struct NotificationRow: View {
         case .requestDeclined: return "xmark.circle.fill"
         case .bookingConfirmed: return "calendar.badge.checkmark"
         case .serviceCompleted: return "star.fill"
+        case .bookingCancelled: return "calendar.badge.xmark"
         case .systemAlert: return "exclamationmark.triangle.fill"
         }
     }
@@ -174,6 +175,7 @@ struct NotificationRow: View {
         case .requestDeclined: return .red
         case .bookingConfirmed: return .purple
         case .serviceCompleted: return .orange
+        case .bookingCancelled: return .red
         case .systemAlert: return .yellow
         }
     }
