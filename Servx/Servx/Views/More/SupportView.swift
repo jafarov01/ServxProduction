@@ -8,37 +8,99 @@
 import SwiftUI
 
 struct SupportView: View {
+    // Create and own the ViewModel for this view's lifecycle
+    @StateObject private var viewModel = SupportViewModel()
+    // Access navigator if needed for custom back button or other navigation
+    @EnvironmentObject private var navigator: NavigationManager
+    // Focus state for the text editor
+    @FocusState private var isTextEditorFocused: Bool
+
     var body: some View {
-        VStack {
-            
-            HStack(alignment: .top, spacing: 52) {
-                Text("Chat")
-                    .background() {
-                        Rectangle()
-                            .foregroundColor(Color("primary100"))
-                            .frame(width: 145, height: 50)
-                            .background(Color(red: 0.97, green: 0.97, blue: 1))
-                            .cornerRadius(14)
+        ZStack { // Use ZStack for overlaying loading indicator
+            VStack(alignment: .leading, spacing: 16) { // Main content stack
+
+                 Text("Contact Support").font(.title).padding(.bottom)
+                 Text("Please describe the issue you are experiencing:").font(.subheadline).foregroundColor(.gray)
+
+                // Text Editor for the message
+                ZStack(alignment: .topLeading) {
+                    TextEditor(text: $viewModel.supportMessage)
+                        .frame(height: 200) // Suggest a reasonable height
+                        .padding(8) // Padding inside the border
+                        .background(Color(.systemBackground)) // Use system background or theme
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(ServxTheme.inputFieldBorderColor, lineWidth: 1) // Use theme border
+                        )
+                        .focused($isTextEditorFocused) // Manage focus state
+
+                    // Placeholder text overlay
+                    if viewModel.supportMessage.isEmpty {
+                        Text("Type your message here...")
+                            .foregroundColor(Color(UIColor.placeholderText))
+                            .padding(.horizontal, 8 + 5) // Match TextEditor internal padding
+                            .padding(.vertical, 8 + 8)
+                            .allowsHitTesting(false) // Let taps pass through to TextEditor
                     }
-                    .foregroundColor(Color("primary400"))
-                    .fontWeight(.bold)
-                    .padding(24)
-                
-                Spacer()
-                
-                Text("Call")
-                    .background() {
-                        Rectangle()
-                            .foregroundColor(Color("secondary100"))
-                            .frame(width: 145, height: 50)
-                            .background(Color(red: 0.97, green: 0.97, blue: 1))
-                            .cornerRadius(14)
-                    }
-                    .foregroundColor(Color("alertErrorColor"))
-                    .fontWeight(.bold)
+                }
+                .padding(.bottom) // Space below text editor
+
+                // Display Success or Error Messages
+                if let successMsg = viewModel.successMessage {
+                    Text(successMsg)
+                        .font(.footnote)
+                        .foregroundColor(.green)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                } else if let errorMsg = viewModel.errorMessage {
+                    Text(errorMsg)
+                        .font(.footnote)
+                        .foregroundColor(.red)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .multilineTextAlignment(.center) // Allow multi-line errors
+                }
+
+
+                // Send Button (Using standard SwiftUI Button)
+                Button {
+                    isTextEditorFocused = false // Dismiss keyboard
+                    Task { await viewModel.sendRequest() }
+                } label: {
+                    Text("Send Support Request")
+                        .frame(maxWidth: .infinity) // Make label fill width
+                        .frame(height: 44) // Standard button height
+                }
+                .buttonStyle(.borderedProminent) // Use prominent style for primary action
+                .tint(ServxTheme.primaryColor) // Use theme color
+                // Disable button based on ViewModel state
+                .disabled(!viewModel.canSubmit)
+                .opacity(viewModel.canSubmit ? 1.0 : 0.6) // Visual cue for disabled state
+
+
+                Spacer() // Push content to top
+
+            } //: VStack
+            .padding() // Padding around the main content
+            // Hide keyboard when tapping outside TextEditor
+             .onTapGesture {
+                 isTextEditorFocused = false
+             }
+
+
+            // --- Loading Indicator Overlay ---
+            if viewModel.isLoading {
+                Color.black.opacity(0.4) // Semi-transparent background
+                    .ignoresSafeArea()
+                ProgressView("Sending...")
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .padding(30)
+                    .background(Color.black.opacity(0.7))
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
             }
-            .padding(0)
-            .frame(width: 342, alignment: .topLeading)
-        }
+
+        } //: ZStack
+        .navigationTitle("Support") // Set title for the navigation bar
+        .navigationBarTitleDisplayMode(.inline)
+        // Optional: Add .toolbar if you need custom bar buttons
     }
 }

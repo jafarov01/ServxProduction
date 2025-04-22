@@ -34,6 +34,8 @@
 		554C73852D9CC0F800145987 /* APIRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554C73842D9CC0F800145987 /* APIRequest.swift */; };
 		554FE7DD2DB802AE00275194 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554FE7DC2DB802AB00275194 /* Formatters.swift */; };
 		554FE7DF2DB804C600275194 /* CalendarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554FE7DE2DB804C600275194 /* CalendarViewModel.swift */; };
+		554FE7E12DB843FC00275194 /* SupportRequestDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554FE7E02DB843FC00275194 /* SupportRequestDTO.swift */; };
+		554FE7E32DB8448900275194 /* SupportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554FE7E22DB8448800275194 /* SupportViewModel.swift */; };
 		556C875E2D56A110005C824E /* ObjectOptionSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556C875D2D56A109005C824E /* ObjectOptionSelectionView.swift */; };
 		556FF0D72DB1A97B0037704D /* ChatMessageDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556FF0D62DB1A97B0037704D /* ChatMessageDTO.swift */; };
 		556FF0D92DB1AA3C0037704D /* ChatServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556FF0D82DB1AA3C0037704D /* ChatServiceProtocol.swift */; };
@@ -168,6 +170,8 @@
 		554C73842D9CC0F800145987 /* APIRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRequest.swift; sourceTree = "<group>"; };
 		554FE7DC2DB802AB00275194 /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
 		554FE7DE2DB804C600275194 /* CalendarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewModel.swift; sourceTree = "<group>"; };
+		554FE7E02DB843FC00275194 /* SupportRequestDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportRequestDTO.swift; sourceTree = "<group>"; };
+		554FE7E22DB8448800275194 /* SupportViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportViewModel.swift; sourceTree = "<group>"; };
 		556C875D2D56A109005C824E /* ObjectOptionSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectOptionSelectionView.swift; sourceTree = "<group>"; };
 		556FF0D62DB1A97B0037704D /* ChatMessageDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageDTO.swift; sourceTree = "<group>"; };
 		556FF0D82DB1AA3C0037704D /* ChatServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatServiceProtocol.swift; sourceTree = "<group>"; };
@@ -397,6 +401,7 @@
 		5574B7432D3DC57B00DF60ED /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				554FE7E02DB843FC00275194 /* SupportRequestDTO.swift */,
 				55BA77302DB5B9DC000A72FE /* BookingServiceProtocol.swift */,
 				556FF0D52DB1A9760037704D /* Chat */,
 				557A17302DAFF65C00971872 /* NotificationServiceProtocol.swift */,
@@ -733,6 +738,7 @@
 		55FBA2702D35EAE100F86201 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				554FE7E22DB8448800275194 /* SupportViewModel.swift */,
 				554FE7DE2DB804C600275194 /* CalendarViewModel.swift */,
 				55A05C012DB6B9DB001C31C0 /* BookingViewModel.swift */,
 				556FF0E82DB481FC0037704D /* BookingProposalViewModel.swift */,
@@ -1045,6 +1051,7 @@
 				55D3D3342DA7EA1100799594 /* BecomeServiceProviderView.swift in Sources */,
 				556FF0D92DB1AA3C0037704D /* ChatServiceProtocol.swift in Sources */,
 				55BA772F2DB5B939000A72FE /* Booking.swift in Sources */,
+				554FE7E12DB843FC00275194 /* SupportRequestDTO.swift in Sources */,
 				551FE7EC2DADB835000972A2 /* RatingView.swift in Sources */,
 				55FBA2AF2D35EAE100F86201 /* OnboardingView.swift in Sources */,
 				556C875E2D56A110005C824E /* ObjectOptionSelectionView.swift in Sources */,
@@ -1056,6 +1063,7 @@
 				55D3D3462DA84D4F00799594 /* UserRequests.swift in Sources */,
 				55A05C022DB6B9DB001C31C0 /* BookingViewModel.swift in Sources */,
 				55CF6E2F2DA338BA0045E240 /* SettingsView.swift in Sources */,
+				554FE7E32DB8448900275194 /* SupportViewModel.swift in Sources */,
 				55FBA2B22D35EAE100F86201 /* ServxButtonView.swift in Sources */,
 				556FF0E32DB305150037704D /* ChatViewModel.swift in Sources */,
 				55FBA2B32D35EAE100F86201 /* ContentView.swift in Sources */,

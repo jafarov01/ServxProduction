@@ -40,6 +40,7 @@ enum Endpoint {
     case cancelBooking(bookingId: Int64)
     case fetchServiceProfile(profileId: Int64)
     case fetchBookingsByDateRange(startDate: Date, endDate: Date)
+    case sendSupportRequest(body: SupportRequestDTO)
 
     var requiresAuth: Bool {
         switch self {
@@ -53,6 +54,8 @@ enum Endpoint {
     var url: String {
         let baseURL = "http://localhost:8080/api/"
         switch self {
+        case .sendSupportRequest:
+            return "\(baseURL)support/request"
         case .fetchServiceProfile(let profileId):
             return "\(baseURL)service-profiles/\(profileId)"
         case .fetchServiceRequest(let id):
@@ -126,7 +129,7 @@ enum Endpoint {
         switch self {
         case .authLogin, .register, .upgradeToProvider, .createServiceProfile,
             .createBulkServices, .createServiceRequest, .createNotification,
-            .confirmBooking, .rejectBooking, .cancelBooking:
+            .confirmBooking, .rejectBooking, .cancelBooking, .sendSupportRequest:
             return .post
         case .updateProfilePhoto, .updateUserDetails:
             return .put
@@ -158,6 +161,8 @@ enum Endpoint {
             return request
         case .createNotification(let notification):
             return notification
+        case .sendSupportRequest(let body): // *** ADD body ***
+            return body
         default:
             return nil
         }
