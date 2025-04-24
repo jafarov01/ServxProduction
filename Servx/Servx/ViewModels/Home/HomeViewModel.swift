@@ -9,7 +9,6 @@ import SwiftUI
 import Foundation
 import Combine
 
-// HomeViewModel: Manages categories and recommended services.
 @MainActor
 class HomeViewModel: ObservableObject {
     @Published private(set) var categories: [ServiceCategory] = []

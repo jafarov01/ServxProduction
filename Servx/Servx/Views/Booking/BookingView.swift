@@ -11,7 +11,6 @@ import SwiftUI
 
 struct BookingView: View {
     @ObservedObject private var viewModel: BookingViewModel
-    // Access the shared NavigationManager from the environment
     @EnvironmentObject private var navigator: NavigationManager
 
     init(viewModel: BookingViewModel) {
@@ -19,144 +18,150 @@ struct BookingView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {  // Use VStack with no spacing for tight control
-            // Top Custom Tab Bar
+        VStack(spacing: 0) {
             CustomTabBar(selectedTab: $viewModel.selectedTab)
-                .padding(.horizontal)  // Add horizontal padding if needed
-                .padding(.top)  // Add top padding if needed
+                .padding(.horizontal)
+                .padding(.top)
 
-            // Content Area for the list
             bookingListContent()
+                .overlay(alignment: .top) {
+                    if let successMsg = viewModel.successMessage {
+                        SuccessBanner(message: successMsg)
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                            .onAppear {
+                                // Banner handles its own dismissal
+                            }
+                            .padding(.horizontal)
+                            .padding(.top, 8)
+                    }
+                }
         }
         .navigationTitle("My Bookings")
-        .navigationBarTitleDisplayMode(.inline)  // Or .large
-        .background(ServxTheme.backgroundColor.ignoresSafeArea())  // Background for the whole screen
-        .task {  // Use .task for initial data load when the view appears
-            // Fetch only if the list is currently empty for the default selected tab
+        .navigationBarTitleDisplayMode(.inline)
+        .background(ServxTheme.backgroundColor.ignoresSafeArea())
+        .task {
             if viewModel.bookings.isEmpty {
-                await viewModel.fetchBookings(initialLoad: true)
+                print("BookingView: Bookings list is empty. Fetching data...")
+                await viewModel.fetchBookings(page: 0)
+            } else {
+                print("BookingView: Bookings list already contains data. No need to fetch.")
             }
         }
-        .refreshable {  // Enable pull-to-refresh
-            await viewModel.fetchBookings(initialLoad: true)  // Reload current tab
+        .refreshable {
+            print("BookingView: Initiating refresh action.")
+            await viewModel.resetAndFetchCurrentTab()
         }
-        // Display alerts based on ViewModel's error message
         .alert(
             "Error",
             isPresented: Binding(
                 get: { viewModel.errorMessage != nil },
-                set: { _, _ in viewModel.errorMessage = nil }  // Clear error on dismiss
+                set: { show in if !show { viewModel.errorMessage = nil } }
             )
         ) {
             Button("OK") {}
         } message: {
             Text(viewModel.errorMessage ?? "An unknown error occurred.")
         }
-        // *** Observer for Navigation Signal from ViewModel ***
         .onChange(of: viewModel.chatNavigationTarget) { _, newTargetId in
             handleChatNavigation(targetId: newTargetId)
         }
+        .animation(.default, value: viewModel.successMessage)
     }
 
-    // Builds the main content area (List, Loading, Empty, Error)
     @ViewBuilder
     private func bookingListContent() -> some View {
-        // Remove the outer Group
-        if viewModel.isLoading && viewModel.bookings.isEmpty {
-            // Loading state for initial fetch
-            VStack {  // Wrap in VStack to center ProgressView
-                Spacer()
-                ProgressView("Loading Bookings...")
-                Spacer()
-            }
-            // Apply frame to the VStack to fill space
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-        } else if !viewModel.isLoading && viewModel.bookings.isEmpty
-            && viewModel.errorMessage == nil
-        {
-            // Empty state
-            VStack {  // Wrap in VStack to center Text
-                Spacer()
-                Text(
-                    "You have no \(viewModel.selectedTab.rawValue.lowercased()) bookings."
-                )
-                .foregroundColor(ServxTheme.secondaryTextColor)  // Use your theme
-                .multilineTextAlignment(.center)
-                .padding()
-                Spacer()
-            }
-            // Apply frame to the VStack to fill space
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-        } else {
-            // List view for bookings or error display
-            // List itself usually expands, frame might not be needed here,
-            // or apply it if necessary for specific layout control.
-            List {
-                // Display error message if applicable
-                if let errorMsg = viewModel.errorMessage, !viewModel.isLoading {
-                    Section {
-                        Text("⚠️ \(errorMsg)")
-                            .foregroundColor(.red)
-                            .padding(.vertical)
-                    }
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
+        ZStack {
+            if viewModel.isLoading && viewModel.bookings.isEmpty {
+                VStack {
+                    Spacer()
+                    ProgressView("Loading Bookings...")
+                    Spacer()
                 }
-
-                ForEach(viewModel.bookings) { booking in
-                    BookingCardView(booking: booking, viewModel: viewModel)
-                        .listRowInsets(EdgeInsets())
-                        .listRowSeparator(.hidden)
-                        .padding(.vertical, 8)
-                        .padding(.horizontal)  // Add horizontal padding *here*
-                        .onAppear {
-                            // Pagination trigger logic
-                            let canLoad =
-                                viewModel.canLoadMore[viewModel.selectedTab]
-                                ?? false
-                            if booking.id == viewModel.bookings.last?.id
-                                && canLoad && !viewModel.isLoading
-                            {
-                                Task {
-                                    await viewModel.loadMoreBookings()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if !viewModel.isLoading && viewModel.bookings.isEmpty && viewModel.errorMessage == nil {
+                VStack {
+                    Spacer()
+                    Text("You have no \(viewModel.selectedTab.rawValue.lowercased()) bookings.")
+                        .foregroundColor(ServxTheme.secondaryTextColor)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                List {
+                    ForEach(viewModel.bookings) { booking in
+                        BookingCardViewWrapper(booking: booking, viewModel: viewModel)
+                            .listRowInsets(EdgeInsets())
+                            .listRowSeparator(.hidden)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal)
+                            .onAppear {
+                                if booking.id == viewModel.bookings.last?.id && !viewModel.isLoading {
+                                    Task {
+                                        print("BookingView: Last item \(booking.id) appeared, loading more bookings...")
+                                        await viewModel.loadMoreBookings()
+                                    }
                                 }
                             }
-                        }
-                }  //: ForEach
-
-                // Loading indicator at the bottom for pagination
-                if viewModel.isLoading && !viewModel.bookings.isEmpty {
-                    HStack {
-                        Spacer()
-                        ProgressView()
-                            .padding(.vertical)
-                        Spacer()
                     }
-                    .listRowSeparator(.hidden)
+
+                    if viewModel.isLoading && !viewModel.bookings.isEmpty {
+                        HStack {
+                            Spacer()
+                            ProgressView()
+                                .padding(.vertical)
+                            Spacer()
+                        }
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                    }
                 }
-            }  //: List
-            .listStyle(.plain)
-            .background(ServxTheme.backgroundColor)  // Apply background to List
-            .scrollContentBackground(.hidden)  // Apply to List
-            // .frame(maxWidth: .infinity, maxHeight: .infinity) // Apply frame to List if needed
+                .listStyle(.plain)
+                .background(ServxTheme.backgroundColor)
+                .scrollContentBackground(.hidden)
+            }
+
+            if !viewModel.isLoading && viewModel.bookings.isEmpty && viewModel.errorMessage != nil {
+                VStack {
+                    Spacer()
+                    Text("⚠️ \(viewModel.errorMessage!)")
+                        .foregroundColor(.red)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
         }
     }
 
-    // Handles navigation trigger from ViewModel
     private func handleChatNavigation(targetId: Int64?) {
         guard let requestId = targetId else { return }
+        print("BookingView: Navigating to chat for request ID \(requestId).")
+        navigator.navigateToChat(requestId: requestId)
+        viewModel.didNavigateToChat()
+    }
+}
 
-        print(
-            "BookingView: Reacting to chatNavigationTarget change, navigating to \(requestId)"
-        )
-        navigator.navigateToChat(requestId: requestId)  // Use environment navigator
+struct BookingCardViewWrapper: View {
+    let booking: Booking
+    @ObservedObject var viewModel: BookingViewModel
 
-        // Reset the target in the ViewModel AFTER triggering navigation
-        DispatchQueue.main.async {
-            viewModel.chatNavigationTarget = nil
-        }
+    var body: some View {
+        BookingCardView(booking: booking, viewModel: viewModel)
+    }
+}
+
+struct SuccessBanner: View {
+    let message: String
+    var body: some View {
+        Text(message)
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color.green.opacity(0.8))
+            .foregroundColor(.white)
+            .cornerRadius(8)
     }
 }
 
@@ -204,17 +209,17 @@ struct CustomTabBar: View {
         .overlay(Divider(), alignment: .bottom)
     }
 }
-
 struct BookingCardDetailsView: View {
     let booking: Booking
     @ObservedObject var viewModel: BookingViewModel
 
-    // Map State (Modern API)
+    // Map State
     @State private var mapCameraPosition: MapCameraPosition = .automatic
     @State private var bookingCoordinate: CLLocationCoordinate2D? = nil
 
     // Alert State
     @State private var showCancelConfirmAlert = false
+
 
     // Helper to format the full address string for display and geocoding
     private var fullAddress: String {
@@ -228,7 +233,7 @@ struct BookingCardDetailsView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {  // Use consistent spacing
+        VStack(alignment: .leading, spacing: 12) {
             Divider().padding(.bottom, 5)
 
             detailRow(label: "Booking No:", value: booking.bookingNumber)
@@ -284,9 +289,7 @@ struct BookingCardDetailsView: View {
 
             // --- Map Section ---
             if bookingCoordinate != nil {
-                // Use modern Map initializer
                 Map(position: $mapCameraPosition) {
-                    // Use Marker for annotation if coordinate exists
                     if let coordinate = bookingCoordinate {
                         Marker(booking.serviceName, coordinate: coordinate)
                             .tint(ServxTheme.primaryColor)
@@ -296,7 +299,6 @@ struct BookingCardDetailsView: View {
                 .cornerRadius(10)
                 .padding(.top, 5)
 
-                // Get Directions Button (Standard SwiftUI Button)
                 Button {
                     if let coordinate = bookingCoordinate {
                         openAppleMapsForDirections(
@@ -309,15 +311,14 @@ struct BookingCardDetailsView: View {
                         "Get Directions",
                         systemImage: "arrow.triangle.turn.up.right.diamond.fill"
                     )
-                    .frame(maxWidth: .infinity)  // Make label take width
-                    .padding(.vertical, 10)  // Adjust padding
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
                 }
-                .buttonStyle(.borderedProminent)  // Use a standard prominent style
-                .tint(ServxTheme.primaryColor)  // Apply theme color
+                .buttonStyle(.borderedProminent)
+                .tint(ServxTheme.primaryColor)
                 .padding(.top, 5)
 
             } else {
-                // Displayed if geocoding is pending or failed
                 HStack {
                     Spacer()
                     VStack {
@@ -331,19 +332,16 @@ struct BookingCardDetailsView: View {
                 }
                 .padding(.vertical)
             }
-            // --- End Map Section ---
 
-            // Action buttons specific to the details view
             actionButtons()
                 .padding(.top, 5)
 
-        }  //: VStack
+        }
         .padding(.horizontal)
         .padding(.bottom)
-        .task {  // Use .task to perform async work when view appears
+        .task {
             await geocodeAddressAndSetupMap()
         }
-        // Confirmation Alert for Cancellation
         .alert("Confirm Cancellation", isPresented: $showCancelConfirmAlert) {
             Button("Cancel Booking", role: .destructive) {
                 Task { await viewModel.cancelBooking(bookingId: booking.id) }
@@ -354,7 +352,6 @@ struct BookingCardDetailsView: View {
         }
     }
 
-    // Helper for consistent detail rows
     @ViewBuilder
     private func detailRow(
         label: String,
@@ -374,21 +371,74 @@ struct BookingCardDetailsView: View {
         }
     }
 
-    // Detail-specific action buttons
     @ViewBuilder
     private func actionButtons() -> some View {
+
+        var currentUserRole: Role? { viewModel.currentRole }
+
+        let _ = print("bookingIssue: [DetailsView Actions \(booking.id)] Evaluating. Status: \(booking.status), ProviderMarked: \(booking.providerMarkedComplete), Role: \(currentUserRole?.rawValue ?? "nil")")
+        
         VStack(spacing: 10) {
             if booking.status == .upcoming {
+                if currentUserRole == .serviceProvider
+                    && !booking.providerMarkedComplete
+                {
+                    Button {
+                        Task {
+                            await viewModel.providerMarkComplete(
+                                bookingId: booking.id
+                            )
+                        }
+                    } label: {
+                        Label(
+                            "Mark as Completed",
+                            systemImage: "checkmark.circle.fill"
+                        )
+                        .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(ServxTheme.primaryColor)
+                }
+                else if currentUserRole == .serviceSeeker
+                    && booking.providerMarkedComplete
+                {
+                    Button {
+                        Task {
+                            await viewModel.seekerConfirmCompletion(
+                                bookingId: booking.id
+                            )
+                        }
+                    } label: {
+                        Label(
+                            "Confirm Completion",
+                            systemImage: "checkmark.seal.fill"
+                        )
+                        .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.green)
+                }
+                else if currentUserRole == .serviceSeeker
+                    && !booking.providerMarkedComplete
+                {
+                    Text("Waiting for provider to mark as complete.")
+                        .font(.footnote)
+                        .foregroundColor(ServxTheme.secondaryTextColor)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.vertical, 5)
+                }
+
                 Button {
-                    showCancelConfirmAlert = true  // Show confirmation alert
+                    showCancelConfirmAlert = true
                 } label: {
                     Text("Cancel Booking")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)  // Use bordered style for less emphasis than primary
-                .tint(.red)  // Tint indicates destructive potential
+                .buttonStyle(.bordered)
+                .tint(.red)
 
             } else if booking.status == .completed {
+                
                 Button {
                     viewModel.viewEReceipt(booking: booking)
                 } label: {
@@ -398,26 +448,30 @@ struct BookingCardDetailsView: View {
                 .buttonStyle(.bordered)
                 .tint(ServxTheme.primaryColor)
 
-                // TODO: Add Leave Review Button (conditionally)
+            } else if booking.status == .cancelledByProvider
+                || booking.status == .cancelledBySeeker
+            {
+                Text("Booking Cancelled")
+                    .font(.footnote)
+                    .foregroundColor(.red)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.vertical, 5)
             }
         }
     }
 
-    // --- Geocoding & MapKit Helpers ---
     private struct IdentifiableCoordinate: Identifiable {
         let id = UUID()
         let coord: CLLocationCoordinate2D
     }
 
-    // Renamed function to clarify it does both
-    @MainActor  // Ensure state updates happen on main thread
+    @MainActor
     private func geocodeAddressAndSetupMap() async {
         print(
             "BookingCardDetailsView: Attempting to geocode address: \(fullAddress)"
         )
         let geocoder = CLGeocoder()
         do {
-            // Attempt geocoding
             let placemarks = try await geocoder.geocodeAddressString(
                 fullAddress
             )
@@ -426,7 +480,6 @@ struct BookingCardDetailsView: View {
                     "BookingCardDetailsView: Geocoding successful - Lat: \(coordinate.latitude), Lon: \(coordinate.longitude)"
                 )
                 self.bookingCoordinate = coordinate
-                // Set map camera position centered on the coordinate
                 self.mapCameraPosition = .region(
                     MKCoordinateRegion(
                         center: coordinate,
@@ -440,13 +493,13 @@ struct BookingCardDetailsView: View {
                 print(
                     "BookingCardDetailsView: Geocoding returned no location for address."
                 )
-                self.bookingCoordinate = nil  // Ensure it's nil if geocoding fails
+                self.bookingCoordinate = nil
             }
         } catch {
             print(
                 "BookingCardDetailsView: Geocoding failed for address '\(fullAddress)': \(error)"
             )
-            self.bookingCoordinate = nil  // Ensure it's nil on error
+            self.bookingCoordinate = nil
         }
     }
 
@@ -462,7 +515,6 @@ struct BookingCardDetailsView: View {
         ])
     }
 
-    // --- Price Formatting ---
     private func formattedPriceRange(min: Double?, max: Double?) -> String {
         let minPrice = min ?? 0.0
         let maxPrice = max ?? minPrice
@@ -484,34 +536,30 @@ struct BookingCardDetailsView: View {
 }
 
 struct BookingCardView: View {
-    let booking: Booking  // Use the Booking domain model
-    // Use @ObservedObject since the ViewModel lifecycle is managed by BookingView
+    let booking: Booking
     @ObservedObject var viewModel: BookingViewModel
+    @EnvironmentObject var navigator: NavigationManager
 
-    // State to control the expansion of details
     @State private var showDetails = false
 
     private var otherParticipant: (name: String, photoUrl: URL?) {
         viewModel.getOtherParticipant(for: booking)
     }
 
-    // Corrected computed property - simply return the URL? from the helper
     private var participantImageURL: URL? {
-        let url: URL? = otherParticipant.photoUrl  // Get the URL?
-        // Optional debug print
+        let url: URL? = otherParticipant.photoUrl
         print(
             "photoIssue123: [BookingCardView \(booking.id)] participantImageURL returning: \(url?.absoluteString ?? "nil")"
         )
-        return url  // Return it directly
+        return url
     }
 
     var body: some View {
 
-        let _ = print(
-            "photoIssue123: [BookingCardView \(booking.id)] Passing to ProfilePhotoView: \(participantImageURL?.absoluteString ?? "nil")"
-        )
+        let _ = print("bookingIssue: [BookingCardView body \(booking.id)] Evaluating. Status: \(booking.status), ProviderMarked: \(booking.providerMarkedComplete)")
 
-        VStack(spacing: 0) {  // Use spacing 0 for tight layout control
+
+        VStack(spacing: 0) {
             // MARK: Card Header (Image & Summary Text)
             HStack(alignment: .top, spacing: 12) {
                 ProfilePhotoView(imageUrl: participantImageURL)
@@ -528,14 +576,13 @@ struct BookingCardView: View {
                         .foregroundColor(ServxTheme.primaryColor)
                         .lineLimit(1)
 
-                    Text(otherParticipant.name)  // Show Provider or Seeker name
+                    Text(otherParticipant.name)
                         .font(.subheadline)
                         .foregroundColor(ServxTheme.secondaryTextColor)
                         .padding(.bottom, 4)
 
                     HStack(spacing: 4) {
                         Image(systemName: "calendar")
-                        // More concise date format for the card view
                         Text(
                             booking.scheduledStartDate?.formatted(
                                 date: .abbreviated,
@@ -558,18 +605,17 @@ struct BookingCardView: View {
                     .font(.caption)
                     .foregroundColor(ServxTheme.secondaryTextColor)
                 }
-                Spacer()  // Push content to left
+                Spacer()
             }
-            .padding([.top, .leading, .trailing])  // Padding around top content
+            .padding([.top, .leading, .trailing])
             .padding(.bottom, 10)
 
             Divider()
 
             // MARK: Collapsible Details Section
-            // Animate the appearance/disappearance of the details
             if showDetails {
                 BookingCardDetailsView(booking: booking, viewModel: viewModel)
-                    .transition(.opacity.combined(with: .move(edge: .top)))  // Add animation
+                    .transition(.opacity.combined(with: .move(edge: .top)))
             }
 
             // MARK: Action Buttons Row
@@ -577,20 +623,23 @@ struct BookingCardView: View {
                 .padding(.vertical, 10)
                 .padding(.horizontal)
 
-        }  //: Main VStack
-        .background(Color(.secondarySystemBackground))  // Card background
+        }
+        .background(Color(.secondarySystemBackground))
         .cornerRadius(16)
-        .shadow(color: Color.black.opacity(0.08), radius: 5, x: 0, y: 2)  // Subtle shadow
+        .shadow(color: Color.black.opacity(0.08), radius: 5, x: 0, y: 2)
     }
 
     // MARK: Action Buttons
     @ViewBuilder
     private func actionButtons() -> some View {
+        
+        let _ = print("bookingIssue: [BookingCardView Actions \(booking.id)] Evaluating. Status: \(booking.status)")
+        
         HStack(spacing: 10) {
             Spacer()
 
             Button {
-                withAnimation {  // Animate the details toggle
+                withAnimation {
                     showDetails.toggle()
                 }
             } label: {
@@ -599,10 +648,9 @@ struct BookingCardView: View {
                     .padding(.horizontal, 16)
                     .frame(height: 36)
             }
-            .buttonStyle(.bordered)  // Use bordered style for secondary action
+            .buttonStyle(.bordered)
             .tint(ServxTheme.primaryColor)
 
-            // Primary action button changes based on status
             switch booking.status {
             case .upcoming:
                 Button {
@@ -613,20 +661,40 @@ struct BookingCardView: View {
                         .padding(.horizontal, 16)
                         .frame(height: 36)
                 }
-                .buttonStyle(.borderedProminent)  // Use prominent style for primary action
+                .buttonStyle(.borderedProminent)
                 .tint(ServxTheme.primaryColor)
 
             case .completed:
-                Button {
-                    viewModel.bookAgain(booking: booking)
-                } label: {
-                    Label("Book Again", systemImage: "arrow.clockwise")
-                        .font(.subheadline.weight(.medium))
-                        .padding(.horizontal, 16)
-                        .frame(height: 36)
+                if viewModel.currentRole == .serviceSeeker {
+                    Button {
+                        print(
+                            "Navigate to Leave Review for booking \(booking.id)"
+                        )
+                        navigator.navigate(to: AppRoute.BookingTab.leaveReview(
+                                        bookingId: booking.id,
+                                        providerName: booking.providerFullName,
+                                        serviceName: booking.serviceName
+                                    ))
+                    } label: {
+                        Label("Leave Review", systemImage: "star.fill")
+                            .font(.subheadline.weight(.medium))
+                            .padding(.horizontal, 16)
+                            .frame(height: 36)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(ServxTheme.primaryColor)
+                } else {
+                    Button {
+                        viewModel.bookAgain(booking: booking)
+                    } label: {
+                        Label("Book Again", systemImage: "arrow.clockwise")
+                            .font(.subheadline.weight(.medium))
+                            .padding(.horizontal, 16)
+                            .frame(height: 36)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(ServxTheme.primaryColor)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(ServxTheme.primaryColor)
 
             case .cancelledBySeeker, .cancelledByProvider:
                 Button {

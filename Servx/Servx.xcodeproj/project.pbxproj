@@ -14,7 +14,6 @@
 		551FE7E42DADABBE000972A2 /* ServiceRequestServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FE7E32DADABBE000972A2 /* ServiceRequestServiceProtocol.swift */; };
 		551FE7E62DADABD5000972A2 /* ServiceRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FE7E52DADABD5000972A2 /* ServiceRequest.swift */; };
 		551FE7EA2DADACEA000972A2 /* ServiceRequestDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FE7E92DADACEA000972A2 /* ServiceRequestDTO.swift */; };
-		551FE7EC2DADB835000972A2 /* RatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FE7EB2DADB835000972A2 /* RatingView.swift */; };
 		552F259E2D987F3E00BF1234 /* CategoryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552F259D2D987F3600BF1234 /* CategoryCard.swift */; };
 		552F25A02D98879600BF1234 /* SubcategoriesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552F259F2D98878C00BF1234 /* SubcategoriesListView.swift */; };
 		552F25A22D9887D100BF1234 /* ServicesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552F25A12D9887C700BF1234 /* ServicesListView.swift */; };
@@ -36,6 +35,12 @@
 		554FE7DF2DB804C600275194 /* CalendarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554FE7DE2DB804C600275194 /* CalendarViewModel.swift */; };
 		554FE7E12DB843FC00275194 /* SupportRequestDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554FE7E02DB843FC00275194 /* SupportRequestDTO.swift */; };
 		554FE7E32DB8448900275194 /* SupportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554FE7E22DB8448800275194 /* SupportViewModel.swift */; };
+		554FE7E52DB84EBB00275194 /* ReviewDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554FE7E42DB84EBB00275194 /* ReviewDTO.swift */; };
+		554FE7E72DB84F4E00275194 /* ReviewServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554FE7E62DB84F4E00275194 /* ReviewServiceProtocol.swift */; };
+		554FE7E92DB8567A00275194 /* LeaveReviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554FE7E82DB8567A00275194 /* LeaveReviewViewModel.swift */; };
+		554FE7EB2DB857B000275194 /* LeaveReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554FE7EA2DB857B000275194 /* LeaveReviewView.swift */; };
+		554FE7ED2DB8615700275194 /* ServiceProfileDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554FE7EC2DB8615700275194 /* ServiceProfileDetailsViewModel.swift */; };
+		554FE7EF2DB8624900275194 /* ServiceProfileDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554FE7EE2DB8624900275194 /* ServiceProfileDetailsView.swift */; };
 		556C875E2D56A110005C824E /* ObjectOptionSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556C875D2D56A109005C824E /* ObjectOptionSelectionView.swift */; };
 		556FF0D72DB1A97B0037704D /* ChatMessageDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556FF0D62DB1A97B0037704D /* ChatMessageDTO.swift */; };
 		556FF0D92DB1AA3C0037704D /* ChatServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556FF0D82DB1AA3C0037704D /* ChatServiceProtocol.swift */; };
@@ -150,7 +155,6 @@
 		551FE7E32DADABBE000972A2 /* ServiceRequestServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceRequestServiceProtocol.swift; sourceTree = "<group>"; };
 		551FE7E52DADABD5000972A2 /* ServiceRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceRequest.swift; sourceTree = "<group>"; };
 		551FE7E92DADACEA000972A2 /* ServiceRequestDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceRequestDTO.swift; sourceTree = "<group>"; };
-		551FE7EB2DADB835000972A2 /* RatingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingView.swift; sourceTree = "<group>"; };
 		552F259D2D987F3600BF1234 /* CategoryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCard.swift; sourceTree = "<group>"; };
 		552F259F2D98878C00BF1234 /* SubcategoriesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubcategoriesListView.swift; sourceTree = "<group>"; };
 		552F25A12D9887C700BF1234 /* ServicesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServicesListView.swift; sourceTree = "<group>"; };
@@ -172,6 +176,12 @@
 		554FE7DE2DB804C600275194 /* CalendarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewModel.swift; sourceTree = "<group>"; };
 		554FE7E02DB843FC00275194 /* SupportRequestDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportRequestDTO.swift; sourceTree = "<group>"; };
 		554FE7E22DB8448800275194 /* SupportViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportViewModel.swift; sourceTree = "<group>"; };
+		554FE7E42DB84EBB00275194 /* ReviewDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewDTO.swift; sourceTree = "<group>"; };
+		554FE7E62DB84F4E00275194 /* ReviewServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewServiceProtocol.swift; sourceTree = "<group>"; };
+		554FE7E82DB8567A00275194 /* LeaveReviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaveReviewViewModel.swift; sourceTree = "<group>"; };
+		554FE7EA2DB857B000275194 /* LeaveReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaveReviewView.swift; sourceTree = "<group>"; };
+		554FE7EC2DB8615700275194 /* ServiceProfileDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProfileDetailsViewModel.swift; sourceTree = "<group>"; };
+		554FE7EE2DB8624900275194 /* ServiceProfileDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProfileDetailsView.swift; sourceTree = "<group>"; };
 		556C875D2D56A109005C824E /* ObjectOptionSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectOptionSelectionView.swift; sourceTree = "<group>"; };
 		556FF0D62DB1A97B0037704D /* ChatMessageDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageDTO.swift; sourceTree = "<group>"; };
 		556FF0D82DB1AA3C0037704D /* ChatServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatServiceProtocol.swift; sourceTree = "<group>"; };
@@ -294,7 +304,6 @@
 			isa = PBXGroup;
 			children = (
 				557A17382DB05A6800971872 /* ServiceRequestDetailView.swift */,
-				551FE7EB2DADB835000972A2 /* RatingView.swift */,
 				551FE7DD2DADAB28000972A2 /* RequestServiceView.swift */,
 			);
 			path = RequestService;
@@ -401,6 +410,8 @@
 		5574B7432D3DC57B00DF60ED /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				554FE7E62DB84F4E00275194 /* ReviewServiceProtocol.swift */,
+				554FE7E42DB84EBB00275194 /* ReviewDTO.swift */,
 				554FE7E02DB843FC00275194 /* SupportRequestDTO.swift */,
 				55BA77302DB5B9DC000A72FE /* BookingServiceProtocol.swift */,
 				556FF0D52DB1A9760037704D /* Chat */,
@@ -738,6 +749,8 @@
 		55FBA2702D35EAE100F86201 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				554FE7EC2DB8615700275194 /* ServiceProfileDetailsViewModel.swift */,
+				554FE7E82DB8567A00275194 /* LeaveReviewViewModel.swift */,
 				554FE7E22DB8448800275194 /* SupportViewModel.swift */,
 				554FE7DE2DB804C600275194 /* CalendarViewModel.swift */,
 				55A05C012DB6B9DB001C31C0 /* BookingViewModel.swift */,
@@ -799,6 +812,8 @@
 		55FBA2852D35EAE100F86201 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				554FE7EE2DB8624900275194 /* ServiceProfileDetailsView.swift */,
+				554FE7EA2DB857B000275194 /* LeaveReviewView.swift */,
 				557A172B2DAFF4F500971872 /* Notifications */,
 				551FE7DC2DADAB1A000972A2 /* RequestService */,
 				55D3D3352DA7EA1A00799594 /* ManageServicesView */,
@@ -980,6 +995,7 @@
 				55FBA2902D35EAE100F86201 /* ServxTheme.swift in Sources */,
 				554871582D9F54AC00AB1811 /* InboxView.swift in Sources */,
 				55FBA2912D35EAE100F86201 /* OTPInputView.swift in Sources */,
+				554FE7E92DB8567A00275194 /* LeaveReviewViewModel.swift in Sources */,
 				5574B7612D3DC8FB00DF60ED /* AuthService.swift in Sources */,
 				5510A4DF2D82567C00C7971E /* BackButton.swift in Sources */,
 				5574B7672D3DC92100DF60ED /* Endpoint.swift in Sources */,
@@ -989,8 +1005,10 @@
 				551FE7E12DADAB71000972A2 /* RequestServiceViewModel.swift in Sources */,
 				551FE7E42DADABBE000972A2 /* ServiceRequestServiceProtocol.swift in Sources */,
 				55FBA2982D35EAE100F86201 /* SendOTPView.swift in Sources */,
+				554FE7E72DB84F4E00275194 /* ReviewServiceProtocol.swift in Sources */,
 				5548669D2DAC839D00AB8DE4 /* ProfilePhotoViewModel.swift in Sources */,
 				551FE7DE2DADAB28000972A2 /* RequestServiceView.swift in Sources */,
+				554FE7E52DB84EBB00275194 /* ReviewDTO.swift in Sources */,
 				55FBA2992D35EAE100F86201 /* RegisterViewModel.swift in Sources */,
 				554C737D2D9CBE9700145987 /* KeychainManager.swift in Sources */,
 				557A17352DB0579D00971872 /* ServiceRequestDetailViewModel.swift in Sources */,
@@ -1030,6 +1048,7 @@
 				55D3D3432DA8023E00799594 /* ProfilePhotoEditViewModel.swift in Sources */,
 				552F25AA2D9888D900BF1234 /* ServicesViewModel.swift in Sources */,
 				55FBA2A62D35EAE100F86201 /* ForgotPasswordView.swift in Sources */,
+				554FE7EF2DB8624900275194 /* ServiceProfileDetailsView.swift in Sources */,
 				55D3D3312DA7E99900799594 /* MoreViewModel.swift in Sources */,
 				552F25A02D98879600BF1234 /* SubcategoriesListView.swift in Sources */,
 				556FF0ED2DB484EF0037704D /* BookingConfirmationSheet.swift in Sources */,
@@ -1052,13 +1071,13 @@
 				556FF0D92DB1AA3C0037704D /* ChatServiceProtocol.swift in Sources */,
 				55BA772F2DB5B939000A72FE /* Booking.swift in Sources */,
 				554FE7E12DB843FC00275194 /* SupportRequestDTO.swift in Sources */,
-				551FE7EC2DADB835000972A2 /* RatingView.swift in Sources */,
 				55FBA2AF2D35EAE100F86201 /* OnboardingView.swift in Sources */,
 				556C875E2D56A110005C824E /* ObjectOptionSelectionView.swift in Sources */,
 				554C73852D9CC0F800145987 /* APIRequest.swift in Sources */,
 				5574B7692D3DC92800DF60ED /* HTTPMethod.swift in Sources */,
 				554871562D9F54A000AB1811 /* CalendarView.swift in Sources */,
 				556FF0DC2DB1AC600037704D /* InboxViewModel.swift in Sources */,
+				554FE7EB2DB857B000275194 /* LeaveReviewView.swift in Sources */,
 				554C73822D9CC07500145987 /* RefreshTokenRequest.swift in Sources */,
 				55D3D3462DA84D4F00799594 /* UserRequests.swift in Sources */,
 				55A05C022DB6B9DB001C31C0 /* BookingViewModel.swift in Sources */,
@@ -1079,6 +1098,7 @@
 				55D3D33B2DA7F4D500799594 /* ProfileEditView.swift in Sources */,
 				554FE7DF2DB804C600275194 /* CalendarViewModel.swift in Sources */,
 				55FBA2BC2D35EAE100F86201 /* ServxInputView.swift in Sources */,
+				554FE7ED2DB8615700275194 /* ServiceProfileDetailsViewModel.swift in Sources */,
 				55CF6E282DA333080045E240 /* ProfileViewModel.swift in Sources */,
 				5574B7572D3DC8B800DF60ED /* LoginRequest.swift in Sources */,
 				559D3CE52DA18B7D00E3862F /* MainBottomNavBar.swift in Sources */,

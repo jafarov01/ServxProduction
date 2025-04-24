@@ -99,7 +99,7 @@ final class APIClient: APIClientProtocol {
         // Response Body
         let jsonString = String(data: data, encoding: .utf8) ?? "Non-UTF8 Data"
         print("📥 Raw Response (\(data.count) bytes):")
-        print(jsonString.prefix(1000))  // Limit to first 1000 chars
+        print(jsonString.prefix(1000))
         
         // Validate Status Code
         guard let httpResponse = response as? HTTPURLResponse else {
@@ -175,6 +175,7 @@ final class APIClient: APIClientProtocol {
         case 401: throw NetworkError.unauthorized
         case 403: throw NetworkError.forbidden
         case 404: throw NetworkError.notFound
+        case 409: throw NetworkError.duplicateReview
         case 500...599: throw NetworkError.serverError(statusCode: statusCode)
         default: throw NetworkError.unknown
         }
@@ -186,9 +187,4 @@ final class APIClient: APIClientProtocol {
         }
         return token
     }
-}
-
-enum NetworkConstants {
-    static let baseURL = "http://localhost:8080"
-    static let uploadsPath = "/uploads/"
 }

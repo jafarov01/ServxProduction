@@ -40,18 +40,6 @@ struct ServiceDetailedCard: View {
                     Text("$\(service.price, specifier: "%.0f")")
                         .font(.system(size: 18, weight: .bold))
                         .foregroundColor(Color("primary500"))
-                    
-                    Button(action: {
-                        isRequested = true
-                    }) {
-                        Text("Request for Service")
-                            .font(.system(size: 14, weight: .medium))
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .background(Color("primary300"))
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                    }
                 }
             }
             .padding(16)

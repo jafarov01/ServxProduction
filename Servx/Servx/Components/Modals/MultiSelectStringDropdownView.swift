@@ -11,7 +11,7 @@ import Foundation
 struct MultiSelectStringDropdownView: View {
     let title: String
     let options: [String]
-    @Binding var selectedOptions: [String]  // Changed to Array
+    @Binding var selectedOptions: [String]
     @State private var isExpanded = false
 
     var body: some View {
@@ -57,9 +57,9 @@ struct MultiSelectStringDropdownView: View {
     private func toggle(_ option: String) {
         withAnimation {
             if let index = selectedOptions.firstIndex(of: option) {
-                selectedOptions.remove(at: index)  // Remove if exists
+                selectedOptions.remove(at: index)
             } else {
-                selectedOptions.append(option)  // Add if not exists
+                selectedOptions.append(option)
             }
         }
     }

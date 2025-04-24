@@ -11,7 +11,7 @@ import SwiftUI
 struct BookingConfirmationSheet: View {
     let payload: BookingRequestPayload
     let senderName: String
-    let requestStatus: ServiceRequest.RequestStatus? // Status passed from ViewModel
+    let requestStatus: ServiceRequest.RequestStatus?
     let onAccept: () -> Void
     let onReject: () -> Void
 
@@ -20,13 +20,13 @@ struct BookingConfirmationSheet: View {
     init(
         payload: BookingRequestPayload,
         senderName: String,
-        requestStatus: ServiceRequest.RequestStatus?, // Receive status
+        requestStatus: ServiceRequest.RequestStatus?,
         onAccept: @escaping () -> Void,
         onReject: @escaping () -> Void
     ) {
         self.payload = payload
         self.senderName = senderName
-        self.requestStatus = requestStatus // Store status
+        self.requestStatus = requestStatus
         self.onAccept = onAccept
         self.onReject = onReject
         print("BookingConfirmationSheet initialized with status: \(String(describing: requestStatus))")
@@ -53,7 +53,7 @@ struct BookingConfirmationSheet: View {
                         }
                     }
 
-                    actionSection() // Extracted action/status section
+                    actionSection()
 
                     Spacer()
                 }
@@ -67,7 +67,6 @@ struct BookingConfirmationSheet: View {
                         dismiss()
                     }
                 }
-                // Buttons moved to main content area
             }
         }
     }
@@ -92,12 +91,11 @@ struct BookingConfirmationSheet: View {
                   Text("Booking Confirmed")
                       .font(.headline).foregroundColor(.green)
                       .frame(maxWidth: .infinity, alignment: .center).padding()
-             } else if requestStatus == .declined { // Check for .declined if it exists
+             } else if requestStatus == .declined {
                   Text("Booking Was Declined")
                       .font(.headline).foregroundColor(.red)
                       .frame(maxWidth: .infinity, alignment: .center).padding()
              } else {
-                   // Handle other statuses like PENDING, COMPLETED, or nil
                    Text("Status: \(requestStatus?.rawValue ?? "Unavailable")")
                       .font(.headline).foregroundColor(.gray)
                       .frame(maxWidth: .infinity, alignment: .center).padding()

@@ -38,7 +38,6 @@ class ChatViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     var scrollToBottomPublisher = PassthroughSubject<Bool, Never>()
     var scrollToMessagePublisher = PassthroughSubject<(id: Int64, anchor: UnitPoint?), Never>()
-    // Removed: private let logger = Logger(...)
 
     init(
         requestId: Int64,
@@ -106,31 +105,38 @@ class ChatViewModel: ObservableObject {
     }
 
     private func fetchParticipantsAndStatus() async {
-            print("ChatViewModel: Fetching request details...")
-            isLoadingDetails = true
-            defer { isLoadingDetails = false }
-            do {
-                let details = try await serviceRequestService.fetchRequestDetails(id: requestId)
-                let otherUser: User
-                if self.currentUserRole == .serviceProvider { otherUser = details.seeker }
-                else { otherUser = details.provider }
-
-                self.otherParticipantId = otherUser.id
-                self.otherParticipantName = otherUser.fullName
-                // --- SET STATUS ---
-                self.currentRequestStatus = details.status // Store the fetched status
-                // ------------------
-                self.canSendMessage = isChatActiveByStatus(details.status)
-                print("ChatViewModel: Set participants & status. Other: \(self.otherParticipantName). Status: \(details.status). CanSend: \(self.canSendMessage)")
-            } catch {
-                print("ChatViewModel: Failed fetch request details: \(error.localizedDescription)")
-                self.errorWrapper = ErrorWrapper(message: "Could not load chat details.")
-                self.otherParticipantName = "Chat Error"
-                self.otherParticipantId = nil
-                self.canSendMessage = false
-                self.currentRequestStatus = nil // Reset status on error
-            }
+        print("ChatViewModel: Fetching request details...")
+        isLoadingDetails = true
+        var fetchedStatus: ServiceRequest.RequestStatus? = nil
+        var fetchedOtherId: Int64? = nil
+        defer {
+            self.canSendMessage = self.isChatActiveByStatus(fetchedStatus) && fetchedOtherId != nil
+            print("ChatViewModel: fetchParticipantsAndStatus END. OtherID: \(self.otherParticipantId ?? -1). CanSend: \(self.canSendMessage)")
+            isLoadingDetails = false
         }
+        do {
+            let details = try await serviceRequestService.fetchRequestDetails(id: requestId)
+            let otherUser: User
+            if self.currentUserRole == .serviceProvider { otherUser = details.seeker }
+            else { otherUser = details.provider }
+
+            fetchedOtherId = otherUser.id
+            fetchedStatus = details.status
+
+            self.otherParticipantId = fetchedOtherId
+            self.otherParticipantName = otherUser.fullName
+            self.currentRequestStatus = fetchedStatus
+
+        } catch {
+            print("ChatViewModel: Failed fetch request details: \(error.localizedDescription)")
+            self.errorWrapper = ErrorWrapper(message: "Could not load chat details.")
+            self.otherParticipantName = "Chat Error"
+            self.otherParticipantId = nil
+            fetchedOtherId = nil
+            fetchedStatus = nil
+            self.currentRequestStatus = nil
+        }
+    }
 
     private func fetchAndProcessMessages(page: Int, initialLoad: Bool = false) async {
         errorWrapper = nil
@@ -159,10 +165,14 @@ class ChatViewModel: ObservableObject {
 
     func sendMessage() {
         let textToSend = messageText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !textToSend.isEmpty, !isSending, canSendMessage, let recipientId = self.otherParticipantId else {
-            if self.otherParticipantId == nil { print("ChatViewModel: Send failed, recipient unknown.") }
+        guard canSendMessage, !textToSend.isEmpty, !isSending else {
+            print("ChatViewModel: Send message failed. Conditions not met (sending: \(isSending), canSend: \(canSendMessage), textEmpty: \(textToSend.isEmpty))")
+             if self.otherParticipantId == nil && isChatActiveByStatus(currentRequestStatus) {
+                 self.errorWrapper = ErrorWrapper(message: "Cannot send message yet. Loading recipient info...")
+             }
             return
         }
+        let recipientId = self.otherParticipantId!
         print("ChatViewModel: Sending message...")
         isSending = true
         let timestampString = ISO8601DateFormatter().string(from: Date())
@@ -204,7 +214,6 @@ class ChatViewModel: ObservableObject {
         self.bookingMessageToShowDetails = message
     }
 
-    // --- Simplified Accept/Decline using Print ---
     func handleBookingAccept(messageId: Int64) {
         guard currentUserRole == .serviceSeeker, !isLoadingDetails else { return }
         guard currentRequestStatus == .accepted else {
@@ -223,7 +232,7 @@ class ChatViewModel: ObservableObject {
             do {
                 let updatedRequestDto = try await self.serviceRequestService.confirmBooking(
                                     requestId: self.requestId,
-                                    messageId: messageId // Pass the ID of the message being accepted
+                                    messageId: messageId 
                                 )
                 print("ChatViewModel: Booking confirmed via API. Status: \(updatedRequestDto.status)")
                 finalStatus = updatedRequestDto.status

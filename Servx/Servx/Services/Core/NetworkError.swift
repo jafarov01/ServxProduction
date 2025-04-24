@@ -24,6 +24,7 @@ enum NetworkError: Error, LocalizedError {
     case invalidImageData
     case conflict
     case invalidRequest
+    case duplicateReview
     
     var errorDescription: String? {
         switch self {
@@ -43,6 +44,7 @@ enum NetworkError: Error, LocalizedError {
         case .invalidImageData: return "Invalid image data"
         case .conflict: return "Conflict occurred - Role is already assigned"
         case .invalidRequest: return "Invalid request"
+        case .duplicateReview: return "You have already submitted a review for this booking."
         }
     }
     
@@ -54,6 +56,8 @@ enum NetworkError: Error, LocalizedError {
             return "Check your permissions"
         case .timeout:
             return "Check your network connection"
+        case .duplicateReview:
+            return "You can only review a booking once."
         default:
             return "Please try again later"
         }

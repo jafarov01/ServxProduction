@@ -11,7 +11,7 @@ struct SubcategoryRow: View {
     let subcategory: ServiceArea
     
     var body: some View {
-        HStack { // ✅ Just a regular view, no nested button
+        HStack {
             Text(subcategory.name)
                 .font(.system(size: 16, weight: .regular))
                 .foregroundColor(Color("greyScale900"))

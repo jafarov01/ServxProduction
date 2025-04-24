@@ -23,7 +23,6 @@ struct User: Codable, Identifiable {
         return "\(firstName) \(lastName)"
     }
     
-    // Optional computed property for cleaner access
     var formattedEducation: String? {
         guard role == .serviceProvider else { return nil }
         return education

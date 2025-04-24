@@ -70,7 +70,7 @@ struct CategoriesSection: View {
             SectionHeader(
                 title: "Category",
                 actionTitle: "View all",
-                action: { /* Handle category view all */ }
+                action: { }
             )
             
             LazyVGrid(columns: gridColumns, spacing: 10) {
@@ -99,7 +99,6 @@ struct HeaderView: View {
                 )
             
             VStack(alignment: .leading) {
-                // Greeting text
                 ServxTextView(
                     text: "Good Morning 👋🏻",
                     color: Color("greyScale900"),
@@ -108,7 +107,6 @@ struct HeaderView: View {
                     alignment: .leading
                 )
                 
-                // User's full name
                 ServxTextView(
                     text: AuthenticatedUser.shared.fullName,
                     color: Color("primary500"),
@@ -120,14 +118,13 @@ struct HeaderView: View {
             
             Spacer()
             
-            // Notification and bookmark icons
             Image("notificationIcon")
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .frame(width: 28, height: 28)
                 .padding(.horizontal, 16)
                 .onTapGesture {
-                    navigator.navigate(to: AppRoute.Main.notifications)  // Navigate to NotificationListView
+                    navigator.navigate(to: AppRoute.Main.notifications)
                 }
             
             Image("bookmarkIcon")
@@ -164,7 +161,7 @@ struct RecommendedServicesSection: View {
             SectionHeader(
                 title: "Recommended Services",
                 actionTitle: "View all",
-                action: { /* Handle services view all */ }
+                action: {}
             )
             .padding(.top, 32)
             
@@ -209,7 +206,6 @@ struct SectionHeader: View {
 }
 
 extension View {
-    /// Logs when the view's body is recomputed
     func debugRender(_ tag: String) -> some View {
         viewLogger.info("issue01: \(tag) re-rendered")
         return self

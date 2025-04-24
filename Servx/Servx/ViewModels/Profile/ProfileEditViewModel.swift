@@ -33,7 +33,6 @@ class ProfileEditViewModel: ObservableObject {
     }
 
     private func setupObservers() {
-        // 🟢 Live updates from global user state
         AuthenticatedUser.shared.$currentUser
             .receive(on: DispatchQueue.main)
             .sink { [weak self] user in
@@ -109,7 +108,6 @@ class ProfileEditViewModel: ObservableObject {
         .assign(to: &$isValid)
     }
 
-    // 🟢 New helper
     var profilePhotoURL: URL? {
         user?.profilePhotoUrl
     }

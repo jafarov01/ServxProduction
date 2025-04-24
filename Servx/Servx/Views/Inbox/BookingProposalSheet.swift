@@ -9,15 +9,11 @@
 import SwiftUI
 
 struct BookingProposalSheet: View {
-    // Create and own the ViewModel for the sheet's lifecycle
     @StateObject private var viewModel: BookingProposalViewModel
-    // Environment variable to dismiss the sheet
     @Environment(\.dismiss) private var dismiss
 
-    // Closure to call when proposal is successfully created
     let onPropose: (BookingRequestPayload) -> Void
 
-    // Initializer receives the request ID to fetch details
     init(requestId: Int64, onPropose: @escaping (BookingRequestPayload) -> Void) {
         _viewModel = StateObject(wrappedValue: BookingProposalViewModel(requestId: requestId))
         self.onPropose = onPropose
@@ -25,17 +21,16 @@ struct BookingProposalSheet: View {
     }
 
     var body: some View {
-        NavigationView { // Embed in NavigationView for title and buttons
+        NavigationView {
             Form {
                 Section("Booking Details") {
-                    Text(viewModel.serviceDetailsText) // Display fetched details
+                    Text(viewModel.serviceDetailsText)
                         .font(.subheadline)
                         .foregroundColor(.gray)
 
                     DatePicker("Proposed Date & Time", selection: $viewModel.proposedDate, displayedComponents: [.date, .hourAndMinute])
-                        // Optional: Add range to prevent past dates
-                         .datePickerStyle(.compact) // Or .graphical
-                         .environment(\.locale, Locale(identifier: "en_GB")) // Example locale for formatting
+                         .datePickerStyle(.compact)
+                         .environment(\.locale, Locale(identifier: "en_GB"))
 
 
                     HStack {
@@ -65,7 +60,6 @@ struct BookingProposalSheet: View {
                         }
                 }
 
-                // Display validation error if any
                 if let error = viewModel.errorMessage {
                     Section {
                          Text(error)
@@ -84,17 +78,15 @@ struct BookingProposalSheet: View {
                     Button("Send") {
                         if let payload = viewModel.createPayload() {
                             print("BookingProposalSheet: Sending payload.")
-                            onPropose(payload) // Call completion handler
-                            dismiss() // Dismiss the sheet
+                            onPropose(payload)
+                            dismiss()
                         } else {
                              print("BookingProposalSheet: Payload creation failed (form invalid).")
-                             // Error message should be displayed via viewModel.errorMessage
                         }
                     }
-                    .disabled(!viewModel.isValid) // Disable if form invalid
+                    .disabled(!viewModel.isValid)
                 }
             }
-             // Show loading indicator while initial details load
              .overlay {
                   if viewModel.isLoadingDetails {
                        ProgressView("Loading details...")

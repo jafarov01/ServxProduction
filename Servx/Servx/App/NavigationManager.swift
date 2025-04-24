@@ -34,13 +34,17 @@ enum AppRoute {
         case serviceRequest(ServiceProfile)
         case notifications
         case serviceRequestDetail(id: Int64)  // For NEW_REQUEST/REQUEST_ACCEPTED
-        case bookingDetail(id: Int64)         // For BOOKING_CONFIRMED
         case serviceReview(bookingId: Int64)  // For SERVICE_COMPLETED
+        case serviceProfileDetail(ServiceProfile)
     }
     
     enum Inbox: Hashable {
         case chat(requestId: Int64)
     }
+    
+    enum BookingTab: Hashable { // Routes specific to Booking tab's stack
+        case leaveReview(bookingId: Int64, providerName: String, serviceName: String)
+     }
 }
 
 enum Tab: String, CaseIterable {
@@ -55,6 +59,7 @@ final class NavigationManager: ObservableObject {
     @Published var authStack = NavigationPath()
     @Published var moreStack = NavigationPath()
     @Published var inboxStack = NavigationPath()
+    @Published var bookingStack = NavigationPath()
     @Published var selectedTab: Tab = .home
     @Published var isSplashVisible = true
     
@@ -80,6 +85,8 @@ final class NavigationManager: ObservableObject {
             mainStack.append(route)
         case let route as AppRoute.Inbox:
             inboxStack.append(route)
+        case let route as AppRoute.BookingTab:
+            bookingStack.append(route)
         default:
             logError("Attempted to navigate to invalid route type: \(type(of: route))")
         }
@@ -112,10 +119,13 @@ final class NavigationManager: ObservableObject {
             moreStack.removeLast()
         } else if !inboxStack.isEmpty {
             inboxStack.removeLast()
+        } else if !bookingStack.isEmpty {
+            bookingStack.removeLast()
         }
     }
     
     func resetAllStacks() {
+        bookingStack.removeLast(bookingStack.count)
         authStack.removeLast(authStack.count)
         moreStack.removeLast(moreStack.count)
         mainStack.removeLast(mainStack.count)
@@ -170,7 +180,6 @@ private extension NavigationManager {
     }
 
     private func handleUnknownState() {
-        // Handle initial unknown state if needed
         logNavigation("Auth state unknown")
     }
     

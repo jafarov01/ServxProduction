@@ -45,7 +45,6 @@ struct ChatMessageDTO: Codable, Identifiable, Hashable {
     let bookingPayload: BookingRequestPayload?
     var bookingProposalStatus: BookingProposalState? = nil
 
-    // Maps JSON keys to Swift properties
     enum CodingKeys: String, CodingKey {
         case id
         case serviceRequestId
@@ -114,7 +113,7 @@ struct BookingRequestPayload: Codable, Hashable {
 }
 
 enum BookingProposalState: String, Codable, Hashable {
-    case pending // Default state when proposal is received/sent
+    case pending
     case accepted
     case rejected
 }

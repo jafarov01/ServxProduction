@@ -112,7 +112,7 @@ struct ServiceProviderHeader: View {
                     .font(.headline)
                 
                 HStack {
-                    RatingView(rating: service.rating)
+                    StaticStarRatingView(rating: service.rating)
                     Text("(\(service.reviewCount))")
                         .font(.subheadline)
                         .foregroundColor(.gray)

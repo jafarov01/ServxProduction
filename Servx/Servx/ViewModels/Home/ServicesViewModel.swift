@@ -36,7 +36,7 @@ class ServicesViewModel: ObservableObject {
         $searchQuery
             .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
             .removeDuplicates()
-            .sink { [weak self] query in // Capture query to use in print
+            .sink { [weak self] query in
                 print("Filtering services based on query: \(query)")
                 self?.filterServices()
             }
@@ -47,7 +47,7 @@ class ServicesViewModel: ObservableObject {
         guard !isLoading else { return }
         print("Loading services for subcategory: \(subcategory.name)")
         isLoading = true
-        errorWrapper = nil // Clear error before loading
+        errorWrapper = nil
         defer { isLoading = false }
 
         do {
@@ -56,14 +56,12 @@ class ServicesViewModel: ObservableObject {
                 subcategoryId: subcategory.id
             )
             self.services = fetchedServices
-            self.filterServices() // Apply initial filter
+            self.filterServices()
             print("Loaded \(fetchedServices.count) services.")
         } catch {
             let errorMsg = "Failed to load services. Please try again."
             print("Error loading services: \(error)")
-            // --- CHANGE: Set errorWrapper ---
             self.errorWrapper = ErrorWrapper(message: errorMsg)
-            // --- End Change ---
         }
     }
 
@@ -82,6 +80,6 @@ class ServicesViewModel: ObservableObject {
 }
 
 struct ErrorWrapper: Identifiable {
-    let id = UUID() // Conforms to Identifiable
+    let id = UUID()
     let message: String
 }

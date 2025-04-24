@@ -10,10 +10,12 @@ import SwiftUI
 struct MainTabView: View {
     @EnvironmentObject private var navigator: NavigationManager
     @EnvironmentObject private var session: UserSessionManager
-    
+
     @StateObject private var homeViewModel = HomeViewModel()
     @StateObject private var moreViewModel = MoreViewModel()
-    @StateObject private var bookingViewModel = BookingViewModel(authenticatedUser: AuthenticatedUser.shared)
+    @StateObject private var bookingViewModel = BookingViewModel(
+        authenticatedUser: AuthenticatedUser.shared
+    )
 
     var body: some View {
         TabView(selection: $navigator.selectedTab) {
@@ -43,14 +45,14 @@ struct MainTabView: View {
                         ServicesListView(
                             subcategory: subcategory
                         )
+                    case .serviceProfileDetail(let serviceProfile):
+                        ServiceProfileDetailsView(serviceProfile: serviceProfile)
                     case .serviceRequest(let service):
                         RequestServiceView(serviceProfile: service)
                     case .notifications:
                         NotificationListView()
                     case .serviceRequestDetail(let id):
                         ServiceRequestDetailView(requestId: id)
-                    case .bookingDetail:
-                        Text("BookingDetailView")
                     case .serviceReview:
                         Text("ServiceReviewView")
                     }
@@ -61,8 +63,23 @@ struct MainTabView: View {
     }
 
     private var bookingTab: some View {
-        NavigationStack {
+        NavigationStack(path: $navigator.bookingStack) {
             BookingView(viewModel: bookingViewModel)
+                .environmentObject(navigator)
+                .navigationDestination(for: AppRoute.BookingTab.self) { route in
+                    switch route {
+                    case .leaveReview(
+                        let bookingId,
+                        let providerName,
+                        let serviceName
+                    ):
+                        LeaveReviewView(
+                            bookingId: bookingId,
+                            providerName: providerName,
+                            serviceName: serviceName
+                        )
+                    }
+                }
         }
         .tabItem { Label("Booking", systemImage: "calendar.badge.plus") }
         .tag(Tab.booking)

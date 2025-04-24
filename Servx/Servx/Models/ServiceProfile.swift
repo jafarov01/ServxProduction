@@ -19,10 +19,8 @@ struct ServiceProfile: Identifiable, Codable, Hashable {
     let reviewCount: Int
     let profilePhotoUrl: String?
 
-    // Additional derived fields
     var serviceTitle: String { "\(categoryName) - \(subcategoryName)" }
 
-     // Add init if needed for manual creation, ensure it includes new fields
      init(id: Int64, providerId: Int64, providerName: String, categoryName: String, subcategoryName: String, workExperience: String, price: Double, rating: Double, reviewCount: Int, profilePhotoUrl: String?) {
         self.id = id
         self.providerId = providerId

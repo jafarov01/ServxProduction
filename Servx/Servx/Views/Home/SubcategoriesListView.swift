@@ -17,7 +17,7 @@ struct SubcategoriesListView: View {
     init(category: ServiceCategory) {
         self.category = category
         _viewModel = StateObject(wrappedValue: SubcategoriesViewModel(category: category))
-        print("SubcategoriesListView initialized for category: \(category.name)") // Added print for debug
+        print("SubcategoriesListView initialized for category: \(category.name)")
     }
     
     var body: some View {

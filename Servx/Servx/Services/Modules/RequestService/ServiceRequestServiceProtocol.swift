@@ -10,7 +10,7 @@ protocol ServiceRequestServiceProtocol {
     func submitRequest(_ request: ServiceRequestDTO) async throws -> EmptyResponseDTO
     func fetchRequestDetails(id: Int64) async throws -> ServiceRequestDetail
     func acceptRequest(id: Int64) async throws -> ServiceRequestDetail
-    func confirmBooking(requestId: Int64, messageId: Int64) async throws -> ServiceRequestDetailDTO // Added messageId
+    func confirmBooking(requestId: Int64, messageId: Int64) async throws -> ServiceRequestDetailDTO
     func rejectBooking(requestId: Int64) async throws -> ServiceRequestDetailDTO
 }
 
@@ -37,9 +37,8 @@ class ServiceRequestService: ServiceRequestServiceProtocol {
         return dto.toEntity()
     }
     
-    func confirmBooking(requestId: Int64, messageId: Int64) async throws -> ServiceRequestDetailDTO { // Added messageId
+    func confirmBooking(requestId: Int64, messageId: Int64) async throws -> ServiceRequestDetailDTO {
         print("ServiceRequestService: Confirming booking for req \(requestId) from msg \(messageId)")
-        // Use updated Endpoint case
         let endpoint = Endpoint.confirmBooking(requestId: requestId, messageId: messageId)
         let updatedRequest: ServiceRequestDetailDTO = try await apiClient.request(endpoint)
         print("ServiceRequestService: Booking confirmed successfully.")
@@ -50,7 +49,6 @@ class ServiceRequestService: ServiceRequestServiceProtocol {
     func rejectBooking(requestId: Int64) async throws -> ServiceRequestDetailDTO {
         print("ServiceRequestService: Rejecting booking for request ID \(requestId)")
         let endpoint = Endpoint.rejectBooking(requestId: requestId)
-        // Expect updated request DTO back from backend
         let updatedRequest: ServiceRequestDetailDTO = try await apiClient.request(endpoint)
         print("ServiceRequestService: Booking rejected successfully.")
         return updatedRequest

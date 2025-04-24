@@ -42,7 +42,7 @@ class LoginViewModel: ObservableObject {
         Task {
             do {
                 try await authService.login(email: email, password: password)
-                loginSuccess = true // Set on success
+                loginSuccess = true
             } catch {
                 handleLoginError(error)
             }
@@ -51,7 +51,6 @@ class LoginViewModel: ObservableObject {
     }
     
     private func handleLoginError(_ error: Error) {
-        // Implement proper error handling
         print("Login failed: \(error.localizedDescription)")
     }
     

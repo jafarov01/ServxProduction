@@ -7,164 +7,228 @@
 
 import Foundation
 
+enum NetworkConstants {
+    static let baseURL = "http://localhost:8080"
+    static let uploadsPath = "/uploads/"
+}
+
 enum Endpoint {
+
+    // MARK: - Authentication
     case authLogin(body: LoginRequest)
     case register(body: RegisterRequest)
+
+    // MARK: - User Profile & Actions
+    case getUserDetails // Fetches authenticated user's own details
+    case updateUserDetails(request: UpdateUserRequest) // Updates own details
+    case updateProfilePhoto // Uploads own photo
+    case deleteProfilePhoto // Deletes own photo
+    case upgradeToProvider(request: UpgradeToProviderRequestDTO) // Upgrade own role
+    case fetchUserDetails(userId: Int64) // Fetch specific user
+
+    // MARK: - Service Categories & Areas
     case fetchCategories
-    case fetchRecommendedServices
     case fetchSubcategories(categoryId: Int64)
-    case fetchServices(categoryId: Int64, subcategoryId: Int64)
-    case getUserDetails
-    case fetchUserDetails(userId: Int64)
-    case updateProfilePhoto
-    case deleteProfilePhoto
-    case updateUserDetails(request: UpdateUserRequest)
-    case upgradeToProvider(request: UpgradeToProviderRequestDTO)
-    case createServiceProfile(request: ServiceProfileRequestDTO)
-    case createBulkServices(
-        categoryId: Int64,
-        request: BulkServiceProfileRequest
-    )
+
+    // MARK: - Service Profiles (Provider Offerings)
+    case fetchServices(categoryId: Int64, subcategoryId: Int64) // Fetch list by subcategory
+    case fetchServiceProfile(profileId: Int64) // Fetch specific profile by its ID
+    case createServiceProfile(request: ServiceProfileRequestDTO) // Create one profile
+    case createBulkServices(categoryId: Int64, request: BulkServiceProfileRequest) // Create multiple
+    case fetchRecommendedServices
+
+    // MARK: - Service Requests
     case createServiceRequest(request: ServiceRequestDTO)
-    case createNotification(Notification)
-    case getNotifications
-    case markNotificationAsRead(notificationId: Int64)
-    case fetchServiceRequest(id: Int64)
-    case acceptServiceRequest(id: Int64)
-    case fetchConversations  // GET /api/chats
+    case fetchServiceRequest(id: Int64) // Get details of one request
+    case acceptServiceRequest(id: Int64) // Provider accepts
+    case confirmBooking(requestId: Int64, messageId: Int64) // Seeker confirms booking from chat
+    case rejectBooking(requestId: Int64) // Seeker rejects booking from chat
+
+    // MARK: - Bookings
+    case fetchBookings(status: BookingStatus, page: Int, size: Int) // Combined endpoint
+    case fetchBookingsByDateRange(startDate: Date, endDate: Date) // For Calendar view
+    case cancelBooking(bookingId: Int64) // User cancels own booking
+    case providerMarkComplete(bookingId: Int64) // Provider action
+    case seekerConfirmCompletion(bookingId: Int64) // Seeker action
+
+    // MARK: - Chat
+    case fetchConversations
     case fetchMessages(requestId: Int64, page: Int, size: Int)
     case markConversationAsRead(requestId: Int64)
-    case confirmBooking(requestId: Int64, messageId: Int64)
-    case rejectBooking(requestId: Int64)
-    case fetchBookings(status: BookingStatus, page: Int, size: Int)
-    case cancelBooking(bookingId: Int64)
-    case fetchServiceProfile(profileId: Int64)
-    case fetchBookingsByDateRange(startDate: Date, endDate: Date)
+
+    // MARK: - Notifications
+    case getNotifications
+    case markNotificationAsRead(notificationId: Int64)
+    case createNotification(Notification)
+
+    // MARK: - Reviews
+    case submitReview(body: ReviewRequestDTO) // Seeker submits review
+    case fetchReviewsForService(serviceId: Int64, page: Int, size: Int) // Fetch reviews for a service
+
+    // MARK: - Support
     case sendSupportRequest(body: SupportRequestDTO)
 
+
+    // --- Computed Properties ---
+
+    /// Base URL for the API, constructed from NetworkConstants
+    private var apiBaseUrl: String {
+        let base = NetworkConstants.baseURL.hasSuffix("/") ? String(NetworkConstants.baseURL.dropLast()) : NetworkConstants.baseURL
+        return base + "/api"
+    }
+
+    /// Determines if the endpoint requires authentication token
     var requiresAuth: Bool {
         switch self {
-        case .authLogin, .register:
+        // Publicly accessible endpoints
+        case .authLogin, .register,
+             .fetchCategories, .fetchSubcategories,
+             .fetchServices, .fetchServiceProfile,
+             .fetchReviewsForService:
             return false
+        // All other endpoints require authentication
         default:
             return true
         }
     }
 
+    /// Generates the full URL string for the endpoint
     var url: String {
-        let baseURL = "http://localhost:8080/api/"
+        let base = apiBaseUrl
+
         switch self {
-        case .sendSupportRequest:
-            return "\(baseURL)support/request"
-        case .fetchServiceProfile(let profileId):
-            return "\(baseURL)service-profiles/\(profileId)"
-        case .fetchServiceRequest(let id):
-            return "\(baseURL)service-requests/\(id)"
-        case .acceptServiceRequest(let id):
-            return "\(baseURL)service-requests/\(id)/accept"
-        case .createNotification:
-            return "\(baseURL)notifications"
-        case .getNotifications:
-            return "\(baseURL)notifications"
-        case .markNotificationAsRead(let notificationId):
-            return "\(baseURL)notifications/\(notificationId)/read"
-        case .createBulkServices(let categoryId, _):
-            return "\(baseURL)categories/\(categoryId)/service-offers/bulk"
-        case .updateProfilePhoto: return "\(baseURL)user/me/photo"
-        case .deleteProfilePhoto: return "\(baseURL)user/me/photo"
-        case .authLogin: return "\(baseURL)auth/login"
-        case .updateUserDetails: return "\(baseURL)user/me"
-        case .register: return "\(baseURL)auth/register"
-        case .getUserDetails: return "\(baseURL)user/me"
-        case .fetchCategories: return "\(baseURL)categories"
-        case .fetchRecommendedServices:
-            return "\(baseURL)service-offers/recommended"
-        case .upgradeToProvider:
-            return "\(baseURL)user/me/upgrade-to-provider"
-        case .fetchSubcategories(let categoryId):
-            return "\(baseURL)categories/\(categoryId)/subcategories"
-        case .fetchServices(let categoryId, let subcategoryId):
-            return
-                "\(baseURL)categories/\(categoryId)/subcategories/\(subcategoryId)/service-offers"
-        case .fetchUserDetails(let userId):
-            return "\(baseURL)users/\(userId)"
-        case .createServiceProfile:
-            return "\(baseURL)user/me/service-profile"
-        case .createServiceRequest:
-            return "\(baseURL)service-requests"
-        case .fetchConversations:
-            return "\(baseURL)chats"
-        case .fetchMessages(let requestId, let page, let size):
-            return
-                "\(baseURL)chats/\(requestId)/messages?page=\(page)&size=\(size)&sort=timestamp,desc"
-        case .markConversationAsRead(let requestId):
-            return "\(baseURL)chats/\(requestId)/read"
-        case .confirmBooking(let requestId, let messageId):  // Updated path
-            return
-                "\(baseURL)service-requests/\(requestId)/confirm-booking/\(messageId)"
-        case .rejectBooking(let requestId):
-            return "\(baseURL)service-requests/\(requestId)/reject-booking"
+        // Auth
+        case .authLogin: return "\(base)/auth/login"
+        case .register: return "\(base)/auth/register"
+
+        // User
+        case .getUserDetails: return "\(base)/user/me"
+        case .updateUserDetails: return "\(base)/user/me"
+        case .updateProfilePhoto: return "\(base)/user/me/photo"
+        case .deleteProfilePhoto: return "\(base)/user/me/photo"
+        case .upgradeToProvider: return "\(base)/user/me/upgrade-to-provider"
+        case .fetchUserDetails(let userId): return "\(base)/users/\(userId)"
+
+        // Categories & Services
+        case .fetchCategories: return "\(base)/categories"
+        case .fetchSubcategories(let categoryId): return "\(base)/categories/\(categoryId)/subcategories"
+        case .fetchServices(let categoryId, let subcategoryId): return "\(base)/categories/\(categoryId)/subcategories/\(subcategoryId)/service-offers"
+        case .fetchServiceProfile(let profileId): return "\(base)/service-profiles/\(profileId)"
+        case .createServiceProfile: return "\(base)/user/me/service-profile"
+        case .createBulkServices(let categoryId, _): return "\(base)/categories/\(categoryId)/service-offers/bulk"
+        case .fetchRecommendedServices: return "\(base)/service-offers/recommended"
+
+        // Service Requests
+        case .createServiceRequest: return "\(base)/service-requests"
+        case .fetchServiceRequest(let id): return "\(base)/service-requests/\(id)"
+        case .acceptServiceRequest(let id): return "\(base)/service-requests/\(id)/accept"
+        case .confirmBooking(let requestId, let messageId): return "\(base)/service-requests/\(requestId)/confirm-booking/\(messageId)"
+        case .rejectBooking(let requestId): return "\(base)/service-requests/\(requestId)/reject-booking"
+
+        // Bookings
         case .fetchBookings(let status, let page, let size):
-            let statusQuery = "status=\(status.rawValue)"  // Use backend status values
-            let pageQuery = "page=\(page)"
-            let sizeQuery = "size=\(size)"
-            // Match the sort parameter used in @PageableDefault in controller
-            let sortQuery = "sort=scheduledStartTime,asc"
-            return
-                "\(baseURL)bookings?\(statusQuery)&\(pageQuery)&\(sizeQuery)&\(sortQuery)"
-        case .cancelBooking(let bookingId):
-            return "\(baseURL)bookings/\(bookingId)/cancel"
+            let query = urlQuery(params: [
+                "status": status.rawValue,
+                "page": "\(page)",
+                "size": "\(size)",
+                "sort": "scheduledStartTime,asc" // Consistent sort
+            ])
+            return "\(base)/bookings?\(query)" // Single endpoint
+
         case .fetchBookingsByDateRange(let startDate, let endDate):
-            let startDateString = DateFormatter.yyyyMMdd.string(from: startDate)
-            let endDateString = DateFormatter.yyyyMMdd.string(from: endDate)
-            // Use ascending sort for calendar view typically
-            let sortQuery = "sort=scheduledStartTime,asc"
-            // Construct the URL for the assumed backend endpoint
-            return
-                "\(baseURL)bookings/by-date?startDate=\(startDateString)&endDate=\(endDateString)&\(sortQuery)"
+            let query = urlQuery(params: [
+                "startDate": startDate.toYYYYMMDDString(),
+                "endDate": endDate.toYYYYMMDDString(),
+                "sort": "scheduledStartTime,asc"
+            ])
+            return "\(base)/bookings/by-date?\(query)"
+
+        case .cancelBooking(let bookingId): return "\(base)/bookings/\(bookingId)/cancel"
+        case .providerMarkComplete(let bookingId): return "\(base)/bookings/\(bookingId)/provider-complete"
+        case .seekerConfirmCompletion(let bookingId): return "\(base)/bookings/\(bookingId)/seeker-confirm"
+
+        // Chat
+        case .fetchConversations: return "\(base)/chats"
+        case .fetchMessages(let requestId, let page, let size):
+             let query = urlQuery(params: [
+                 "page": "\(page)",
+                 "size": "\(size)",
+                 "sort": "timestamp,desc"
+             ])
+            return "\(base)/chats/\(requestId)/messages?\(query)"
+        case .markConversationAsRead(let requestId): return "\(base)/chats/\(requestId)/read"
+
+        // Notifications
+        case .getNotifications: return "\(base)/notifications"
+        case .markNotificationAsRead(let notificationId): return "\(base)/notifications/\(notificationId)/read"
+        case .createNotification: return "\(base)/notifications"
+
+        // Reviews
+        case .submitReview: return "\(base)/reviews"
+        case .fetchReviewsForService(let serviceId, let page, let size):
+             let query = urlQuery(params: [
+                 "page": "\(page)",
+                 "size": "\(size)",
+                 "sort": "createdAt,desc"
+             ])
+            return "\(base)/reviews/service/\(serviceId)?\(query)"
+
+        // Support
+        case .sendSupportRequest: return "\(base)/support/request"
         }
     }
 
+    /// Determines the HTTP method for the endpoint
     var method: HTTPMethod {
         switch self {
+        // POST
         case .authLogin, .register, .upgradeToProvider, .createServiceProfile,
-            .createBulkServices, .createServiceRequest, .createNotification,
-            .confirmBooking, .rejectBooking, .cancelBooking, .sendSupportRequest:
+             .createBulkServices, .createServiceRequest, .confirmBooking,
+             .rejectBooking, .cancelBooking, .sendSupportRequest, .submitReview,
+             .providerMarkComplete, .seekerConfirmCompletion:
             return .post
+
+        // PUT
         case .updateProfilePhoto, .updateUserDetails:
             return .put
+
+        // DELETE
         case .deleteProfilePhoto:
             return .delete
-        case .markNotificationAsRead, .acceptServiceRequest,
-            .markConversationAsRead:
+
+        // PATCH
+        case .markNotificationAsRead, .acceptServiceRequest, .markConversationAsRead:
             return .patch
+
+        // GET (Default)
         default:
             return .get
         }
     }
 
+    /// Provides the request body for endpoints that require it
     var body: APIRequest? {
         switch self {
-        case .authLogin(let body):
-            return body as APIRequest
-        case .register(let body):
-            return body as APIRequest
-        case .updateUserDetails(let request):
-            return request
-        case .upgradeToProvider(let request):
-            return request
-        case .createServiceProfile(let request):
-            return request
-        case .createBulkServices(_, let request):
-            return request
-        case .createServiceRequest(let request):
-            return request
-        case .createNotification(let notification):
-            return notification
-        case .sendSupportRequest(let body): // *** ADD body ***
-            return body
+        case .authLogin(let body): return body
+        case .register(let body): return body
+        case .updateUserDetails(let request): return request
+        case .upgradeToProvider(let request): return request
+        case .createServiceProfile(let request): return request
+        case .createBulkServices(_, let request): return request
+        case .createServiceRequest(let request): return request
+        case .createNotification(let notification): return notification
+        case .sendSupportRequest(let body): return body
+        case .submitReview(let body): return body
+
+        // Endpoints without a body return nil
         default:
             return nil
         }
     }
+
+    private func urlQuery(params: [String: String]) -> String {
+         var components = URLComponents()
+         components.queryItems = params.map { URLQueryItem(name: $0.key, value: $0.value) }
+         return components.query ?? ""
+     }
 }

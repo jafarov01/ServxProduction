@@ -13,7 +13,7 @@ struct MessageBubbleView: View {
     let isCurrentUser: Bool
     var onBookingAccept: (() -> Void)? = nil
     var onBookingDecline: (() -> Void)? = nil
-    var onShowBookingDetails: (() -> Void)? = nil // Closure for the new button
+    var onShowBookingDetails: (() -> Void)? = nil
 
     var body: some View {
         HStack(alignment: .bottom, spacing: 5) {
@@ -87,7 +87,7 @@ struct MessageBubbleView: View {
                  if !isCurrentUser {
                      Button {
                          print("MessageBubbleView: Show Details tapped for msg ID \(message.id)")
-                         onShowBookingDetails?() // Call closure to trigger sheet in ChatView
+                         onShowBookingDetails?()
                      } label: {
                           Text("Show Details / Respond")
                               .font(.caption.weight(.semibold))

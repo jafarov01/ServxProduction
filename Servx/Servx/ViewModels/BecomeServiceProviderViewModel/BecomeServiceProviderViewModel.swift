@@ -53,7 +53,7 @@ final class BecomeServiceProviderViewModel: ObservableObject {
             return education.count >= 10 &&
             category != nil &&
             !subcategories.isEmpty &&
-            (10...500).contains(experience.count) // Changed from 50 to 10
+            (10...500).contains(experience.count)
             && Double(price) ?? 0 >= 0.01
         }
         .assign(to: &$formValid)
@@ -89,7 +89,6 @@ extension BecomeServiceProviderViewModel {
         defer { isLoading = false }
         
         do {
-            // 1. Upgrade user role - FIXED SYNTAX
             let userResponse = try await userService.upgradeToProvider(
                 request: UpgradeToProviderRequestDTO(education: education)
             )
@@ -108,7 +107,6 @@ extension BecomeServiceProviderViewModel {
                 )
             )
             
-            // 3. Update successful state
             await MainActor.run {
                 didCompleteRegistration = true
                 submissionError = nil

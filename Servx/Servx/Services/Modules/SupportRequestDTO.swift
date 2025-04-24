@@ -14,7 +14,6 @@ protocol SupportServiceProtocol {
     func sendSupportRequest(message: String) async throws
 }
 
-// Concrete implementation of the SupportService
 class SupportService: SupportServiceProtocol {
     private let apiClient: APIClientProtocol
 

@@ -20,7 +20,7 @@ struct Booking: Codable, Identifiable, Hashable {
     let locationCity: String
     let locationZipCode: String
     let locationCountry: String
-    let serviceId: Int64 // <<< Ensure this exists
+    let serviceId: Int64
     let serviceName: String
     let serviceCategoryName: String
     let providerId: Int64
@@ -34,13 +34,13 @@ struct Booking: Codable, Identifiable, Hashable {
     let serviceRequestId: Int64
     let createdAt: String?
     let updatedAt: String?
+    let providerMarkedComplete: Bool
 
     var scheduledStartDate: Date? { ISO8601DateFormatter().date(from: scheduledStartTime) }
     var providerFullName: String { "\(providerFirstName) \(providerLastName)" }
     var seekerFullName: String { "\(seekerFirstName) \(seekerLastName)" }
 
-    // Ensure init matches all properties including serviceId
-    init(id: Int64, bookingNumber: String, status: BookingStatus, scheduledStartTime: String, durationMinutes: Int, priceMin: Double, priceMax: Double, notes: String?, locationAddressLine: String, locationCity: String, locationZipCode: String, locationCountry: String, serviceId: Int64, serviceName: String, serviceCategoryName: String, providerId: Int64, providerFirstName: String, providerLastName: String, providerProfilePhotoUrl: String?, seekerId: Int64, seekerFirstName: String, seekerLastName: String, seekerProfilePhotoUrl: String?, serviceRequestId: Int64, createdAt: String?, updatedAt: String?) {
+    init(id: Int64, bookingNumber: String, status: BookingStatus, scheduledStartTime: String, durationMinutes: Int, priceMin: Double, priceMax: Double, notes: String?, locationAddressLine: String, locationCity: String, locationZipCode: String, locationCountry: String, serviceId: Int64, serviceName: String, serviceCategoryName: String, providerId: Int64, providerFirstName: String, providerLastName: String, providerProfilePhotoUrl: String?, seekerId: Int64, seekerFirstName: String, seekerLastName: String, seekerProfilePhotoUrl: String?, serviceRequestId: Int64, createdAt: String?, updatedAt: String?, providerMarkedComplete: Bool) {
         self.id = id
         self.bookingNumber = bookingNumber
         self.status = status
@@ -53,7 +53,7 @@ struct Booking: Codable, Identifiable, Hashable {
         self.locationCity = locationCity
         self.locationZipCode = locationZipCode
         self.locationCountry = locationCountry
-        self.serviceId = serviceId // Assign serviceId
+        self.serviceId = serviceId
         self.serviceName = serviceName
         self.serviceCategoryName = serviceCategoryName
         self.providerId = providerId
@@ -67,6 +67,7 @@ struct Booking: Codable, Identifiable, Hashable {
         self.serviceRequestId = serviceRequestId
         self.createdAt = createdAt
         self.updatedAt = updatedAt
+        self.providerMarkedComplete = providerMarkedComplete
     }
 }
 
@@ -80,8 +81,8 @@ enum BookingStatus: String, Codable, Hashable, CaseIterable {
         switch self {
         case .upcoming: return "Upcoming"
         case .completed: return "Completed"
-        case .cancelledBySeeker: return "Cancelled" // Simplified display
-        case .cancelledByProvider: return "Cancelled" // Simplified display
+        case .cancelledBySeeker: return "Cancelled"
+        case .cancelledByProvider: return "Cancelled"
         }
     }
     

@@ -79,6 +79,7 @@ struct BookingDTO: Codable, Identifiable {
     let id: Int64
     let bookingNumber: String
     let status: BookingStatus
+    let providerMarkedComplete: Bool?
     let scheduledStartTime: String
     let durationMinutes: Int
     let priceMin: Double
@@ -117,7 +118,8 @@ struct BookingDTO: Codable, Identifiable {
             seekerId: seekerId, seekerFirstName: seekerFirstName, seekerLastName: seekerLastName,
             seekerProfilePhotoUrl: seekerProfilePhotoUrl,
             serviceRequestId: serviceRequestId,
-            createdAt: createdAt, updatedAt: updatedAt
+            createdAt: createdAt, updatedAt: updatedAt,
+            providerMarkedComplete: providerMarkedComplete ?? false
         )
     }
 }

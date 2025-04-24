@@ -7,10 +7,10 @@
 
 import Combine
 import Foundation
-import SwiftStomp  // Ensure added via SPM
+import SwiftStomp
 import os
 
-// ConnectionState enum (Keep as before)
+// ConnectionState enum
 enum ConnectionState: Equatable {
     case disconnected
     case connecting
@@ -45,6 +45,7 @@ class WebSocketManager: NSObject, ObservableObject, SwiftStompDelegate {
     )
     private var currentToken: String?
     private var activeSubscriptionId: String?
+    private var isIntentionalDisconnect = false
 
     // Reconnection Logic properties
     private var reconnectTimer: Timer?
@@ -65,7 +66,7 @@ class WebSocketManager: NSObject, ObservableObject, SwiftStompDelegate {
     // MARK: - Public Methods
 
     func connect(token: String) {
-        // Prevent multiple concurrent connection attempts
+        // Prevents multiple concurrent connection attempts
         guard connectionState == .disconnected || connectionState.isError()
         else {
             logger.warning("Connect called while already connecting/connected.")
@@ -78,23 +79,23 @@ class WebSocketManager: NSObject, ObservableObject, SwiftStompDelegate {
         logger.info("Attempting to connect...")
         print(
             "secretSocket123 - STARTING CONNECT with token: \(token.prefix(4))****"
-        )  // ADDED
+        )
         updateState(.connecting)
-        self.currentToken = token  // Store for potential reconnects
+        self.currentToken = token
         invalidateReconnectTimer()
-        resetReconnectAttempts()  // Reset counter for new connection attempt
+        resetReconnectAttempts()
 
         // --- Prepare Headers ---
         // Headers for the STOMP CONNECT Frame
         let stompConnectHeaders = [
-            "Authorization": "Bearer \(token)",  // For backend interceptor
+            "Authorization": "Bearer \(token)",
             "host": "localhost",
             "accept-version": "1.1,1.2",
             "heart-beat": "10000,10000",
         ]
         // Headers for the initial HTTP WebSocket Handshake
         let httpHandshakeHeaders = [
-            "Authorization": "Bearer \(token)",  // For JwtAuthFilter during handshake
+            "Authorization": "Bearer \(token)",
             "Sec-WebSocket-Protocol": "v10.stomp,v11.stomp,v12.stomp",
         ]
 
@@ -106,22 +107,20 @@ class WebSocketManager: NSObject, ObservableObject, SwiftStompDelegate {
         logger.debug(
             "Initializing SwiftStomp with host, STOMP headers, and HTTP headers..."
         )
-        print("secretSocket123 - Creating SwiftStomp with URL: \(webSocketURL)")  // ADDED
+        print("secretSocket123 - Creating SwiftStomp with URL: \(webSocketURL)")
         stompClient = SwiftStomp(
-            host: webSocketURL,  // The ws:// URL
-            headers: stompConnectHeaders,  // STOMP CONNECT headers go here
-            httpConnectionHeaders: httpHandshakeHeaders  // Handshake headers go here
+            host: webSocketURL,
+            headers: stompConnectHeaders,
+            httpConnectionHeaders: httpHandshakeHeaders
         )
-        stompClient?.delegate = self  // Set the delegate
+        stompClient?.delegate = self
         print(
             "secretSocket123 - Delegate set: \(String(describing: stompClient?.delegate != nil))"
-        )  // ADDED
+        )
 
         // --- Initiate Connection ---
-        // Call connect() without arguments, as headers are set during init
-        // Disable library's auto-reconnect as we handle it manually
         logger.debug("Calling stompClient.connect (autoReconnect=false)...")
-        print("secretSocket123 - CONNECTING NOW (autoReconnect: false)")  // ADDED
+        print("secretSocket123 - CONNECTING NOW (autoReconnect: false)")
         stompClient?.connect(autoReconnect: false)
     }
 
@@ -129,13 +128,13 @@ class WebSocketManager: NSObject, ObservableObject, SwiftStompDelegate {
         logger.info(
             "Disconnecting (reconnect scheduled: \(attemptReconnect))..."
         )
+        self.isIntentionalDisconnect = true
         invalidateReconnectTimer()
         if !attemptReconnect {
             resetReconnectAttempts()
         }
         stompClient?.autoReconnect = false
         stompClient?.disconnect()
-        // Actual state update via delegate
     }
 
     func sendMessage(dto: ChatMessageDTO) {
@@ -151,7 +150,6 @@ class WebSocketManager: NSObject, ObservableObject, SwiftStompDelegate {
         }
 
         let destination = "/app/chat.sendMessage"
-        // IMPORTANT: Even sending String, specify content-type for backend handler
         let headers = ["content-type": "application/json"]
 
         do {
@@ -164,15 +162,13 @@ class WebSocketManager: NSObject, ObservableObject, SwiftStompDelegate {
                 return
             }
 
-            // --- ADD/MODIFY PRINTS for verification ---
             print("<<<< WebSocketManager: Attempting to send to \(destination)")
-            print("<<<< WebSocketManager: Payload STRING: \(jsonString)") // Log the string being sent
+            print("<<<< WebSocketManager: Payload STRING: \(jsonString)")
             // ----------------------------------------
 
             // 3. Use the send method that takes a STRING body
             client.send(body: jsonString, to: destination, headers: headers)
 
-            // --- ADD/MODIFY PRINT for verification ---
             print("<<<< WebSocketManager: stompClient.send(body: String...) called successfully for \(destination).")
             // ---------------------------------------
 
@@ -188,18 +184,17 @@ class WebSocketManager: NSObject, ObservableObject, SwiftStompDelegate {
         swiftStomp: SwiftStomp,
         connectType: StompConnectType
     ) {
-        // Log from background thread is okay
         let log = Logger(
             subsystem: Bundle.main.bundleIdentifier!,
             category: "WebSocketManager"
-        )  // Create local logger instance
+        )
         log.info(
             "STOMP Delegate: Connected! Type: \(String(describing: connectType))"
-        )  // Use String(describing:) for ambiguous type fix
+        )
 
         if connectType == .toStomp {
             // Dispatch state updates and subsequent actions to main actor
-            Task { @MainActor [weak self] in  // Use weak self
+            Task { @MainActor [weak self] in
                 guard let self = self else { return }
                 self.resetReconnectAttempts()
                 self.updateState(.connected)
@@ -219,25 +214,30 @@ class WebSocketManager: NSObject, ObservableObject, SwiftStompDelegate {
         )
         log.warning(
             "STOMP Delegate: Disconnected. Type: \(String(describing: disconnectType))"
-        )  // Use String(describing:) for ambiguous type fix
+        )
 
         Task { @MainActor [weak self] in
             guard let self = self else { return }
+            
+            let intentional = self.isIntentionalDisconnect
+                    self.isIntentionalDisconnect = false
+            
             self.activeSubscriptionId = nil
+            
             let wasConnectedOrConnecting =
                 (self.connectionState == .connected
                     || self.connectionState == .connecting)
-            self.stompClient = nil  // Release client instance now
+            
+            self.stompClient = nil
 
-            // We only schedule reconnect if it wasn't a manual disconnect initiated when state was already .disconnected
-            let shouldReconnect = wasConnectedOrConnecting
-
-            self.updateState(.disconnected)  // Always update state finally
+            let shouldReconnect = !intentional && wasConnectedOrConnecting
+            
+            self.updateState(.disconnected)
 
             if shouldReconnect {
                 self.logger.info(
                     "Scheduling reconnect due to unexpected disconnect."
-                )  // Use self.logger inside Task
+                )
                 self.scheduleReconnect()
             } else {
                 self.logger.info("Clean disconnect, not scheduling reconnect.")
@@ -290,7 +290,6 @@ class WebSocketManager: NSObject, ObservableObject, SwiftStompDelegate {
             category: "WebSocketManager"
         )
         log.debug("STOMP Delegate: Received receipt: \(receiptId)")
-        // Task { @MainActor [weak self] in ... } if UI needs update
     }
 
     nonisolated func onError(
@@ -307,12 +306,12 @@ class WebSocketManager: NSObject, ObservableObject, SwiftStompDelegate {
         )
         log.error(
             "STOMP Delegate: Error - Type: \(String(describing: type)), Description: \(errorDesc), ReceiptID: \(receiptId ?? "N/A")"
-        )  // Use String(describing:)
+        )
 
         Task { @MainActor [weak self] in
             guard let self = self else { return }
             self.updateState(.error(errorDesc))
-            self.scheduleReconnect()  // Attempt reconnect on STOMP errors
+            self.scheduleReconnect()
         }
     }
 
@@ -333,7 +332,6 @@ class WebSocketManager: NSObject, ObservableObject, SwiftStompDelegate {
     }
 
     private func decodeAndPublish(data: Data) {
-        // This method is now called within Task { @MainActor ... } context
         do {
             let messageDto = try JSONDecoder().decode(
                 ChatMessageDTO.self,
@@ -350,27 +348,26 @@ class WebSocketManager: NSObject, ObservableObject, SwiftStompDelegate {
 
     private func queueMessage(_ dto: ChatMessageDTO) {
         logger.info("Queueing message content: \(dto.content)")
-        messageQueue.append(dto)  // Accessing self.messageQueue is safe inside @MainActor method
+        messageQueue.append(dto)
     }
 
     private func flushMessageQueue() {
         guard connectionState == .connected else { return }
         guard !messageQueue.isEmpty else { return }
 
-        logger.info("Flushing \(self.messageQueue.count) queued messages...")  // Use self.
-        let queued = self.messageQueue  // Use self.
-        self.messageQueue.removeAll()  // Use self.
-        // Calling instance method requires self. if potentially ambiguous later
+        logger.info("Flushing \(self.messageQueue.count) queued messages...")
+        let queued = self.messageQueue
+        self.messageQueue.removeAll()
         queued.forEach { self.sendMessage(dto: $0) }
     }
 
     private func updateState(_ newState: ConnectionState) {
         guard connectionState != newState else { return }
-        self.connectionState = newState  // Use self.
+        self.connectionState = newState
         if case .error(let msg) = newState {
-            self.lastErrorDetails = msg  // Use self.
+            self.lastErrorDetails = msg
         } else {
-            self.lastErrorDetails = nil  // Use self.
+            self.lastErrorDetails = nil
         }
         logger.info("Connection state updated: \(String(describing: newState))")
     }
@@ -378,47 +375,44 @@ class WebSocketManager: NSObject, ObservableObject, SwiftStompDelegate {
     // MARK: - Reconnection Logic (@MainActor safe)
 
     private func resetReconnectAttempts() {
-        self.reconnectAttempts = 0  // Use self.
-        self.invalidateReconnectTimer()  // Use self.
+        self.reconnectAttempts = 0
+        self.invalidateReconnectTimer()
     }
 
     private func invalidateReconnectTimer() {
-        self.reconnectTimer?.invalidate()  // Use self.
-        self.reconnectTimer = nil  // Use self.
+        self.reconnectTimer?.invalidate()
+        self.reconnectTimer = nil
     }
 
     private func scheduleReconnect() {
-        guard self.reconnectTimer == nil else { return }  // Use self.
-        guard self.reconnectAttempts < self.maxReconnectAttempts else {  // Use self.
+        guard self.reconnectTimer == nil else { return }
+        guard self.reconnectAttempts < self.maxReconnectAttempts else {
             logger.error(
                 "Max reconnect attempts (\(self.maxReconnectAttempts)) reached."
-            )  // Use self.
+            )
             self.updateState(
                 .error("Connection failed after multiple retries.")
-            )  // Use self.
+            )
             return
         }
         let delay = min(
             30.0,
             self.baseReconnectDelay * pow(2.0, Double(self.reconnectAttempts))
-        )  // Use self.
+        )
         let jitter = TimeInterval.random(in: 0..<0.5)
         let actualDelay = delay + jitter
-        // Use self.logger here
+        
         self.logger.warning(
             "Scheduling reconnect attempt \(self.reconnectAttempts + 1) in \(String(format: "%.2f", actualDelay)) seconds..."
-        )  // Use self.
+        )
 
-        // Timer runs on main run loop, callback needs weak self
         self.reconnectTimer = Timer.scheduledTimer(
             withTimeInterval: actualDelay,
             repeats: false
-        ) { [weak self] _ in  // Use weak self
-            // Re-dispatch to main actor explicitly within timer callback just to be safe,
-            // although scheduledTimer on main run loop usually calls back on main.
-            Task { @MainActor [weak self] in  // Ensure execution context after timer fires
-                guard let self = self else { return }  // Check weak self
-                // Access properties/methods with self.
+        ) { [weak self] _ in
+            
+            Task { @MainActor [weak self] in
+                guard let self = self else { return }
                 if self.connectionState == .disconnected
                     || self.connectionState.isError()
                 {
@@ -469,12 +463,11 @@ class WebSocketManager: NSObject, ObservableObject, SwiftStompDelegate {
     // @objc methods require NSObject inheritance typically
     @objc private func handleAppDidEnterBackground() {
         logger.info("App entered background, disconnecting WebSocket.")
-        self.disconnect(attemptReconnect: false)  // Use self.
+        self.disconnect(attemptReconnect: false)
     }
 
     @objc private func handleAppDidBecomeActive() {
         logger.info("App became active.")
-        // Use self. for all instance member access
         if let token = self.currentToken,
             self.connectionState == .disconnected
                 || self.connectionState.isError()
@@ -492,7 +485,6 @@ class WebSocketManager: NSObject, ObservableObject, SwiftStompDelegate {
     }
 }
 
-// --- Required UIKit Import ---
 #if canImport(UIKit)
     import UIKit
 #endif

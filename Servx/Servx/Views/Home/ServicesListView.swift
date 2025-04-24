@@ -32,41 +32,22 @@ struct ServicesListView: View {
                 await viewModel.loadServices()
             }
         }
-        // --- CHANGE: Use .alert(item: ...) ---
         .alert(item: $viewModel.errorWrapper) { wrapper in
-             // SwiftUI automatically handles presenting when errorWrapper is non-nil
-             // and setting it back to nil on dismissal.
             Alert(
                 title: Text("Error"),
                 message: Text(wrapper.message), // Use message from the wrapper
                 dismissButton: .default(Text("OK"))
             )
         }
-        // --- End Change ---
     }
 
-    // searchField remains the same
-     private var searchField: some View {
-         ServxInputView(
-             text: $viewModel.searchQuery,
-             placeholder: "Search services...",
-             frameColor: Color("greyScale400"),
-             backgroundColor: Color("greyScale100"),
-             textColor: Color("greyScale900")
-         )
-         .padding(.horizontal, 20)
-     }
-
-
-    // contentState remains the same, checking errorWrapper now
      @ViewBuilder
      private var contentState: some View {
          if viewModel.isLoading {
              ProgressView("Loading...")
-                 .padding(.top, 40) // Added padding back
+                 .padding(.top, 40)
          } else if viewModel.errorWrapper != nil {
-             // Just show a simple placeholder or retry, alert shows the detail
-              errorStatePlaceholder // Use placeholder view
+              errorStatePlaceholder
          } else if viewModel.filteredServices.isEmpty && !viewModel.searchQuery.isEmpty {
              noSearchResultsState
          } else if viewModel.services.isEmpty {
@@ -76,7 +57,6 @@ struct ServicesListView: View {
          }
      }
      
-     // Optional: Placeholder shown while alert is potentially visible
      private var errorStatePlaceholder: some View {
          VStack {
              Image(systemName: "exclamationmark.triangle")
@@ -124,10 +104,9 @@ struct ServicesListView: View {
     private var servicesList: some View {
             LazyVStack(spacing: 16) {
                 ForEach(viewModel.filteredServices) { service in
-                    
                     Button {
                          print("Navigating to service request for: \(service.providerName)")
-                         navigator.navigate(to: AppRoute.Main.serviceRequest(service))
+                         navigator.navigate(to: AppRoute.Main.serviceProfileDetail(service))
                     } label: {
                          ServiceDetailedCard(service: service)
                              .padding(.horizontal, 20)

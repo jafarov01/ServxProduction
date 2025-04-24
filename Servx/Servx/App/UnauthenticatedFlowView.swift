@@ -46,7 +46,6 @@ struct UnauthenticatedFlowView: View {
             }
         }
         .onAppear {
-            // Clear any previous navigation state when flow appears
             if !navManager.authStack.isEmpty {
                 navManager.authStack.removeLast(navManager.authStack.count)
             }

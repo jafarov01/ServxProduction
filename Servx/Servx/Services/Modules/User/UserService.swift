@@ -19,7 +19,6 @@ protocol UserServiceProtocol {
 final class UserService: UserServiceProtocol {
     private let apiClient: APIClientProtocol
     
-    // Dependency injection allows for testing or swapping with a mock client.
     init(apiClient: APIClientProtocol = APIClient()) {
         self.apiClient = apiClient
     }
@@ -54,7 +53,7 @@ final class UserService: UserServiceProtocol {
             mimeType: "image/jpeg"
         )
 
-        // Validate URL construction
+        // Validates URL construction
         guard let url = response.fullURL() else {
             print("""
             🚨 Invalid URL Construction:
@@ -70,7 +69,6 @@ final class UserService: UserServiceProtocol {
     
     /// Deletes the current user's profile photo.
     func deleteProfilePhoto() async throws {
-        // We do not need the response value here;
         // the request throws if there is any error.
         let _: DeletePhotoResponse = try await apiClient.request(.deleteProfilePhoto)
     }

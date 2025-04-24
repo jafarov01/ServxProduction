@@ -15,7 +15,7 @@ protocol ServicesServiceProtocol {
     func fetchUserName(userId: Int64) async throws -> String
     func createServiceProfile(request: ServiceProfileRequestDTO) async throws -> ServiceProfileResponseDTO
     func createBulkServiceProfiles(request: BulkServiceProfileRequest) async throws -> [ServiceProfileResponseDTO]
-    func fetchServiceProfile(id: Int64) async throws -> ServiceProfile // <<< ADDED
+    func fetchServiceProfile(id: Int64) async throws -> ServiceProfile
 }
 
 final class ServicesService: ServicesServiceProtocol {
@@ -33,7 +33,7 @@ final class ServicesService: ServicesServiceProtocol {
         let endpoint = Endpoint.fetchServiceProfile(profileId: id)
         let dto: ServiceProfileResponseDTO = try await apiClient.request(endpoint)
         print("ServicesService: Fetched service profile successfully.")
-        return dto.toEntity() // Map DTO to domain model
+        return dto.toEntity()
     }
     
     func createBulkServiceProfiles(request: BulkServiceProfileRequest) async throws -> [ServiceProfileResponseDTO] {
@@ -45,13 +45,11 @@ final class ServicesService: ServicesServiceProtocol {
             request: request
         )
         
-        // Explicit type specification for generic parameter
         let response: [ServiceProfileResponseDTO] = try await apiClient.request(endpoint)
         print("🎉 Bulk Service Creation Successful (\(response.count) services created)")
         return response
     }
     
-    // Create service profile (returns ServiceProfileDTO instead of ServiceProfileRequestDTO)
     func createServiceProfile(request: ServiceProfileRequestDTO) async throws -> ServiceProfileResponseDTO {
         let endpoint = Endpoint.createServiceProfile(request: request)
         let response: ServiceProfileResponseDTO = try await apiClient.request(endpoint)
@@ -100,7 +98,6 @@ final class ServicesService: ServicesServiceProtocol {
     
     private func withLoggedErrorHandling<T: Decodable>(endpoint: Endpoint) async throws -> T {
         do {
-            // Now properly constrained to Decodable
             return try await apiClient.request(endpoint)
         } catch {
             print("🚨 API Error for \(endpoint.url): \(error.localizedDescription)")

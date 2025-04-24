@@ -18,7 +18,7 @@ struct UserResponse: Decodable {
     let address: AddressResponse
     let languagesSpoken: [String]
     let role: RoleResponse
-    let education: String?  // Add this line
+    let education: String?
     let profilePhotoUrl: String?
     
     enum CodingKeys: String, CodingKey {
@@ -35,11 +35,11 @@ struct UserResponse: Decodable {
              firstName: firstName,
              lastName: lastName,
              phoneNumber: phoneNumber,
-             address: address.toEntity(), // Assuming AddressResponse has toEntity()
+             address: address.toEntity(),
              languagesSpoken: languagesSpoken,
-             role: role.toEntity(), // Assuming RoleResponse has toEntity()
+             role: role.toEntity(),
              education: education,
-             profilePhotoUrl: profilePhotoUrl // Pass the String?
+             profilePhotoUrl: profilePhotoUrl
          )
      }
 }

@@ -14,7 +14,6 @@ struct SettingsView: View {
 
     var body: some View {
         VStack(spacing: 32) {
-            // Header
             ServxTextView(
                 text: "Settings",
                 color: ServxTheme.primaryColor,
@@ -24,7 +23,6 @@ struct SettingsView: View {
             )
             .padding(.top, 40)
 
-            // Account Section
             VStack(alignment: .leading, spacing: 16) {
                 ServxTextView(
                     text: "ACCOUNT SETTINGS",
@@ -55,7 +53,6 @@ struct SettingsView: View {
                 )
             }
 
-            // Preferences Section
             VStack(alignment: .leading, spacing: 16) {
                 ServxTextView(
                     text: "APP PREFERENCES",
@@ -102,7 +99,6 @@ struct SettingsView: View {
                 )
             }
 
-            // App Info
             ServxTextView(
                 text: "Servx v1.0.0",
                 color: ServxTheme.secondaryTextColor,

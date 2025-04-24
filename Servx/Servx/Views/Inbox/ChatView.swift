@@ -73,7 +73,6 @@ struct ChatView: View {
             }
             .presentationDetents([.medium, .large])
         }
-        // MODIFIED: Pass currentRequestStatus to confirmation sheet
         .sheet(item: $viewModel.bookingMessageToShowDetails) { messageToShow in
              if let payload = messageToShow.bookingPayload {
                  BookingConfirmationSheet(
@@ -108,7 +107,6 @@ struct ChatView: View {
                           if viewModel.isLoadingMessages {
                               ProgressView().padding(.vertical)
                           } else {
-                              // Using Button for pagination trigger (simpler than GeometryReader)
                               Button("Load More Messages") {
                                    Task { await viewModel.loadMoreMessages() }
                               }
@@ -125,19 +123,17 @@ struct ChatView: View {
                             onShowBookingDetails: { viewModel.showBookingDetails(for: message) }
                         )
                         .id(message.id)
-                        // Optionally add .onAppear for the first message to trigger load more
-                        // .onAppear {
-                        //     if message.id == viewModel.messages.first?.id && viewModel.canLoadMoreMessages && !viewModel.isLoadingMessages {
-                        //         Task { await viewModel.loadMoreMessages() }
-                        //     }
-                        // }
+                         .onAppear {
+                             if message.id == viewModel.messages.first?.id && viewModel.canLoadMoreMessages && !viewModel.isLoadingMessages {
+                                 Task { await viewModel.loadMoreMessages() }
+                             }
+                         }
                     }
                     Color.clear.frame(height: 1).id("bottom")
                 }
                  .padding(.horizontal)
                  .padding(.top, 5)
             }
-             // Removed coordinateSpace and onPreferenceChange for simplicity
              .onReceive(viewModel.scrollToBottomPublisher) { animated in
                  scrollToLastMessage(proxy: scrollViewProxy, animated: animated)
              }
@@ -221,13 +217,8 @@ struct ChatView: View {
     }
 }
 
-// Include ScrollOffsetPreferenceKey definition if not defined elsewhere
-// Include Keyboard helper extensions if not defined elsewhere
-// Helper extension on Notification to easily get height
 extension Foundation.Notification {
     var keyboardHeight: CGFloat {
-        // Access the 'userInfo' property of the Foundation.Notification instance
-        // Using 'self.' is optional but clear: self.userInfo
         return (userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect)?.height ?? 0
     }
 }
@@ -241,20 +232,17 @@ struct ScrollOffsetPreferenceKey: PreferenceKey {
 
 extension Publishers {
     static var keyboardHeight: AnyPublisher<CGFloat, Never> {
-        // Use the correct publisher for Notification.Name
         let willShow = NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)
-            .map { notification -> CGFloat in // $0 is the Notification object
-                // Use the keyboardHeight computed property from the other extension
+            .map { notification -> CGFloat in
                 notification.keyboardHeight
             }
 
         let willHide = NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)
-            .map { _ -> CGFloat in // We don't need the notification object here
-                CGFloat(0) // Return 0 on hide
+            .map { _ -> CGFloat in
+                CGFloat(0)
             }
 
-        // Merge the two streams into one publisher
         return MergeMany(willShow, willHide)
-            .eraseToAnyPublisher() // Type erase
+            .eraseToAnyPublisher()
     }
 }

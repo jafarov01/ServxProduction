@@ -20,7 +20,6 @@ class NotificationService: NotificationServiceProtocol {
         self.apiClient = apiClient
     }
     
-    // Create a generalized notification
     func createNotification(type: Notification.NotificationType, payload: Notification.NotificationPayload) async throws -> Notification {
         
         let dateFormatter = ISO8601DateFormatter()
@@ -35,25 +34,20 @@ class NotificationService: NotificationServiceProtocol {
             payload: payload
         )
         
-        // Explicitly specify the return type for the request
         let createdNotification: Notification = try await apiClient.request(
             .createNotification(notification)
         )
         return createdNotification
     }
     
-    // Fetch notifications for a user
     func fetchNotifications() async throws -> [Notification] {
-        // Explicitly specify the generic return type
         let notifications: [Notification] = try await apiClient.request(
             .getNotifications
         )
         return notifications
     }
     
-    // Mark notification as read
     func markNotificationAsRead(notificationId: Int64) async throws {
-        // Specify Void return type for empty responses
         let _: EmptyResponseDTO = try await apiClient.request(
             .markNotificationAsRead(notificationId: notificationId)
         )

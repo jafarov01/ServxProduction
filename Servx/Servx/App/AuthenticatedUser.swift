@@ -11,7 +11,6 @@ import Foundation
 final class AuthenticatedUser: ObservableObject {
     static let shared = AuthenticatedUser()
     
-    // Consolidated user data
     @Published private(set) var currentUser: User?
     @Published private(set) var isAuthenticated = false
     @Published private(set) var requiresOnboarding = true
@@ -27,7 +26,6 @@ final class AuthenticatedUser: ObservableObject {
     func authenticate(with response: UserResponse) {
         var updated = response.toEntity()
         
-        // Bust photo URL cache
         if var url = updated.profilePhotoUrl {
             url = url.appending(queryItems: [
                 URLQueryItem(name: "t", value: UUID().uuidString)

@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct ServiceRequestDetailView: View {
-    // Use @StateObject: View creates and owns the ViewModel
     @StateObject private var vm: ServiceRequestDetailViewModel
     @EnvironmentObject private var navigator: NavigationManager
 
@@ -21,69 +20,63 @@ struct ServiceRequestDetailView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     if let request = vm.request {
-                        // Request Details Section (no changes)
-                        SectionView(title: "Service Request") { /* ... InfoRows ... */
+                        SectionView(title: "Service Request") {
                             InfoRow(label: "Description", value: request.description)
                             InfoRow(label: "Severity", value: request.severity.rawValue.capitalized)
                             InfoRow(label: "Status", value: request.status.rawValue.capitalized)
-                            InfoRow(label: "Request Date", value: formattedDate(request.createdAt)) // Use nil-coalescing if createdAt can be nil from DTO
+                            InfoRow(label: "Request Date", value: formattedDate(request.createdAt))
                         }
 
-                        // Service Details Section (no changes)
-                        SectionView(title: "Service Details") { /* ... InfoRows ... */
+                        // Service Details Section
+                        SectionView(title: "Service Details") {
                             InfoRow(label: "Category", value: request.service.categoryName)
                             InfoRow(label: "Subcategory", value: request.service.subcategoryName)
                             InfoRow(label: "Price", value: formattedPrice(request.service.price))
                             InfoRow(label: "Rating", value: formattedRating(request.service.rating))
                         }
 
-                        // Client Details Section (no changes)
-                        SectionView(title: "Client Information") { /* ... InfoRows ... */
-                            InfoRow(label: "Name", value: request.seeker.fullName) // Assuming User DTO has fullName
+                        // Client Details Section
+                        SectionView(title: "Client Information") {
+                            InfoRow(label: "Name", value: request.seeker.fullName)
                             InfoRow(label: "Phone", value: request.seeker.phoneNumber)
-                            InfoRow(label: "Address", value: request.address.formattedAddress) // Assuming Address DTO has formattedAddress
+                            InfoRow(label: "Address", value: request.address.formattedAddress)
                         }
 
-                        // --- MODIFIED ACTION BUTTON SECTION ---
-                        Group { // Use Group to avoid compiler limits in complex views
+                        Group {
                             if vm.currentUserRole == .serviceProvider && request.status == .pending {
                                 // PROVIDER sees Accept when Pending
                                 ServxButtonView(
                                     title: "Accept Request",
                                     width: .infinity, height: 50,
                                     frameColor: .clear, innerColor: ServxTheme.primaryColor, textColor: .white,
-                                    isDisabled: vm.isLoading, // Disable while loading/submitting
+                                    isDisabled: vm.isLoading,
                                     action: { Task { await vm.acceptRequest() } }
                                 )
                             } else if vm.isChatActiveStatus(request.status) {
                                 // BOTH Provider and Seeker see Chat button when Accepted/BookingConfirmed
-                                // Determine the other person's name for the button title
                                 let otherPersonName = vm.currentUserRole == .serviceProvider ? request.seeker.firstName : request.provider.firstName
 
                                 ServxButtonView(
-                                    title: "Chat with \(otherPersonName)", // Dynamic title
+                                    title: "Chat with \(otherPersonName)",
                                     width: .infinity, height: 50,
-                                    frameColor: ServxTheme.primaryColor, innerColor: .white, textColor: ServxTheme.primaryColor, // Example style
-                                    icon: Image(systemName: "message.fill"), // Add chat icon
+                                    frameColor: ServxTheme.primaryColor, innerColor: .white,
+                                    textColor: ServxTheme.primaryColor,
+                                    icon: Image(systemName: "message.fill"),
                                     action: {
                                          print("ServiceRequestDetailView: 'Go to Chat' tapped.")
-                                         // Use navigator method to switch tab and push chat view
                                          navigator.navigateToChat(requestId: vm.requestId)
                                      }
                                 )
                             } else {
-                                // No action button needed for other statuses (e.g., Completed, Declined)
-                                // Or add other buttons if needed (e.g., "Leave Review")
                                 EmptyView()
                             }
                         }
-                        .padding(.top) // Apply padding to the button group
+                        .padding(.top)
 
                     } else if vm.isLoading {
                         ProgressView()
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                     } else {
-                         // Handle case where request failed to load after loading finished
                          Text("Failed to load request details.")
                              .foregroundColor(.red)
                     }
@@ -91,8 +84,8 @@ struct ServiceRequestDetailView: View {
                 .padding()
             }
             .navigationTitle("Request #\(vm.requestId)")
-            .task { await vm.loadRequestDetails() } // Load details on appear
-            .alert("Error", isPresented: $vm.showError) { // Error alert
+            .task { await vm.loadRequestDetails() }
+            .alert("Error", isPresented: $vm.showError) {
                 Button("OK", role: .cancel) {}
             } message: {
                 Text(vm.errorMessage ?? "Unknown error occurred")
@@ -105,9 +98,7 @@ struct ServiceRequestDetailView: View {
             }
         }
 
-        // Keep helper formatters
         private func formattedDate(_ dateString: String) -> String {
-            // Ensure your ChatMessageDTO computed property/ISO8601DateFormatter handles this format
              let formatter = ISO8601DateFormatter()
              formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
              guard let date = formatter.date(from: dateString) else {
@@ -127,8 +118,7 @@ struct ServiceRequestDetailView: View {
 
         private func formattedPrice(_ price: Double) -> String {
             let formatter = NumberFormatter()
-            formatter.numberStyle = .currency // Consider setting locale if needed
-             // formatter.locale = Locale.current
+            formatter.numberStyle = .currency
             return formatter.string(from: NSNumber(value: price)) ?? "\(price)"
         }
 

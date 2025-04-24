@@ -23,9 +23,10 @@ struct Notification: Identifiable, Codable, APIRequest {
         case requestAccepted = "REQUEST_ACCEPTED"
         case requestDeclined = "REQUEST_DECLINED"
         case bookingConfirmed = "BOOKING_CONFIRMED"
-        case serviceCompleted = "SERVICE_COMPLETED"
         case bookingCancelled = "BOOKING_CANCELLED"
         case systemAlert = "SYSTEM_ALERT"
+        case providerMarkedComplete = "PROVIDER_MARKED_COMPLETE"
+        case seekerConfirmedCompletion = "SEEKER_CONFIRMED_COMPLETION"
     }
     
     struct NotificationPayload: Codable {
@@ -69,10 +70,11 @@ extension Notification {
         case .newRequest: return "New Service Request"
         case .requestAccepted: return "Request Accepted"
         case .bookingConfirmed: return "Booking Confirmed"
-        case .serviceCompleted: return "Service Completed"
         case .systemAlert: return "System Alert"
         case .bookingCancelled: return "Booking Cancelled"
         case .requestDeclined: return "Request Declined"
+        case .providerMarkedComplete: return "Provider Marked Complete"
+        case .seekerConfirmedCompletion: return "Seeker Confirmed Completion"
         }
     }
     
@@ -90,8 +92,10 @@ extension Notification {
             return "Your service request was declined"
         case .bookingCancelled:
             return "Your booking has been cancelled"
-        case .serviceCompleted:
-            return "Service has been completed"
+        case .providerMarkedComplete:
+            return "Your service has been completed"
+        case .seekerConfirmedCompletion:
+            return "Your service has been completed"
         }
     }
 }
@@ -105,43 +109,32 @@ protocol NotificationRouterProtocol {
 struct NotificationRouter: NotificationRouterProtocol {
     @MainActor
     func handleNavigation(for notification: Notification, navigator: NavigationManager) {
-        // --- REMOVED: guard !notification.isRead else { return } ---
-        // Allow tapping regardless of read status
 
         switch notification.type {
-        case .newRequest, .requestDeclined: // Keep these going to detail view
+        case .providerMarkedComplete, .seekerConfirmedCompletion:
+            if notification.payload.bookingId != nil {
+                navigator.switchTab(to: .booking)
+            }
+        
+        case .newRequest, .requestDeclined:
             if let requestId = notification.payload.serviceRequestId {
-                // Navigate using the appropriate stack if needed, or a generic navigate
-                // Assuming navigate(to: AppRoute.Main...) adds to mainStack
                 navigator.navigate(to: AppRoute.Main.serviceRequestDetail(id: requestId))
             }
 
         case .requestAccepted:
             if let requestId = notification.payload.serviceRequestId {
-                 // This switches to Inbox tab and pushes chat view onto inboxStack
                 navigator.navigateToChat(requestId: requestId)
             }
 
-        case .serviceCompleted:
-            if let bookingId = notification.payload.bookingId {
-                // Assuming payload contains bookingId needed for review route
-                navigator.navigate(to: AppRoute.Main.serviceReview(bookingId: bookingId))
-            }
         case .bookingConfirmed:
              print("Routing to Booking Tab (Upcoming)")
-             // Switch to the booking tab. The view's .task should load upcoming.
             navigator.switchTab(to: .booking)
-             // Clear any potential sub-navigation stack on that tab
 
         case .bookingCancelled:
              print("Routing to Booking Tab (Cancelled)")
-             // Switch to the booking tab. We'll need VM logic to default to cancelled here.
-             // For now, just switch tab, user might need to select filter manually.
-             // TODO: Enhance this later to pre-select the 'Cancelled' filter in BookingViewModel
             navigator.switchTab(to: .booking)
 
         case .systemAlert:
-            // No navigation action needed
             break
         }
     }

@@ -63,14 +63,12 @@ class RegisterViewModel: ObservableObject {
     
     // MARK: - Registration Actions
     func register(completion: @escaping (Bool) -> Void) {
-        // Convert selected country name to code
         guard let countryCode = countryCodeMap[selectedCountry] else {
             print("Invalid country selection")
             completion(false)
             return
         }
         
-        // Convert selected language names to codes
         let languageCodes = selectedLanguages.compactMap { languageCodeMap[$0] }
         
         let request = RegisterRequest(
@@ -89,7 +87,6 @@ class RegisterViewModel: ObservableObject {
             languagesSpoken: languageCodes
         )
         
-        // Debug print the request
         print("Sending country code:", countryCode)
         print("Sending language codes:", languageCodes)
         
@@ -128,7 +125,6 @@ class RegisterViewModel: ObservableObject {
     }
     
     var isValidPassword: Bool {
-        // Simplified for testing: minimum 8 characters
         password.count >= 8
     }
     

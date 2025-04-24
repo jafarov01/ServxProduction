@@ -5,7 +5,6 @@
 //  Created by Makhlug Jafarov on 2025. 04. 07..
 //
 
-// ProfileViewModel encapsulates profile data and operations (in the same file for simplicity)
 import SwiftUI
 import Combine
 
