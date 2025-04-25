@@ -21,7 +21,6 @@ struct ServicesListView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                searchField
                 contentState
             }
             .padding(.vertical)

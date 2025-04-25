@@ -16,6 +16,7 @@ protocol ServicesServiceProtocol {
     func createServiceProfile(request: ServiceProfileRequestDTO) async throws -> ServiceProfileResponseDTO
     func createBulkServiceProfiles(request: BulkServiceProfileRequest) async throws -> [ServiceProfileResponseDTO]
     func fetchServiceProfile(id: Int64) async throws -> ServiceProfile
+    func searchServices(query: String) async throws -> [ServiceProfile]
 }
 
 final class ServicesService: ServicesServiceProtocol {
@@ -50,6 +51,18 @@ final class ServicesService: ServicesServiceProtocol {
         return response
     }
     
+    func searchServices(query: String) async throws -> [ServiceProfile] {
+        print("ServicesService: Searching services with query: \(query)")
+        let endpoint = Endpoint.searchServices(query: query)
+
+        let _: [ServiceProfileResponseDTO] = try await apiClient.request(endpoint)
+
+        let results: [ServiceProfileResponseDTO] = try await apiClient.request(endpoint)
+
+        print("ServicesService: Found \(results.count) services.")
+        return results.map { $0.toEntity() }
+    }
+    
     func createServiceProfile(request: ServiceProfileRequestDTO) async throws -> ServiceProfileResponseDTO {
         let endpoint = Endpoint.createServiceProfile(request: request)
         let response: ServiceProfileResponseDTO = try await apiClient.request(endpoint)
@@ -68,14 +81,9 @@ final class ServicesService: ServicesServiceProtocol {
     }
 
     func fetchRecommendedServices() async throws -> [ServiceProfile] {
-        if let cachedServices = recommendedServices {
-            return cachedServices
-        }
-        
         let endpoint = Endpoint.fetchRecommendedServices
-        let recommendedServicesResponse: [ServiceProfile] = try await apiClient.request(endpoint)
-        self.recommendedServices = recommendedServicesResponse
-        return recommendedServicesResponse
+        let recommendedServicesResponse: [ServiceProfileResponseDTO] = try await apiClient.request(endpoint)
+        return recommendedServicesResponse.map { $0.toEntity() }
     }
 
     func fetchSubcategories(categoryId: Int64) async throws -> [ServiceArea] {

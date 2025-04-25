@@ -5,7 +5,7 @@
 //  Created by Makhlug Jafarov on 2025. 04. 12..
 //
 
-struct ServiceProfileResponseDTO: Decodable, Identifiable {
+struct ServiceProfileResponseDTO: Codable, Identifiable {
     let id: Int64
     let providerId: Int64
     let providerName: String

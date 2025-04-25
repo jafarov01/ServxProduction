@@ -36,6 +36,7 @@ enum AppRoute {
         case serviceRequestDetail(id: Int64)  // For NEW_REQUEST/REQUEST_ACCEPTED
         case serviceReview(bookingId: Int64)  // For SERVICE_COMPLETED
         case serviceProfileDetail(ServiceProfile)
+        case searchView(searchTerm: String)
     }
     
     enum Inbox: Hashable {

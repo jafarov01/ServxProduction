@@ -12,3 +12,7 @@ struct LoginRequest: APIRequest {
     let email: String
     let password: String
 }
+
+struct ForgotPasswordRequest: APIRequest {
+    let email: String
+}

@@ -7,6 +7,13 @@
 
 import Foundation
 
+protocol AuthServiceProtocol {
+    func login(email: String, password: String) async throws -> AuthResponse
+    func register(request: RegisterRequest) async throws -> RegisterResponse
+    func logout()
+    func requestPasswordReset(email: String) async throws
+}
+
 final class AuthService: AuthServiceProtocol {
     private let apiClient: APIClientProtocol
     private let ongoingRequestsActor = OngoingRequestsActor()
@@ -19,12 +26,10 @@ final class AuthService: AuthServiceProtocol {
         let idempotencyKey = UUID().uuidString
         let loginRequest = LoginRequest(email: email, password: password)
 
-        // Check if a request with this idempotency key is already in progress
         if await ongoingRequestsActor.isRequestInProgress(for: idempotencyKey) {
             return try await ongoingRequestsActor.getExistingRequest(for: idempotencyKey)
         }
 
-        // Create a new task for the login request
         let task = Task<AuthResponse, Error> {
             do {
                 let authResponse: AuthResponse = try await apiClient.request(
@@ -37,16 +42,13 @@ final class AuthService: AuthServiceProtocol {
             }
         }
 
-        // Store the task in the ongoing requests actor
         await ongoingRequestsActor.addRequest(idempotencyKey: idempotencyKey, task: task)
 
         do {
             let response = try await task.value
-            // Remove the task from the ongoing requests actor upon completion
             await ongoingRequestsActor.removeRequest(for: idempotencyKey)
             return response
         } catch {
-            // Remove the task from the ongoing requests actor in case of error
             await ongoingRequestsActor.removeRequest(for: idempotencyKey)
             throw error
         }
@@ -65,8 +67,17 @@ final class AuthService: AuthServiceProtocol {
     }
 
     func logout() {
-        // Remove the token from Keychain
         try? KeychainManager.deleteToken(service: "auth")
+    }
+    
+    func requestPasswordReset(email: String) async throws {
+        print("AuthService: Requesting password reset for email: \(email)")
+        let requestBody = ForgotPasswordRequest(email: email)
+        let endpoint = Endpoint.forgotPassword(body: requestBody)
+
+        let _: EmptyResponseDTO = try await apiClient.request(endpoint)
+
+        print("AuthService: Password reset request sent successfully (API call succeeded)")
     }
 }
 

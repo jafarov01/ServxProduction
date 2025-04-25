@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		5510A4C32D7CED9E00C7971E /* MultiSelectStringDropdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5510A4C22D7CED9C00C7971E /* MultiSelectStringDropdownView.swift */; };
 		5510A4DF2D82567C00C7971E /* BackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5510A4DE2D82567A00C7971E /* BackButton.swift */; };
+		5517A0122DBAD315004FA4AE /* SearchResultsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5517A0112DBAD315004FA4AE /* SearchResultsViewModel.swift */; };
+		5517A0142DBAD3B2004FA4AE /* SearchResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5517A0132DBAD3B2004FA4AE /* SearchResultsView.swift */; };
 		551FE7DE2DADAB28000972A2 /* RequestServiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FE7DD2DADAB28000972A2 /* RequestServiceView.swift */; };
 		551FE7E12DADAB71000972A2 /* RequestServiceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FE7E02DADAB71000972A2 /* RequestServiceViewModel.swift */; };
 		551FE7E42DADABBE000972A2 /* ServiceRequestServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FE7E32DADABBE000972A2 /* ServiceRequestServiceProtocol.swift */; };
@@ -59,7 +61,6 @@
 		5574B75D2D3DC8EA00DF60ED /* AuthResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B75C2D3DC8EA00DF60ED /* AuthResponse.swift */; };
 		5574B75F2D3DC8F200DF60ED /* RegisterResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B75E2D3DC8F200DF60ED /* RegisterResponse.swift */; };
 		5574B7612D3DC8FB00DF60ED /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7602D3DC8FB00DF60ED /* AuthService.swift */; };
-		5574B7632D3DC90600DF60ED /* AuthServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7622D3DC90600DF60ED /* AuthServiceProtocol.swift */; };
 		5574B7652D3DC91500DF60ED /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7642D3DC90F00DF60ED /* APIClient.swift */; };
 		5574B7672D3DC92100DF60ED /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7662D3DC91C00DF60ED /* Endpoint.swift */; };
 		5574B7692D3DC92800DF60ED /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5574B7682D3DC92400DF60ED /* HTTPMethod.swift */; };
@@ -150,6 +151,8 @@
 /* Begin PBXFileReference section */
 		5510A4C22D7CED9C00C7971E /* MultiSelectStringDropdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectStringDropdownView.swift; sourceTree = "<group>"; };
 		5510A4DE2D82567A00C7971E /* BackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackButton.swift; sourceTree = "<group>"; };
+		5517A0112DBAD315004FA4AE /* SearchResultsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsViewModel.swift; sourceTree = "<group>"; };
+		5517A0132DBAD3B2004FA4AE /* SearchResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsView.swift; sourceTree = "<group>"; };
 		551FE7DD2DADAB28000972A2 /* RequestServiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestServiceView.swift; sourceTree = "<group>"; };
 		551FE7E02DADAB71000972A2 /* RequestServiceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestServiceViewModel.swift; sourceTree = "<group>"; };
 		551FE7E32DADABBE000972A2 /* ServiceRequestServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceRequestServiceProtocol.swift; sourceTree = "<group>"; };
@@ -199,7 +202,6 @@
 		5574B75C2D3DC8EA00DF60ED /* AuthResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthResponse.swift; sourceTree = "<group>"; };
 		5574B75E2D3DC8F200DF60ED /* RegisterResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterResponse.swift; sourceTree = "<group>"; };
 		5574B7602D3DC8FB00DF60ED /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
-		5574B7622D3DC90600DF60ED /* AuthServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthServiceProtocol.swift; sourceTree = "<group>"; };
 		5574B7642D3DC90F00DF60ED /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		5574B7662D3DC91C00DF60ED /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		5574B7682D3DC92400DF60ED /* HTTPMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPMethod.swift; sourceTree = "<group>"; };
@@ -431,7 +433,6 @@
 				5574B7552D3DC8AA00DF60ED /* RequestModels */,
 				5574B7542D3DC89F00DF60ED /* ResponseModels */,
 				5574B7602D3DC8FB00DF60ED /* AuthService.swift */,
-				5574B7622D3DC90600DF60ED /* AuthServiceProtocol.swift */,
 			);
 			path = Auth;
 			sourceTree = "<group>";
@@ -749,6 +750,7 @@
 		55FBA2702D35EAE100F86201 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				5517A0112DBAD315004FA4AE /* SearchResultsViewModel.swift */,
 				554FE7EC2DB8615700275194 /* ServiceProfileDetailsViewModel.swift */,
 				554FE7E82DB8567A00275194 /* LeaveReviewViewModel.swift */,
 				554FE7E22DB8448800275194 /* SupportViewModel.swift */,
@@ -773,6 +775,7 @@
 		55FBA2742D35EAE100F86201 /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				5517A0132DBAD3B2004FA4AE /* SearchResultsView.swift */,
 				552F25A52D98888100BF1234 /* SubcategoryRow.swift */,
 				552F25A32D98885A00BF1234 /* ServiceDetailedCard.swift */,
 				552F25A12D9887C700BF1234 /* ServicesListView.swift */,
@@ -1017,13 +1020,13 @@
 				554871522D9F546700AB1811 /* BookingView.swift in Sources */,
 				55FBA29A2D35EAE100F86201 /* UserDefaultsManager.swift in Sources */,
 				557A172D2DAFF50300971872 /* NotificationListView.swift in Sources */,
-				5574B7632D3DC90600DF60ED /* AuthServiceProtocol.swift in Sources */,
 				55FBA29B2D35EAE100F86201 /* HomeView.swift in Sources */,
 				5510A4C32D7CED9E00C7971E /* MultiSelectStringDropdownView.swift in Sources */,
 				55FBA29E2D35EAE100F86201 /* ServiceButtonView.swift in Sources */,
 				55FBA29F2D35EAE100F86201 /* ServiceCategory.swift in Sources */,
 				557A17332DAFFC1E00971872 /* Notification.swift in Sources */,
 				55D3D3412DA7F58400799594 /* ProfilePhotoView.swift in Sources */,
+				5517A0142DBAD3B2004FA4AE /* SearchResultsView.swift in Sources */,
 				5574B7472D3DC7E700DF60ED /* ServicesService.swift in Sources */,
 				552F259E2D987F3E00BF1234 /* CategoryCard.swift in Sources */,
 				55D3D3372DA7EA2600799594 /* ManageServicesView.swift in Sources */,
@@ -1054,6 +1057,7 @@
 				556FF0ED2DB484EF0037704D /* BookingConfirmationSheet.swift in Sources */,
 				55FBA2A72D35EAE100F86201 /* HomeViewModel.swift in Sources */,
 				552F25A22D9887D100BF1234 /* ServicesListView.swift in Sources */,
+				5517A0122DBAD315004FA4AE /* SearchResultsViewModel.swift in Sources */,
 				55FBA2A82D35EAE100F86201 /* User.swift in Sources */,
 				55FBA2A92D35EAE100F86201 /* ServxApp.swift in Sources */,
 				559D3CE12DA18B4100E3862F /* MainTabView.swift in Sources */,

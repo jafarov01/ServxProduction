@@ -12,6 +12,7 @@ enum NetworkError: Error, LocalizedError {
     case requestFailed
     case serverError(statusCode: Int)
     case decodingError
+    case encodingError
     case noData
     case unauthorized
     case forbidden
@@ -45,6 +46,7 @@ enum NetworkError: Error, LocalizedError {
         case .conflict: return "Conflict occurred - Role is already assigned"
         case .invalidRequest: return "Invalid request"
         case .duplicateReview: return "You have already submitted a review for this booking."
+        case .encodingError: return "Failed to encode request"
         }
     }
     

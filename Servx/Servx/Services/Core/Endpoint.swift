@@ -17,6 +17,7 @@ enum Endpoint {
     // MARK: - Authentication
     case authLogin(body: LoginRequest)
     case register(body: RegisterRequest)
+    case forgotPassword(body: ForgotPasswordRequest)
 
     // MARK: - User Profile & Actions
     case getUserDetails // Fetches authenticated user's own details
@@ -29,6 +30,7 @@ enum Endpoint {
     // MARK: - Service Categories & Areas
     case fetchCategories
     case fetchSubcategories(categoryId: Int64)
+    case searchServices(query: String)
 
     // MARK: - Service Profiles (Provider Offerings)
     case fetchServices(categoryId: Int64, subcategoryId: Int64) // Fetch list by subcategory
@@ -84,7 +86,7 @@ enum Endpoint {
         case .authLogin, .register,
              .fetchCategories, .fetchSubcategories,
              .fetchServices, .fetchServiceProfile,
-             .fetchReviewsForService:
+             .fetchReviewsForService, .forgotPassword:
             return false
         // All other endpoints require authentication
         default:
@@ -100,6 +102,7 @@ enum Endpoint {
         // Auth
         case .authLogin: return "\(base)/auth/login"
         case .register: return "\(base)/auth/register"
+        case .forgotPassword: return "\(base)/auth/forgot-password"
 
         // User
         case .getUserDetails: return "\(base)/user/me"
@@ -117,6 +120,7 @@ enum Endpoint {
         case .createServiceProfile: return "\(base)/user/me/service-profile"
         case .createBulkServices(let categoryId, _): return "\(base)/categories/\(categoryId)/service-offers/bulk"
         case .fetchRecommendedServices: return "\(base)/service-offers/recommended"
+        case .searchServices: return "\(base)/services/search"
 
         // Service Requests
         case .createServiceRequest: return "\(base)/service-requests"
@@ -131,9 +135,9 @@ enum Endpoint {
                 "status": status.rawValue,
                 "page": "\(page)",
                 "size": "\(size)",
-                "sort": "scheduledStartTime,asc" // Consistent sort
+                "sort": "scheduledStartTime,asc"
             ])
-            return "\(base)/bookings?\(query)" // Single endpoint
+            return "\(base)/bookings?\(query)"
 
         case .fetchBookingsByDateRange(let startDate, let endDate):
             let query = urlQuery(params: [
@@ -185,7 +189,7 @@ enum Endpoint {
         case .authLogin, .register, .upgradeToProvider, .createServiceProfile,
              .createBulkServices, .createServiceRequest, .confirmBooking,
              .rejectBooking, .cancelBooking, .sendSupportRequest, .submitReview,
-             .providerMarkComplete, .seekerConfirmCompletion:
+             .providerMarkComplete, .seekerConfirmCompletion, .forgotPassword:
             return .post
 
         // PUT
@@ -205,6 +209,15 @@ enum Endpoint {
             return .get
         }
     }
+    
+    var parameters: [URLQueryItem]? {
+        switch self {
+            case .searchServices(let query):
+                return [URLQueryItem(name: "q", value: query)]
+            default:
+                return nil
+        }
+    }
 
     /// Provides the request body for endpoints that require it
     var body: APIRequest? {
@@ -219,6 +232,7 @@ enum Endpoint {
         case .createNotification(let notification): return notification
         case .sendSupportRequest(let body): return body
         case .submitReview(let body): return body
+        case .forgotPassword(let body): return body
 
         // Endpoints without a body return nil
         default:

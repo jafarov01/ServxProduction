@@ -55,6 +55,9 @@ struct MainTabView: View {
                         ServiceRequestDetailView(requestId: id)
                     case .serviceReview:
                         Text("ServiceReviewView")
+                        
+                    case .searchView(let searchTerm):
+                        SearchResultsView(searchTerm: searchTerm)
                     }
                 }
         }

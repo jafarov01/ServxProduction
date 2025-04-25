@@ -50,6 +50,9 @@ struct HomeView: View {
                     textColor: Color("greyScale900")
                 )
                 .padding(.top, 20)
+                .onSubmit {
+                    triggerSearch()
+                }
                 
                 HorizontalScrollView()
                 CategoriesSection(viewModel: viewModel)
@@ -57,6 +60,17 @@ struct HomeView: View {
             }
             .padding(.horizontal, 20)
         }
+        
+    }
+    
+    private func triggerSearch() {
+        let trimmedQuery = searchInput.trimmingCharacters(in: .whitespacesAndNewlines)
+        print("HomeView: Triggering search for '\(trimmedQuery)'")
+        guard !trimmedQuery.isEmpty else {
+            print("HomeView: Search query is empty, not navigating.")
+            return // Don't search for empty strings
+        }
+        navigator.navigate(to: AppRoute.Main.searchView(searchTerm: trimmedQuery))
     }
 }
 
