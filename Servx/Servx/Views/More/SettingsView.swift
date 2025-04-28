@@ -39,8 +39,10 @@ struct SettingsView: View {
                     frameColor: ServxTheme.inputFieldBorderColor,
                     innerColor: ServxTheme.backgroundColor,
                     textColor: ServxTheme.primaryColor,
+                    isDisabled: true,
                     action: {}
                 )
+                .opacity(0.5)
 
                 ServxButtonView(
                     title: "Change Password",
@@ -49,8 +51,10 @@ struct SettingsView: View {
                     frameColor: ServxTheme.inputFieldBorderColor,
                     innerColor: ServxTheme.backgroundColor,
                     textColor: ServxTheme.primaryColor,
+                    isDisabled: true,
                     action: {}
                 )
+                .opacity(0.5)
             }
 
             VStack(alignment: .leading, spacing: 16) {

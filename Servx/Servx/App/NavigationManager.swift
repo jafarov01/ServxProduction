@@ -101,14 +101,14 @@ final class NavigationManager: ObservableObject {
     }
     
     func navigateToChat(requestId: Int64) {
-        // Switch to Inbox tab
+        print("Navigating to chat for request ID \(requestId)")  // Log the chat navigation request
+        
         selectedTab = .inbox
-        
-        // Clear existing navigation stack
-        inboxStack.removeLast(inboxStack.count)
-        
-        // Navigate to chat view
-        navigate(to: AppRoute.Inbox.chat(requestId: requestId));
+        print("Selected tab set to: \(selectedTab)")  // Log selected tab change
+
+        // Ensure the chat view is correctly navigated without resetting other stacks
+        navigate(to: AppRoute.Inbox.chat(requestId: requestId))
+        print("Navigated to chat, current inbox stack: \(inboxStack)")  // Log inbox stack after navigation
     }
     
     func goBack() {

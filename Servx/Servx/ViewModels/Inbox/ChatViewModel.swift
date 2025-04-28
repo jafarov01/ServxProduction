@@ -20,6 +20,8 @@ class ChatViewModel: ObservableObject {
     @Published var otherParticipantName: String = "Chat"
     @Published var isSending: Bool = false
     @Published var canSendMessage: Bool = false
+    @Published private(set) var currentUserPhotoUrl: URL?
+    @Published private(set) var otherParticipantPhotoUrl: URL?
     @Published var bookingMessageToShowDetails: ChatMessageDTO? = nil
     @Published private(set) var currentRequestStatus: ServiceRequest.RequestStatus? = nil
 
@@ -56,6 +58,11 @@ class ChatViewModel: ObservableObject {
         }
         self.currentUserId = currentUser.id
         self.currentUserRole = currentUser.role
+        
+        self.currentUserPhotoUrl = currentUser.profilePhotoUrl
+                print("ChatViewModel Init: Assigned currentUserPhotoUrl: \(self.currentUserPhotoUrl?.absoluteString ?? "nil")")
+        
+        print("photo0111", currentUser)
 
         print("ChatViewModel initialized for requestId: \(requestId)")
 
@@ -126,6 +133,8 @@ class ChatViewModel: ObservableObject {
             self.otherParticipantId = fetchedOtherId
             self.otherParticipantName = otherUser.fullName
             self.currentRequestStatus = fetchedStatus
+            
+            self.otherParticipantPhotoUrl = otherUser.profilePhotoUrl
 
         } catch {
             print("ChatViewModel: Failed fetch request details: \(error.localizedDescription)")

@@ -14,6 +14,19 @@ struct HomeView: View {
     @ObservedObject private var viewModel: HomeViewModel
     @EnvironmentObject private var navigator: NavigationManager
     
+    let promotionCards: [PromotionCardData] = [
+        PromotionCardData(headline: "Welcome to Servx!",
+                          imageName: "promo_welcome"),
+        PromotionCardData(headline: "Grow Your Business!",
+                          imageName: "promo_provider_free"),
+        PromotionCardData(headline: "Find Help, Zero Fees!",
+                          imageName: "promo_seeker_free"),
+        PromotionCardData(headline: "We're Just Getting Started!",
+                          imageName: "promo_features"),
+        PromotionCardData(headline: "Support Your Local Pros!",
+                          imageName: "promo_community")
+    ]
+    
     init(viewModel: HomeViewModel) {
         _viewModel = ObservedObject(wrappedValue: viewModel)
     }
@@ -54,7 +67,8 @@ struct HomeView: View {
                     triggerSearch()
                 }
                 
-                HorizontalScrollView()
+                PromotionsScrollView(promotions: promotionCards)
+                     .padding(.vertical)
                 CategoriesSection(viewModel: viewModel)
                 RecommendedServicesSection(viewModel: viewModel)
             }
@@ -68,7 +82,7 @@ struct HomeView: View {
         print("HomeView: Triggering search for '\(trimmedQuery)'")
         guard !trimmedQuery.isEmpty else {
             print("HomeView: Search query is empty, not navigating.")
-            return // Don't search for empty strings
+            return
         }
         navigator.navigate(to: AppRoute.Main.searchView(searchTerm: trimmedQuery))
     }
@@ -81,12 +95,6 @@ struct CategoriesSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SectionHeader(
-                title: "Category",
-                actionTitle: "View all",
-                action: { }
-            )
-            
             LazyVGrid(columns: gridColumns, spacing: 10) {
                 ForEach(viewModel.categories) { category in
                     Button {
@@ -103,32 +111,50 @@ struct CategoriesSection: View {
 struct HeaderView: View {
     @EnvironmentObject private var navigator: NavigationManager
     
+    private var timeBasedGreeting: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 5..<12:
+            return "Good Morning ☀️"
+        case 12..<18:
+            return "Good Afternoon 👋🏻"
+        default:
+            return "Good Evening 🌙"
+        }
+    }
+    
     var body: some View {
         HStack {
-            ProfilePhotoView(imageUrl: AuthenticatedUser.shared.currentUser?.profilePhotoUrl)
-                .frame(width: 48, height: 48)
-                .overlay(
-                    Circle()
-                        .stroke(ServxTheme.inputFieldBorderColor, lineWidth: 2)
-                )
-            
-            VStack(alignment: .leading) {
-                ServxTextView(
-                    text: "Good Morning 👋🏻",
-                    color: Color("greyScale900"),
-                    size: 14,
-                    weight: .regular,
-                    alignment: .leading
-                )
+            HStack {
+                ProfilePhotoView(imageUrl: AuthenticatedUser.shared.currentUser?.profilePhotoUrl)
+                    .frame(width: 48, height: 48)
+                    .overlay(
+                        Circle()
+                            .stroke(ServxTheme.inputFieldBorderColor, lineWidth: 2)
+                    )
                 
-                ServxTextView(
-                    text: AuthenticatedUser.shared.fullName,
-                    color: Color("primary500"),
-                    size: 18,
-                    weight: .bold,
-                    alignment: .leading
-                )
+                VStack(alignment: .leading) {
+                    ServxTextView(
+                        text: timeBasedGreeting,
+                        color: Color("greyScale900"),
+                        size: 14,
+                        weight: .regular,
+                        alignment: .leading
+                    )
+                    
+                    ServxTextView(
+                        text: AuthenticatedUser.shared.fullName,
+                        color: Color("primary500"),
+                        size: 18,
+                        weight: .bold,
+                        alignment: .leading
+                    )
+                }
             }
+            .onTapGesture(perform: {
+                navigator.switchTab(to: .more)
+                navigator.navigate(to: AppRoute.More.profile)
+            })
             
             Spacer()
             
@@ -140,29 +166,22 @@ struct HeaderView: View {
                 .onTapGesture {
                     navigator.navigate(to: AppRoute.Main.notifications)
                 }
-            
-            Image("bookmarkIcon")
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 28, height: 28)
         }
         .padding(.horizontal, 20)
     }
 }
 
-private func HorizontalScrollView() -> some View {
-    ScrollView(.horizontal, showsIndicators: false) {
-        HStack {
-            ForEach(0..<10) { index in
-                RoundedRectangle(cornerRadius: 24)
-                    .fill(Color("primary300"))
-                    .frame(width: 280, height: 134)
-                    .padding(10)
-                    .overlay(
-                        Text("This is the \(index)th page here")
-                            .foregroundColor(.white)
-                    )
+struct PromotionsScrollView: View {
+    let promotions: [PromotionCardData]
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 16) {
+                ForEach(promotions) { cardData in
+                    PromotionCardView(data: cardData)
+                }
             }
+            .padding(.horizontal)
         }
     }
 }
@@ -172,13 +191,6 @@ struct RecommendedServicesSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SectionHeader(
-                title: "Recommended Services",
-                actionTitle: "View all",
-                action: {}
-            )
-            .padding(.top, 32)
-            
             LazyVStack(spacing: 16) {
                 ForEach(viewModel.recommendedServices) { service in
                     ServiceDetailedCard(service: service)
@@ -223,5 +235,47 @@ extension View {
     func debugRender(_ tag: String) -> some View {
         viewLogger.info("issue01: \(tag) re-rendered")
         return self
+    }
+}
+
+struct PromotionCardData: Identifiable {
+    let id = UUID()
+    let headline: String
+    let imageName: String
+}
+
+struct PromotionCardView: View {
+    let data: PromotionCardData
+    
+    var body: some View {
+        ZStack {
+            Image(data.imageName)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 280, height: 134)
+                .overlay(
+                    LinearGradient(
+                        gradient: Gradient(colors: [.black.opacity(0.6), .black.opacity(0.1)]),
+                        startPoint: .bottom,
+                        endPoint: .center
+                    )
+                )
+                .clipped()
+                
+            VStack(alignment: .leading) {
+                Spacer()
+                Text(data.headline)
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .shadow(radius: 2)
+            }
+            .padding()
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+        }
+        .frame(width: 280, height: 134)
+        .background(Color("primary300"))
+        .cornerRadius(24)
+        .shadow(radius: 3)
     }
 }

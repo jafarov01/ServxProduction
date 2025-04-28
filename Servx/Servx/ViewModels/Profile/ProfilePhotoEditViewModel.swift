@@ -25,6 +25,8 @@ class ProfilePhotoEditViewModel: ObservableObject {
             // 2. Get updated user data
             let updatedUser = try await userService.getUserDetails()
             
+            print("3003 updatedUserResponse", updatedUser)
+            
             // 3. Update global authenticated user
             AuthenticatedUser.shared.authenticate(with: updatedUser)
             

@@ -25,7 +25,7 @@ final class AuthenticatedUser: ObservableObject {
     
     func authenticate(with response: UserResponse) {
         var updated = response.toEntity()
-        
+                
         if var url = updated.profilePhotoUrl {
             url = url.appending(queryItems: [
                 URLQueryItem(name: "t", value: UUID().uuidString)

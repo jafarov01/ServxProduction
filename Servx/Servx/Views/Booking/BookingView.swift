@@ -656,7 +656,7 @@ struct BookingCardView: View {
                 Button {
                     viewModel.messageUser(booking: booking)
                 } label: {
-                    Label("Message", systemImage: "message.fill")
+                    Text("Message")
                         .font(.subheadline.weight(.medium))
                         .padding(.horizontal, 16)
                         .frame(height: 36)

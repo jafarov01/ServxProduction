@@ -62,59 +62,65 @@ struct InboxRowView: View {
     let conversation: ChatConversationDTO
 
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                ServxTextView(
-                    text: conversation.otherParticipantName,
-                    size: 16, weight: conversation.unreadCount > 0 ? .semibold : .regular
-                )
+        HStack(spacing: 12) {
 
-                ServxTextView(
-                    text: conversation.lastMessage ?? "...",
-                    color: .gray,
-                    size: 14,
-                    lineLimit: 1
-                )
-                .fontWeight(conversation.unreadCount > 0 ? .semibold : .regular)
+            ProfilePhotoView(imageUrl: conversation.otherParticipantPhotoUrl)
+                .frame(width: 50, height: 50)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(conversation.otherParticipantName)
+                    .font(.system(size: 16, weight: conversation.unreadCount > 0 ? .semibold : .medium))
+                    .foregroundColor(Color("primary500"))
+                    .lineLimit(1)
+
+
+                Text(conversation.lastMessage ?? "...")
+                    .font(.system(size: 14))
+                    .foregroundColor(conversation.unreadCount > 0 ? Color(.label).opacity(0.9) : .secondary)
+                    .lineLimit(1)
+                    .fontWeight(conversation.unreadCount > 0 ? .medium : .regular)
+
             }
 
             Spacer()
 
-            VStack(alignment: .trailing, spacing: 4) {
-                 ServxTextView(
-                     text: formattedTimestamp(conversation.lastMessageTimestampDate),
-                     color: .gray,
-                     size: 12
-                 )
+            VStack(alignment: .trailing, spacing: 5) {
+                Text(formattedTimestamp(conversation.lastMessageTimestampDate))
+                    .font(.system(size: 12))
+                    .foregroundColor(.gray)
 
-                 if conversation.unreadCount > 0 {
-                     Text("\(conversation.unreadCount)")
-                         .font(.caption2)
-                         .fontWeight(.bold)
-                         .foregroundColor(.white)
-                         .padding(.horizontal, 6)
-                         .padding(.vertical, 2)
-                         .background(Color.red)
-                         .clipShape(Capsule())
-                 } else {
-                     Text("").font(.caption2)
-                 }
+
+                if conversation.unreadCount > 0 {
+                    Text("\(conversation.unreadCount)")
+                        .font(.caption2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(Color.red)
+                        .clipShape(Capsule())
+                } else {
+                     Spacer().frame(height: 16)
+                }
             }
+            .frame(width: 70, alignment: .trailing)
         }
-         .padding(.vertical, 8)
+        .padding(.vertical, 10)
+        .padding(.horizontal)
     }
 
-     private func formattedTimestamp(_ date: Date?) -> String {
-         guard let date = date else { return "--" }
-         _ = Date()
-         let calendar = Calendar.current
+    private func formattedTimestamp(_ date: Date?) -> String {
+        guard let date = date else { return "--" }
+        let calendar = Calendar.current
 
-         if calendar.isDateInToday(date) {
-             return date.formatted(date: .omitted, time: .shortened)
-         } else if calendar.isDateInYesterday(date) {
-             return "Yesterday"
+        if calendar.isDateInToday(date) {
+            return date.formatted(date: .omitted, time: .shortened)
+        } else if calendar.isDateInYesterday(date) {
+            return "Yesterday"
+        } else if calendar.isDate(date, equalTo: Date(), toGranularity: .weekOfYear) {
+             return date.formatted(.dateTime.weekday(.abbreviated))
          } else {
-             return date.formatted()
-         }
-     }
+            return date.formatted(date: .numeric, time: .omitted)
+        }
+    }
 }

@@ -79,9 +79,12 @@ struct ChatConversationDTO: Codable, Identifiable, Hashable {
     let lastMessageTimestamp: String
     let unreadCount: Int
     let requestStatus: ServiceRequest.RequestStatus
+    let otherParticipantPhotoUrl: URL?
 
+    // Keep id computed property
     var id: Int64 { serviceRequestId }
 
+    // Keep date computed property
     var lastMessageTimestampDate: Date? {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -91,6 +94,37 @@ struct ChatConversationDTO: Codable, Identifiable, Hashable {
         formatter.formatOptions = [.withInternetDateTime]
         return formatter.date(from: lastMessageTimestamp) ?? .distantPast
     }
+
+    // Custom Decodable Initializer
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        // Decode all standard properties
+        serviceRequestId = try container.decode(Int64.self, forKey: .serviceRequestId)
+        otherParticipantName = try container.decode(String.self, forKey: .otherParticipantName)
+        otherParticipantId = try container.decode(Int64.self, forKey: .otherParticipantId)
+        lastMessage = try container.decodeIfPresent(String.self, forKey: .lastMessage)
+        lastMessageTimestamp = try container.decode(String.self, forKey: .lastMessageTimestamp)
+        unreadCount = try container.decode(Int.self, forKey: .unreadCount)
+        requestStatus = try container.decode(ServiceRequest.RequestStatus.self, forKey: .requestStatus)
+        
+        // Decode the photo path string
+        let photoPath = try container.decodeIfPresent(String.self, forKey: .otherParticipantPhotoUrl)
+        
+        self.otherParticipantPhotoUrl = URL(string: photoPath ?? "")
+    }
+
+     // Add a simple memberwise initializer if needed for testing or other manual creation
+     init(serviceRequestId: Int64, otherParticipantName: String, otherParticipantId: Int64, lastMessage: String?, lastMessageTimestamp: String, unreadCount: Int, requestStatus: ServiceRequest.RequestStatus, otherParticipantPhotoUrl: URL?) {
+         self.serviceRequestId = serviceRequestId
+         self.otherParticipantName = otherParticipantName
+         self.otherParticipantId = otherParticipantId
+         self.lastMessage = lastMessage
+         self.lastMessageTimestamp = lastMessageTimestamp
+         self.unreadCount = unreadCount
+         self.requestStatus = requestStatus
+         self.otherParticipantPhotoUrl = otherParticipantPhotoUrl
+     }
 }
 
 struct BookingRequestPayload: Codable, Hashable {

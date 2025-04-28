@@ -44,10 +44,6 @@ struct ChatView: View {
                           .foregroundColor(ServxTheme.primaryColor)
                  }
                  Spacer()
-                 Text(viewModel.otherParticipantName)
-                    .font(.headline)
-                 Spacer()
-                  Button {} label: { Image(systemName: "chevron.left").opacity(0) } .disabled(true)
 
              }
              .padding(.horizontal)
@@ -58,7 +54,7 @@ struct ChatView: View {
             Divider()
             inputArea()
         }
-        .navigationTitle(viewModel.otherParticipantName)
+        .navigationTitle("\(viewModel.otherParticipantName) - Request ID \(viewModel.requestId)")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .task {
@@ -118,6 +114,8 @@ struct ChatView: View {
                         MessageBubbleView(
                             message: message,
                             isCurrentUser: viewModel.isCurrentUser(senderId: message.senderId),
+                            currentUserPhotoUrl: viewModel.currentUserPhotoUrl,
+                            otherParticipantPhotoUrl: viewModel.otherParticipantPhotoUrl,
                             onBookingAccept: { viewModel.handleBookingAccept(messageId: message.id) },
                             onBookingDecline: { viewModel.handleBookingDecline(messageId: message.id) },
                             onShowBookingDetails: { viewModel.showBookingDetails(for: message) }

@@ -26,9 +26,6 @@ struct MainTabView: View {
             moreTab
         }
         .tint(Color("primary500"))
-        .onChange(of: navigator.selectedTab) {
-            navigator.resetAllStacks()
-        }
     }
 
     private var homeTab: some View {
