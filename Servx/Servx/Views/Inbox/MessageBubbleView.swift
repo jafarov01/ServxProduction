@@ -166,6 +166,7 @@ struct MessageBubbleView: View {
         let minPrice = min ?? 0.0
         let maxPrice = max ?? minPrice
         let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "en_US")
         formatter.numberStyle = .currency
         formatter.minimumFractionDigits = 2
         formatter.maximumFractionDigits = 2

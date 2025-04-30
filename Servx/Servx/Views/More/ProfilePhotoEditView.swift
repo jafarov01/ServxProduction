@@ -22,14 +22,6 @@ struct ProfilePhotoEditView: View {
 
     var body: some View {
         VStack(spacing: 24) {
-            Button {
-                navigator.goBack()
-            } label: {
-                Image(systemName: "chevron.left")
-                    .foregroundColor(ServxTheme.primaryColor)
-                    .padding()
-            }
-            
             navigationHeader
             photoPreview
             actionButtons

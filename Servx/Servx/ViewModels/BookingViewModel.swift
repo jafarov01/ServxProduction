@@ -24,12 +24,14 @@ class BookingViewModel: ObservableObject {
     @Published var errorMessage: String? = nil
     @Published var successMessage: String? = nil
     @Published var chatNavigationTarget: Int64? = nil
+    @Published var serviceProfileForNavigation: ServiceProfile? = nil
 
     private var currentPageForCurrentTab: Int = 0
     private var canLoadMoreForCurrentTab: Bool = true
     private let bookingsPerPage = 10
 
     private let bookingService: BookingServiceProtocol
+    private let servicesService: ServicesServiceProtocol
     private let authenticatedUser: AuthenticatedUser
 
     var currentRole: Role? { authenticatedUser.currentUser?.role }
@@ -40,9 +42,11 @@ class BookingViewModel: ObservableObject {
 
     init(
         bookingService: BookingServiceProtocol = BookingService(),
+        servicesService: ServicesServiceProtocol = ServicesService(),
         authenticatedUser: AuthenticatedUser
     ) {
         self.bookingService = bookingService
+        self.servicesService = servicesService
         self.authenticatedUser = authenticatedUser
         print("BookingViewModel initialized.")
         setupUserObserver()
@@ -236,8 +240,32 @@ class BookingViewModel: ObservableObject {
         chatNavigationTarget = nil
     }
 
-    func bookAgain(booking: Booking) {
-        errorMessage = "Book Again not implemented yet."
+    func bookAgain(basedOn booking: Booking) async {
+        print("bookAgain triggered for original booking ID \(booking.id), service ID \(booking.serviceId)")
+        isLoading = true // Optionally show loading for this action
+        errorMessage = nil
+        // Ensure serviceProfileForNavigation is nil before starting
+        if serviceProfileForNavigation != nil { serviceProfileForNavigation = nil }
+
+        do {
+            // 1. Fetch the ServiceProfile needed for navigation
+            let fetchedProfile = try await servicesService.fetchServiceProfile(id: booking.serviceId)
+            print("Successfully fetched service profile for Book Again: \(fetchedProfile.id)")
+
+            // 2. Set the dedicated state variable to trigger navigation in the View
+            self.serviceProfileForNavigation = fetchedProfile
+
+        } catch {
+            print("Error fetching ServiceProfile for Book Again: \(error)")
+            errorMessage = "Could not retrieve service details to book again."
+        }
+        isLoading = false // Reset loading state
+    }
+    
+    func didNavigateToServiceRequest() {
+        // Called by the View *after* navigation has been initiated
+        print("Resetting serviceProfileForNavigation")
+        serviceProfileForNavigation = nil
     }
 
     func viewEReceipt(booking: Booking) {

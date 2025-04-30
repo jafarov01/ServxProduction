@@ -1,14 +1,34 @@
 //
-//  UserDTO.swift
+//  UserRequests.swift
 //  Servx
 //
-//  Created by Makhlug Jafarov on 2025. 04. 07..
+//  Created by Makhlug Jafarov on 2025. 04. 10..
 //
-
 
 import Foundation
 
-// MARK: - User and Address Data Transfer Objects
+struct UpdateUserRequest: Encodable, APIRequest {
+    let firstName: String
+    let lastName: String
+    let phoneNumber: String
+    let address: AddressUpdateRequest
+}
+
+struct AddressUpdateRequest: Encodable, APIRequest {
+    let addressLine: String
+    let city: String
+    let zipCode: String
+    let country: String
+}
+
+struct UpgradeToProviderRequestDTO: Encodable, APIRequest {
+    let education: String
+
+    init(education: String) {
+        self.education = education
+    }
+}
+
 struct UserResponse: Decodable {
     let id: Int64
     let email: String
@@ -55,7 +75,6 @@ enum RoleResponse: String, Decodable {
     case serviceProvider = "SERVICE_PROVIDER"
 }
 
-// MARK: - Profile Photo Response DTO
 struct ProfilePhotoResponse: Decodable {
     let url: String
     
@@ -65,7 +84,6 @@ struct ProfilePhotoResponse: Decodable {
     }
 }
 
-// MARK: - Delete Photo Response DTO
 struct DeletePhotoResponse: Decodable {
     let success: Bool
     let message: String?

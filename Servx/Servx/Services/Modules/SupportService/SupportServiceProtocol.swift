@@ -1,14 +1,10 @@
 //
-//  SupportRequestDTO.swift
+//  SupportServiceProtocol.swift
 //  Servx
 //
-//  Created by Makhlug Jafarov on 2025. 04. 22..
+//  Created by Makhlug Jafarov on 2025. 04. 30..
 //
 
-
-struct SupportRequestDTO: Encodable, APIRequest {
-    let message: String
-}
 
 protocol SupportServiceProtocol {
     func sendSupportRequest(message: String) async throws

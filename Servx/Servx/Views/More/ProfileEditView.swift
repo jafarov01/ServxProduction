@@ -37,7 +37,7 @@ struct ProfileEditView: View {
             ServxTextView(
                 text: "Profile Photo",
                 color: ServxTheme.primaryColor,
-                size: 18,
+                size: 15,
                 weight: .semibold
             )
 
@@ -49,6 +49,7 @@ struct ProfileEditView: View {
                         Circle()
                             .stroke(ServxTheme.inputFieldBorderColor, lineWidth: 2)
                     )
+                    .frame(width: 80, height: 80)
             }
             .buttonStyle(.plain)
         }

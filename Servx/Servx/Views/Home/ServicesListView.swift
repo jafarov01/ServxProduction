@@ -21,11 +21,13 @@ struct ServicesListView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
+                navigationHeader
                 contentState
             }
             .padding(.vertical)
         }
         .navigationTitle(subcategory.name)
+        .navigationBarBackButtonHidden()
         .task {
             if viewModel.services.isEmpty {
                 await viewModel.loadServices()
@@ -55,6 +57,17 @@ struct ServicesListView: View {
              servicesList
          }
      }
+    
+    private var navigationHeader: some View {
+        HStack {
+            Button(action: navigator.goBack) {
+                Image(systemName: "chevron.left")
+                    .foregroundColor(.blue)
+            }
+            Spacer()
+        }
+        .padding()
+    }
      
      private var errorStatePlaceholder: some View {
          VStack {

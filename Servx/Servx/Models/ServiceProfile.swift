@@ -17,11 +17,11 @@ struct ServiceProfile: Identifiable, Codable, Hashable {
     let price: Double
     let rating: Double
     let reviewCount: Int
-    let profilePhotoUrl: String?
+    let profilePhotoUrl: URL?
 
     var serviceTitle: String { "\(categoryName) - \(subcategoryName)" }
 
-     init(id: Int64, providerId: Int64, providerName: String, categoryName: String, subcategoryName: String, workExperience: String, price: Double, rating: Double, reviewCount: Int, profilePhotoUrl: String?) {
+     init(id: Int64, providerId: Int64, providerName: String, categoryName: String, subcategoryName: String, workExperience: String, price: Double, rating: Double, reviewCount: Int, profilePhotoUrl: URL?) {
         self.id = id
         self.providerId = providerId
         self.providerName = providerName

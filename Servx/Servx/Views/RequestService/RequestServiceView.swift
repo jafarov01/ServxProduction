@@ -99,13 +99,8 @@ struct ServiceProviderHeader: View {
     
     var body: some View {
         HStack(spacing: 16) {
-            Circle()
-                .fill(Color.gray.opacity(0.2))
+            ProfilePhotoView(imageUrl: service.profilePhotoUrl)
                 .frame(width: 60, height: 60)
-                .overlay(
-                    Image(systemName: "person.fill")
-                        .foregroundColor(.gray)
-                )
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(service.providerName)

@@ -67,7 +67,7 @@ struct ServiceProfileDetailsView: View {
     @ViewBuilder
     private func profileHeaderSection(profile: ServiceProfile) -> some View {
         HStack(spacing: 15) {
-             ProfilePhotoView(imageUrl: URL(string: profile.profilePhotoUrl ?? ""))
+             ProfilePhotoView(imageUrl: profile.profilePhotoUrl)
                  .frame(width: 70, height: 70)
                  .clipShape(Circle())
 

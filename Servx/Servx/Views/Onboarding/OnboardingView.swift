@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 struct OnboardingView: View {
+    @Binding var hasCompletedOnboarding: Bool
     @EnvironmentObject var navigationManager: NavigationManager
     @State private var currentPage = 0
 
@@ -56,7 +57,8 @@ struct OnboardingView: View {
                     if currentPage < 3 {
                         currentPage += 1
                     } else {
-                        navigationManager.navigate(to: AppRoute.Login.authentication)
+                        self.hasCompletedOnboarding = true
+                        //navigationManager.navigate(to: AppRoute.Login.authentication)
                     }
                 }
             )

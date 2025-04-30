@@ -28,6 +28,7 @@ struct SubcategoriesListView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
+        .navigationTitle(category.name)
         .task {
             if viewModel.subcategories.isEmpty {
                 await viewModel.loadSubcategories()

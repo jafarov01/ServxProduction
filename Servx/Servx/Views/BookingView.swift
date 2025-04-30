@@ -49,7 +49,7 @@ struct BookingView: View {
         }
         .refreshable {
             print("BookingView: Initiating refresh action.")
-            await viewModel.resetAndFetchCurrentTab()
+            viewModel.resetAndFetchCurrentTab()
         }
         .alert(
             "Error",
@@ -65,6 +65,9 @@ struct BookingView: View {
         .onChange(of: viewModel.chatNavigationTarget) { _, newTargetId in
             handleChatNavigation(targetId: newTargetId)
         }
+        .onChange(of: viewModel.serviceProfileForNavigation) { _, newProfileData in
+              handleServiceRequestNavigation(profile: newProfileData)
+         }
         .animation(.default, value: viewModel.successMessage)
     }
 
@@ -141,6 +144,19 @@ struct BookingView: View {
         print("BookingView: Navigating to chat for request ID \(requestId).")
         navigator.navigateToChat(requestId: requestId)
         viewModel.didNavigateToChat()
+    }
+    
+    private func handleServiceRequestNavigation(profile: ServiceProfile?) {
+         guard let serviceProfile = profile else {
+             print("BookingView: handleServiceRequestNavigation called with nil profile.")
+             return
+         }
+         print("BookingView: Handling navigation for fetched ServiceProfile ID \(serviceProfile.id)")
+
+         navigator.switchTabWithoutReset(to: .home)
+         navigator.navigate(to: AppRoute.Main.serviceRequest(serviceProfile))
+
+         viewModel.didNavigateToServiceRequest()
     }
 }
 
@@ -522,6 +538,7 @@ struct BookingCardDetailsView: View {
         formatter.numberStyle = .currency
         formatter.minimumFractionDigits = 2
         formatter.maximumFractionDigits = 2
+        formatter.locale = Locale(identifier: "en_US")
         let minStr =
             formatter.string(from: NSNumber(value: minPrice)) ?? "\(minPrice)"
         if abs(minPrice - maxPrice) < 0.01 {
@@ -663,7 +680,7 @@ struct BookingCardView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(ServxTheme.primaryColor)
-
+                
             case .completed:
                 if viewModel.currentRole == .serviceSeeker {
                     Button {
@@ -671,23 +688,12 @@ struct BookingCardView: View {
                             "Navigate to Leave Review for booking \(booking.id)"
                         )
                         navigator.navigate(to: AppRoute.BookingTab.leaveReview(
-                                        bookingId: booking.id,
-                                        providerName: booking.providerFullName,
-                                        serviceName: booking.serviceName
-                                    ))
+                            bookingId: booking.id,
+                            providerName: booking.providerFullName,
+                            serviceName: booking.serviceName
+                        ))
                     } label: {
-                        Label("Leave Review", systemImage: "star.fill")
-                            .font(.subheadline.weight(.medium))
-                            .padding(.horizontal, 16)
-                            .frame(height: 36)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(ServxTheme.primaryColor)
-                } else {
-                    Button {
-                        viewModel.bookAgain(booking: booking)
-                    } label: {
-                        Label("Book Again", systemImage: "arrow.clockwise")
+                        Text("Leave Review")
                             .font(.subheadline.weight(.medium))
                             .padding(.horizontal, 16)
                             .frame(height: 36)
@@ -695,18 +701,22 @@ struct BookingCardView: View {
                     .buttonStyle(.borderedProminent)
                     .tint(ServxTheme.primaryColor)
                 }
-
+                
             case .cancelledBySeeker, .cancelledByProvider:
-                Button {
-                    viewModel.bookAgain(booking: booking)
-                } label: {
-                    Label("Book Again", systemImage: "arrow.clockwise")
-                        .font(.subheadline.weight(.medium))
-                        .padding(.horizontal, 16)
-                        .frame(height: 36)
+                if viewModel.currentRole == .serviceSeeker {
+                    Button {
+                        Task {
+                                await viewModel.bookAgain(basedOn: booking)
+                        }
+                    } label: {
+                        Text("Book Again")
+                            .font(.subheadline.weight(.medium))
+                            .padding(.horizontal, 16)
+                            .frame(height: 36)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(ServxTheme.primaryColor)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(ServxTheme.primaryColor)
             }
             Spacer()
         }

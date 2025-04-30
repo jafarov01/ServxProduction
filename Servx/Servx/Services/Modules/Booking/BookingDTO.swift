@@ -1,78 +1,35 @@
 //
-//  ServiceRequestDetailDTO.swift
+//  BookingDTO.swift
 //  Servx
 //
-//  Created by Makhlug Jafarov on 2025. 04. 16..
+//  Created by Makhlug Jafarov on 2025. 04. 30..
 //
 
 import Foundation
 
-// For receiving from backend (DTO)
-struct ServiceRequestDetailDTO: Decodable {
-    let id: Int64
-    let description: String
-    let severity: ServiceRequest.SeverityLevel
-    let status: ServiceRequest.RequestStatus
-    let address: AddressResponse
-    let createdAt: String
-    let service: ServiceProfileResponseDTO
-    let seeker: UserResponse
-    let provider: UserResponse
-}
+struct BookingRequestPayload: Codable, Hashable {
+    let agreedDateTime: String
+    let serviceRequestDetailsText: String
+    let priceMin: Double?
+    let priceMax: Double?
+    let notes: String?
+    let durationMinutes: Int?
 
-// For frontend domain use
-struct ServiceRequestDetail: Codable, Identifiable {
-    let id: Int64
-    let description: String
-    let severity: ServiceRequest.SeverityLevel
-    let status: ServiceRequest.RequestStatus
-    let address: Address
-    let createdAt: String
-    let service: ServiceProfile
-    let seeker: User
-    let provider: User
-    
-    var createdAtDate: Date? {
-        return createdAt.toDate()
+    var agreedDate: Date? {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let date = formatter.date(from: agreedDateTime) {
+            return date
+        }
+        formatter.formatOptions = [.withInternetDateTime]
+        return formatter.date(from: agreedDateTime)
     }
 }
 
-// For sending to backend
-struct AcceptRequestDTO: Encodable, APIRequest {
-    var accepted: Bool = true
-    var acceptedAt: String
-    
-    init() {
-        self.acceptedAt = Date().toString()
-    }
-}
-
-extension String {
-    func toDate() -> Date? {
-        return DateFormatter.iso8601Full.date(from: self)
-    }
-}
-
-extension Date {
-    func toString() -> String {
-        return DateFormatter.iso8601Full.string(from: self)
-    }
-}
-
-extension ServiceRequestDetailDTO {
-    func toEntity() -> ServiceRequestDetail {
-        ServiceRequestDetail(
-            id: id,
-            description: description,
-            severity: severity,
-            status: status,
-            address: address.toEntity(),
-            createdAt: createdAt,
-            service: service.toEntity(),
-            seeker: seeker.toEntity(),
-            provider: provider.toEntity()
-        )
-    }
+enum BookingProposalState: String, Codable, Hashable {
+    case pending
+    case accepted
+    case rejected
 }
 
 struct BookingDTO: Codable, Identifiable {

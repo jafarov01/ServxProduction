@@ -116,7 +116,9 @@ enum Endpoint {
         case .fetchCategories: return "\(base)/categories"
         case .fetchSubcategories(let categoryId): return "\(base)/categories/\(categoryId)/subcategories"
         case .fetchServices(let categoryId, let subcategoryId): return "\(base)/categories/\(categoryId)/subcategories/\(subcategoryId)/service-offers"
-        case .fetchServiceProfile(let profileId): return "\(base)/service-profiles/\(profileId)"
+        case .fetchServiceProfile(let profileId):
+            let arbitraryCategoryId: Int64 = 1
+            return "\(base)/categories/\(arbitraryCategoryId)/\(profileId)"
         case .createServiceProfile: return "\(base)/user/me/service-profile"
         case .createBulkServices(let categoryId, _): return "\(base)/categories/\(categoryId)/service-offers/bulk"
         case .fetchRecommendedServices: return "\(base)/service-offers/recommended"

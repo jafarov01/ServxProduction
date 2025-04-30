@@ -100,15 +100,19 @@ final class NavigationManager: ObservableObject {
         resetAllStacks()
     }
     
+    func switchTabWithoutReset(to tab: Tab) {
+        guard selectedTab != tab else { return }
+        selectedTab = tab
+    }
+    
     func navigateToChat(requestId: Int64) {
-        print("Navigating to chat for request ID \(requestId)")  // Log the chat navigation request
+        print("Navigating to chat for request ID \(requestId)")
         
         selectedTab = .inbox
-        print("Selected tab set to: \(selectedTab)")  // Log selected tab change
+        print("Selected tab set to: \(selectedTab)")
 
-        // Ensure the chat view is correctly navigated without resetting other stacks
         navigate(to: AppRoute.Inbox.chat(requestId: requestId))
-        print("Navigated to chat, current inbox stack: \(inboxStack)")  // Log inbox stack after navigation
+        print("Navigated to chat, current inbox stack: \(inboxStack)")
     }
     
     func goBack() {

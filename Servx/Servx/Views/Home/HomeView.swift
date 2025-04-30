@@ -52,7 +52,7 @@ struct HomeView: View {
     
     private var contentView: some View {
         ScrollView {
-            VStack(spacing: 20) {
+            VStack(spacing: 24) {
                 HeaderView()
                 
                 ServxInputView(
@@ -62,15 +62,27 @@ struct HomeView: View {
                     backgroundColor: Color("greyScale100"),
                     textColor: Color("greyScale900")
                 )
-                .padding(.top, 20)
+                .padding(.top, 10)
                 .onSubmit {
                     triggerSearch()
                 }
                 
                 PromotionsScrollView(promotions: promotionCards)
-                     .padding(.vertical)
+
+                SectionHeader(
+                    title: "Categories",
+                )
+                 .padding(.top, 16)
+
                 CategoriesSection(viewModel: viewModel)
+                
+                SectionHeader(
+                    title: "Recommended Services"
+                )
+                 .padding(.top, 16)
+                
                 RecommendedServicesSection(viewModel: viewModel)
+                .padding(.bottom)
             }
             .padding(.horizontal, 20)
         }
@@ -202,8 +214,6 @@ struct RecommendedServicesSection: View {
 
 struct SectionHeader: View {
     let title: String
-    let actionTitle: String?
-    var action: (() -> Void)?
     
     var body: some View {
         HStack {
@@ -214,19 +224,7 @@ struct SectionHeader: View {
                 weight: .bold,
                 alignment: .leading
             )
-            
             Spacer()
-            
-            if let actionTitle = actionTitle, let action = action {
-                ServxTextView(
-                    text: actionTitle,
-                    color: Color("primary500"),
-                    size: 14,
-                    weight: .regular,
-                    alignment: .trailing
-                )
-                .onTapGesture(perform: action)
-            }
         }
     }
 }
