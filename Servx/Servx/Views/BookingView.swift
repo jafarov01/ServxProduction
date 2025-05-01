@@ -702,22 +702,22 @@ struct BookingCardView: View {
                     .tint(ServxTheme.primaryColor)
                 }
                 
-            case .cancelledBySeeker, .cancelledByProvider:
-                if viewModel.currentRole == .serviceSeeker {
-                    Button {
-                        Task {
+                case .cancelledBySeeker, .cancelledByProvider:
+                    if viewModel.currentRole == .serviceSeeker {
+                        Button {
+                            Task {
                                 await viewModel.bookAgain(basedOn: booking)
+                            }
+                        } label: {
+                            Text("Book Again")
+                                .font(.subheadline.weight(.medium))
+                                .padding(.horizontal, 16)
+                                .frame(height: 36)
                         }
-                    } label: {
-                        Text("Book Again")
-                            .font(.subheadline.weight(.medium))
-                            .padding(.horizontal, 16)
-                            .frame(height: 36)
+                        .buttonStyle(.borderedProminent)
+                        .tint(ServxTheme.primaryColor)
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(ServxTheme.primaryColor)
                 }
-            }
             Spacer()
         }
     }

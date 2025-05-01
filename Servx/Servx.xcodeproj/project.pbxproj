@@ -532,6 +532,19 @@
 			path = Util;
 			sourceTree = "<group>";
 		};
+		55B5A9D82DC22E35009AC976 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				556FF0E02DB1B2250037704D /* WebSocketManager.swift */,
+				5548714A2D9F4EFC00AB1811 /* UserSessionManager.swift */,
+				55FBA2432D35EAE100F86201 /* NavigationManager.swift */,
+				55FBA2462D35EAE100F86201 /* UserDefaultsManager.swift */,
+				554C737C2D9CBE9700145987 /* KeychainManager.swift */,
+				552F25B22D98992F00BF1234 /* AuthenticatedUser.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
 		55CF6E292DA333330045E240 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
@@ -587,18 +600,12 @@
 		55FBA2472D35EAE100F86201 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				556FF0E02DB1B2250037704D /* WebSocketManager.swift */,
 				557A17322DAFFC1E00971872 /* Notification.swift */,
 				559D3CE42DA18B7D00E3862F /* MainBottomNavBar.swift */,
 				559D3CE22DA18B4C00E3862F /* UnauthenticatedFlowView.swift */,
 				559D3CE02DA18B4100E3862F /* MainTabView.swift */,
-				5548714A2D9F4EFC00AB1811 /* UserSessionManager.swift */,
-				552F25B22D98992F00BF1234 /* AuthenticatedUser.swift */,
-				554C737C2D9CBE9700145987 /* KeychainManager.swift */,
 				55FBA2422D35EAE100F86201 /* ContentView.swift */,
-				55FBA2432D35EAE100F86201 /* NavigationManager.swift */,
 				55FBA2442D35EAE100F86201 /* ServxApp.swift */,
-				55FBA2462D35EAE100F86201 /* UserDefaultsManager.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -713,6 +720,7 @@
 		55FBA2872D35EAE100F86201 /* Servx */ = {
 			isa = PBXGroup;
 			children = (
+				55B5A9D82DC22E35009AC976 /* Managers */,
 				55D3D3472DA8699D00799594 /* Info.plist */,
 				55B5A9D32DC1D815009AC976 /* Util */,
 				5574B7252D3DAEAF00DF60ED /* Services */,

@@ -33,8 +33,8 @@ enum AppRoute {
         case subcategory(ServiceArea)
         case serviceRequest(ServiceProfile)
         case notifications
-        case serviceRequestDetail(id: Int64)  // For NEW_REQUEST/REQUEST_ACCEPTED
-        case serviceReview(bookingId: Int64)  // For SERVICE_COMPLETED
+        case serviceRequestDetail(id: Int64)
+        case serviceReview(bookingId: Int64)
         case serviceProfileDetail(ServiceProfile)
         case searchView(searchTerm: String)
     }
@@ -43,7 +43,7 @@ enum AppRoute {
         case chat(requestId: Int64)
     }
     
-    enum BookingTab: Hashable { // Routes specific to Booking tab's stack
+    enum BookingTab: Hashable {
         case leaveReview(bookingId: Int64, providerName: String, serviceName: String)
      }
 }

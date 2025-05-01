@@ -29,7 +29,6 @@ struct KeychainManager: KeychainManagerProtocol {
             kSecAttrAccessible: accessible
         ]
         
-        // Delete existing item before adding new
         print("Attempting to delete existing token for service: \(service)")
         try deleteToken(service: service)
 

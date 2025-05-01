@@ -65,64 +65,42 @@ class WebSocketManager: NSObject, ObservableObject, SwiftStompDelegate {
 
     // MARK: - Public Methods
 
-    func connect(token: String) {
-        // Prevents multiple concurrent connection attempts
-        guard connectionState == .disconnected || connectionState.isError()
-        else {
-            logger.warning("Connect called while already connecting/connected.")
-            print(
-                "secretSocket123 - Connect blocked! Current state: \(connectionState)"
-            )  // ADDED
-            return
-        }
-
-        logger.info("Attempting to connect...")
-        print(
-            "secretSocket123 - STARTING CONNECT with token: \(token.prefix(4))****"
-        )
-        updateState(.connecting)
-        self.currentToken = token
-        invalidateReconnectTimer()
-        resetReconnectAttempts()
-
-        // --- Prepare Headers ---
-        // Headers for the STOMP CONNECT Frame
-        let stompConnectHeaders = [
-            "Authorization": "Bearer \(token)",
-            "host": "localhost",
-            "accept-version": "1.1,1.2",
-            "heart-beat": "10000,10000",
-        ]
-        // Headers for the initial HTTP WebSocket Handshake
-        let httpHandshakeHeaders = [
-            "Authorization": "Bearer \(token)",
-            "Sec-WebSocket-Protocol": "v10.stomp,v11.stomp,v12.stomp",
-        ]
-
-        // ADDED HEADER PRINTS
-        print("secretSocket123 - STOMP HEADERS: \(stompConnectHeaders)")
-        print("secretSocket123 - HTTP HEADERS: \(httpHandshakeHeaders)")
-
-        // --- Initialize SwiftStomp using the CORRECT init from source ---
-        logger.debug(
-            "Initializing SwiftStomp with host, STOMP headers, and HTTP headers..."
-        )
-        print("secretSocket123 - Creating SwiftStomp with URL: \(webSocketURL)")
-        stompClient = SwiftStomp(
-            host: webSocketURL,
-            headers: stompConnectHeaders,
-            httpConnectionHeaders: httpHandshakeHeaders
-        )
-        stompClient?.delegate = self
-        print(
-            "secretSocket123 - Delegate set: \(String(describing: stompClient?.delegate != nil))"
-        )
-
-        // --- Initiate Connection ---
-        logger.debug("Calling stompClient.connect (autoReconnect=false)...")
-        print("secretSocket123 - CONNECTING NOW (autoReconnect: false)")
-        stompClient?.connect(autoReconnect: false)
+func connect(token: String) {
+    // Prevents multiple concurrent connection attempts
+    guard connectionState == .disconnected || connectionState.isError()
+    else {
+        return
     }
+
+    updateState(.connecting)
+    self.currentToken = token
+    invalidateReconnectTimer()
+    resetReconnectAttempts()
+
+    // Headers for the STOMP CONNECT Frame
+    let stompConnectHeaders = [
+        "Authorization": "Bearer \(token)",
+        "host": "localhost",
+        "accept-version": "1.1,1.2",
+        "heart-beat": "10000,10000",
+    ]
+    // Headers for the initial HTTP WebSocket Handshake
+    let httpHandshakeHeaders = [
+        "Authorization": "Bearer \(token)",
+        "Sec-WebSocket-Protocol": "v10.stomp,v11.stomp,v12.stomp",
+    ]
+
+    // --- Initialize SwiftStomp using the CORRECT init from source ---
+    stompClient = SwiftStomp(
+        host: webSocketURL,
+        headers: stompConnectHeaders,
+        httpConnectionHeaders: httpHandshakeHeaders
+    )
+    stompClient?.delegate = self
+
+    // --- Initiate Connection ---
+    stompClient?.connect(autoReconnect: false)
+}
 
     func disconnect(attemptReconnect: Bool = false) {
         logger.info(
